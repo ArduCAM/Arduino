@@ -79,7 +79,56 @@
 #define Wire Wire1
 #endif 
 
+void ArduCAM::CS_LOW(void)
+{
+	cbi(P_CS, B_CS);
+}
+void ArduCAM::CS_HIGH(void)
+{
+	sbi(P_CS, B_CS);
+}
 
+void ArduCAM::set_bit(uint8_t addr, uint8_t bit)
+{
+	uint8_t temp;
+	temp = read_reg(addr);
+	write_reg(addr, temp | bit);
+
+}
+
+void ArduCAM::clear_bit(uint8_t addr, uint8_t bit)
+{
+	uint8_t temp;
+	temp = read_reg(addr);
+	write_reg(addr, temp & (~bit));
+}
+
+uint8_t ArduCAM::get_bit(uint8_t addr, uint8_t bit)
+{
+	uint8_t temp;
+	temp = read_reg(addr);
+	temp = temp & bit;
+	return temp;
+}
+
+void ArduCAM::set_mode(uint8_t mode)
+{
+	switch(mode)
+	{
+		case MCU2LCD_MODE:
+			write_reg(ARDUCHIP_MODE, MCU2LCD_MODE);
+			break;
+		case CAM2LCD_MODE:
+			write_reg(ARDUCHIP_MODE, CAM2LCD_MODE);
+			break;
+		case LCD2MCU_MODE:
+			write_reg(ARDUCHIP_MODE, LCD2MCU_MODE);
+			break;
+		default:
+			write_reg(ARDUCHIP_MODE, MCU2LCD_MODE);
+			break;
+	}
+}
 
 int ArduCAM::bus_write(int address, int value) {
   // take the SS pin low to select the chip:
@@ -171,8 +220,23 @@ void ArduCAM::clear_fifo_flag(void)
 uint8_t ArduCAM::read_fifo(void)
 {
 	uint8_t data;
-	data = bus_read(0x3D);
+	data = bus_read(SINGLE_FIFO_READ);
 	return data;
+}
+
+uint32_t ArduCAM::read_fifo_length(void)
+{
+	uint32_t len1,len2,len3,length=0;
+	len1 = read_reg(FIFO_SIZE1);
+    len2 = read_reg(FIFO_SIZE2);
+    len3 = read_reg(FIFO_SIZE3) & 0x07;
+    length = ((len3 << 16) | (len2 << 8) | len1) & 0x07ffff;
+	return length;
+}
+
+void ArduCAM::set_fifo_burst()
+{
+	SPI.transfer(BURST_FIFO_READ);
 }
 
 uint8_t ArduCAM::read_reg(uint8_t addr)
@@ -524,17 +588,26 @@ void ArduCAM::InitCAM()
 			delay(100);
 			if(m_fmt == JPEG)
 			{
-				wrSensorRegs16_8(OV5642_1080P_Video_setting);
-				rdSensorReg16_8(0x3818,&reg_val);
-				wrSensorReg16_8(0x3818, (reg_val | 0x20) & 0xBf);
-				rdSensorReg16_8(0x3621,&reg_val);
-				wrSensorReg16_8(0x3621, reg_val | 0x20);
+				// wrSensorRegs16_8(OV5642_1080P_Video_setting);
+				// rdSensorReg16_8(0x3818,&reg_val);
+				// wrSensorReg16_8(0x3818, (reg_val | 0x20) & 0xBf);
+				// rdSensorReg16_8(0x3621,&reg_val);
+				// wrSensorReg16_8(0x3621, reg_val | 0x20);
+				wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
+				delay(100); 
+				wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga); 
+				// wrSensorReg16_8(0x4407,0x0C);
+				//******************Test************************//
+				//wrSensorRegs16_8(OV5642_VGA_preview_setting); 
+				//delay(100); 
+				//wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA); 
+				wrSensorReg16_8(0x4407,0x10);
 			}
 			else
 			{
 				wrSensorRegs16_8(OV5642_RGB_QVGA);
 				rdSensorReg16_8(0x3818,&reg_val);
-				Serial.println(reg_val,HEX);
+				//Serial.println(reg_val,HEX);
 				wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
 				rdSensorReg16_8(0x3621,&reg_val);
 				wrSensorReg16_8(0x3621, reg_val & 0xdf);

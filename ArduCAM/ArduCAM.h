@@ -181,8 +181,12 @@
 /****************************************************/
 /* ArduChip related definition 											*/
 /****************************************************/
+#define RWBIT					0x80  //READ AND WRITE BIT IS BIT[7]
+
 #define ARDUCHIP_TEST1       	0x00  //TEST register
 #define ARDUCHIP_TEST2      	0x01  //TEST register
+
+#define ARDUCHIP_FRAMES			0x01  //Bit[2:0]Number of frames to be captured
 
 #define ARDUCHIP_MODE      		0x02  //Mode register
 #define MCU2LCD_MODE       		0x00
@@ -196,6 +200,7 @@
 #define DELAY_MASK         		0x08  //0 = no delay, 			1 = delay one clock
 #define MODE_MASK          		0x10  //0 = LCD mode, 			1 = FIFO mode
 #define FIFO_PWRDN_MASK	   		0x20  //0 = Normal operation, 	1 = FIFO power down
+#define LOW_POWER_MODE			0x40  //0 = Normal mode, 		1 = Low power mode
 
 #define ARDUCHIP_FIFO      		0x04  //FIFO and I2C control
 #define FIFO_CLEAR_MASK    		0x01
@@ -203,6 +208,12 @@
 #define FIFO_RDPTR_RST_MASK     0x10
 #define FIFO_WRPTR_RST_MASK     0x20
 
+#define ARDUCHIP_GPIO			0x06  //GPIO Write Register
+#define GPIO_RESET_MASK			0x01  //0 = default state,		1 =  Sensor reset IO value
+#define GPIO_POWER_MASK			0x02  //0 = Sensor power down IO value, 1 = Sensor power enable IO value
+
+#define BURST_FIFO_READ			0x3C  //Burst FIFO read operation
+#define SINGLE_FIFO_READ		0x3D  //Single FIFO read operation
 
 #define ARDUCHIP_REV       		0x40  //ArduCHIP revision
 #define VER_LOW_MASK       		0x3F
@@ -213,7 +224,9 @@
 #define SHUTTER_MASK       		0x02
 #define CAP_DONE_MASK      		0x08
 
-
+#define FIFO_SIZE1				0x42  //Camera write FIFO size[7:0] for burst to read
+#define FIFO_SIZE2				0x43  //Camera write FIFO size[15:8]
+#define FIFO_SIZE3				0x44  //Camera write FIFO size[18:16]
 
 
 /****************************************************/
@@ -234,13 +247,23 @@ class ArduCAM
 		ArduCAM(byte model,int CS);
 		void InitCAM();
 		
+		void CS_HIGH(void);
+		void CS_LOW(void);
+		
 		void flush_fifo(void);
 		void start_capture(void);
 		void clear_fifo_flag(void);
 		uint8_t read_fifo(void);
 		
 		uint8_t read_reg(uint8_t addr);
-		void write_reg(uint8_t addr, uint8_t data);	
+		void write_reg(uint8_t addr, uint8_t data);
+
+		uint32_t read_fifo_length(void);
+		void set_fifo_burst(void);
+		void set_bit(uint8_t addr, uint8_t bit);
+		void clear_bit(uint8_t addr, uint8_t bit);
+		uint8_t get_bit(uint8_t addr, uint8_t bit);
+		void set_mode(uint8_t mode);
 		
 		int wrSensorRegs(const struct sensor_reg*);
 		int wrSensorRegs8_8(const struct sensor_reg*);
