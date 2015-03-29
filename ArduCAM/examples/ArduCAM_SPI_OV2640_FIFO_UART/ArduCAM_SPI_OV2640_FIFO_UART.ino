@@ -36,6 +36,7 @@ void setup()
     Wire1.begin(); 
   #endif
   Serial.begin(115200);
+
   Serial.println("ArduCAM Start!"); 
 
   // set the SPI_CS as an output:
@@ -49,10 +50,11 @@ void setup()
   if(temp != 0x55)
   {
   	Serial.println("SPI interface Error!");
+        Serial.println(temp,HEX);
   	while(1);
   }
   
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+  myCAM.set_mode(MCU2LCD_MODE);
 
   //Check if the camera module type is OV2640
   myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
@@ -65,7 +67,7 @@ void setup()
   //Change to JPEG capture mode and initialize the OV2640 module	
   myCAM.set_format(JPEG);
   myCAM.InitCAM();
-  myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);
+  myCAM.OV2640_set_JPEG_size(OV2640_320x240);
 }
 
 void loop()
@@ -120,7 +122,7 @@ void loop()
     //Start capture
     myCAM.start_capture();	 
   }
-  if(myCAM.read_reg(ARDUCHIP_TRIG) & CAP_DONE_MASK)
+  if(myCAM.get_bit(ARDUCHIP_TRIG,CAP_DONE_MASK))
   {
     Serial.println("Capture Done!");
 

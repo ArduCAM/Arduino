@@ -39,7 +39,7 @@ void setup()
     Wire.begin(); 
   #endif
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("ArduCAM Start!"); 
   // set the SPI_CS as an output:
   pinMode(SPI_CS, OUTPUT);
@@ -56,7 +56,7 @@ void setup()
   }
   
   //Change MCU mode
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+  myCAM.set_mode(MCU2LCD_MODE);
 
   myGLCD.InitLCD();
   
@@ -78,28 +78,47 @@ void setup()
   {
     //while (1);		//If failed, stop here
     Serial.println("SD Card Error!");
-    while(1);
+    //while(1);
   }
   else
   {
     Serial.println("SD Card detected!");
   }
-  if(!FileSystem.exists("/mnt/sd/DCIM/"))
+  if(!FileSystem.exists("/mnt/sda1/arduino/"))
   {
-    if(FileSystem.mkdir("/mnt/sd/DCIM"))
+    if(FileSystem.mkdir("/mnt/sda1/arduino"))
+    {
+      Serial.println("Make arduino floder done.");
+    }
+    else
+    {
+      Serial.println("Make arduino floder failed!");
+      //while(1);
+    }
+  }
+  else
+  {
+    Serial.println("The arduino floder is already existed.");
+  }
+  if(!FileSystem.exists("/mnt/sda1/DCIM/"))
+  {
+    if(FileSystem.mkdir("/mnt/sda1/DCIM"))
     {
       Serial.println("Make DCIM floder done.");
     }
     else
     {
       Serial.println("Make DCIM floder failed!");
-      while(1);
+      //while(1);
     }
   }
   else
   {
     Serial.println("The DCIM floder is already existed.");
   }
+  Process p;
+  p.runShellCommand("ln -s /mnt/sda1/DCIM /www/DCIM");
+  p.running();
 }
 
 void loop()
@@ -118,17 +137,17 @@ void loop()
   int total_time = 0;
 
   //Wait trigger from shutter buttom   
-  if(myCAM.read_reg(ARDUCHIP_TRIG) & SHUTTER_MASK)	
+  if(myCAM.get_bit(ARDUCHIP_TRIG , SHUTTER_MASK))	
   {
     isShowFlag = false;
-    myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+    myCAM.set_mode(MCU2LCD_MODE);
     myCAM.set_format(JPEG);
     myCAM.InitCAM();
 
     myCAM.OV2640_set_JPEG_size(OV2640_640x480);
     //myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);
     //Wait until buttom released
-    while(myCAM.read_reg(ARDUCHIP_TRIG) & SHUTTER_MASK);
+    while(myCAM.get_bit(ARDUCHIP_TRIG, SHUTTER_MASK));
     delay(1000);
     start_capture = 1;
     	
@@ -137,14 +156,13 @@ void loop()
   {
     if(isShowFlag )
     {
-      temp = myCAM.read_reg(ARDUCHIP_TRIG);
   
-      if(!(temp & VSYNC_MASK))				 			//New Frame is coming
+      if(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK))				 			//New Frame is coming
       {
-         myCAM.write_reg(ARDUCHIP_MODE, 0x00);    		//Switch to MCU
+         myCAM.set_mode(MCU2LCD_MODE);    		//Switch to MCU
          myGLCD.resetXY();
-         myCAM.write_reg(ARDUCHIP_MODE, 0x01);    		//Switch to CAM
-         while(!(myCAM.read_reg(ARDUCHIP_TRIG)&0x01)); 	//Wait for VSYNC is gone
+         myCAM.set_mode(CAM2LCD_MODE);    		//Switch to CAM
+         while(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK)); 	//Wait for VSYNC is gone
       }
     }
   }
@@ -159,7 +177,7 @@ void loop()
     Serial.println("Start Capture");     
   }
   
-  if(myCAM.read_reg(ARDUCHIP_TRIG) & CAP_DONE_MASK)
+  if(myCAM.get_bit(ARDUCHIP_TRIG ,CAP_DONE_MASK))
   {
 
     Serial.println("Capture Done!");
@@ -168,7 +186,7 @@ void loop()
     filename[strlen(filename)-1]=0;
     //Serial.println(filename);
     strcat(filename,".jpg");
-    strcat(path,"/mnt/sd/DCIM/");
+    strcat(path,"/mnt/sda1/DCIM/");
     strcat(path,filename);
     Serial.println(path);
     //Open the new file  

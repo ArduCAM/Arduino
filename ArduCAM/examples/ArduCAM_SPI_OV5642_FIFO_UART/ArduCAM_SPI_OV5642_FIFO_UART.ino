@@ -53,7 +53,7 @@ void setup()
   }
   
   //Change MCU mode
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+  myCAM.set_mode(MCU2LCD_MODE);
 
   //Check if the camera module type is OV5642
   myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
@@ -93,15 +93,15 @@ void loop()
     //Start capture
     myCAM.start_capture();	 
   }
-  if(myCAM.read_reg(ARDUCHIP_TRIG) & CAP_DONE_MASK)
+  if(myCAM.get_bit(ARDUCHIP_TRIG,CAP_DONE_MASK))
   {
     Serial.println("Capture Done!");
     
     while( (temp != 0xD9) | (temp_last != 0xFF) )
     {
         temp_last = temp;
-	temp = myCAM.read_fifo();
-	Serial.write(temp);
+        temp = myCAM.read_fifo();
+        Serial.write(temp);
     }
 
     //Clear the capture done flag 

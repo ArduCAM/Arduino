@@ -1,7 +1,7 @@
 // ArduCAM demo (C)2014 Lee
 // web: http://www.ArduCAM.com
 // This program is a demo of how to use most of the functions
-// of the library with a supported camera modules, and can run on any Arduino platform.
+// of the library with a supported camera modules, and run on Arduino Yun.
 //
 // This demo was made for Omnivision OV2640 2MP sensor.
 // It will run the ArduCAM as a real 2MP digital camera, provide both preview and JPEG capture.
@@ -11,19 +11,16 @@
 // 3. Capture and buffer the image to FIFO. 
 // 4. Store the image to Micro SD/TF card with JPEG format.
 // 5. Resolution can be changed by myCAM.set_JPEG_size() function.
-// This program requires the ArduCAM V3.1.0 (or later) library and Rev.C ArduCAM shield
-// and use Arduino IDE 1.5.2 compiler or above
+// This program requires the ArduCAM V3.4.0 (or later) library and Rev.C ArduCAM shield
+// and use Arduino IDE 1.5.8 compiler or above
 
 #include <UTFT_SPI.h>
-#include <SD.h>
+#include <FileIO.h>
+#include <Process.h>
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
-
-#if defined(__arm__)
-  #include <itoa.h>
-#endif
 
 #define SD_CS 9 
 // set pin 10 as the slave select for SPI:
@@ -37,17 +34,16 @@ void setup()
 {
   uint8_t vid,pid;
   uint8_t temp; 
+  
   #if defined (__AVR__)
     Wire.begin(); 
   #endif
-  #if defined(__arm__)
-    Wire1.begin(); 
-  #endif
-  Serial.begin(115200);
+
+  Serial.begin(9600);
   Serial.println("ArduCAM Start!"); 
   // set the SPI_CS as an output:
   pinMode(SPI_CS, OUTPUT);
-
+  Bridge.begin();
   // initialize SPI:
   SPI.begin(); 
   //Check if the ArduCAM SPI bus is OK
@@ -70,7 +66,7 @@ void setup()
   if((vid != 0x26) || (pid != 0x42))
   	Serial.println("Can't find OV2640 module!");
   else
-  	Serial.println("OV2640 detected");
+  	Serial.println("OV2640 detected!");
   	
   //Change to BMP capture mode and initialize the OV2640 module	  	
   myCAM.set_format(BMP);
@@ -78,19 +74,41 @@ void setup()
   myCAM.InitCAM();
   
   //Initialize SD Card
-  if (!SD.begin(SD_CS)) 
+  if (! FileSystem.begin()) 
   {
     //while (1);		//If failed, stop here
-    Serial.println("SD Card Error");
+    Serial.println("SD Card Error!");
+    while(1);
   }
   else
+  {
     Serial.println("SD Card detected!");
+  }
+  if(!FileSystem.exists("/mnt/sd/DCIM/"))
+  {
+    if(FileSystem.mkdir("/mnt/sd/DCIM"))
+    {
+      Serial.println("Make DCIM floder done.");
+    }
+    else
+    {
+      Serial.println("Make DCIM floder failed!");
+      while(1);
+    }
+  }
+  else
+  {
+    Serial.println("The DCIM floder is already existed.");
+  }
 }
 
 void loop()
 {
   char str[8];
-  File outFile;
+  char path[40];
+  char filename[20];
+  memset(path,0,40);
+  memset(filename,0,20);
   byte buf[256];
   static int i = 0;
   static int k = 0;
@@ -119,6 +137,7 @@ void loop()
   {
     if(isShowFlag )
     {
+  
       if(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK))				 			//New Frame is coming
       {
          myCAM.set_mode(MCU2LCD_MODE);    		//Switch to MCU
@@ -139,20 +158,24 @@ void loop()
     Serial.println("Start Capture");     
   }
   
-  if(myCAM.get_bit(ARDUCHIP_TRIG ,CAP_DONE_MASK))
+  if(myCAM.read_reg(ARDUCHIP_TRIG) & CAP_DONE_MASK)
   {
 
     Serial.println("Capture Done!");
-    
-    //Construct a file name
-    k = k + 1;
-    itoa(k, str, 10); 
-    strcat(str,".jpg");
+    String time = gettime();
+    strcat(filename,time.c_str());
+    filename[strlen(filename)-1]=0;
+    //Serial.println(filename);
+    strcat(filename,".jpg");
+    strcat(path,"/mnt/sd/DCIM/");
+    strcat(path,filename);
+    Serial.println(path);
     //Open the new file  
-    outFile = SD.open(str,O_WRITE | O_CREAT | O_TRUNC);
+    File outFile = FileSystem.open(path,FILE_WRITE);
     if (! outFile) 
     { 
       Serial.println("open file failed");
+      myCAM.clear_fifo_flag();
       return;
     }
     total_time = millis();
@@ -198,6 +221,18 @@ void loop()
   }
 }
 
-   
-
+String gettime()
+{
+    Process ptime;
+    String time="";
+    ptime.begin("date");
+    ptime.addParameter("+%Y%m%d%H%M%S");
+    ptime.run();
+    while(ptime.available() > 0) 
+    {
+      char c = ptime.read();
+      time += c;
+    }
+    return time;
+}
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>ArduCam Yun Web Server</title>
+        <script type="text/javascript" src="zepto.min.js"></script>
+        <script type="text/javascript">
+			function refresh() {
+				$('#content').load('/arduino/save/1');
+				document.getElementById("photo").src=$("#content").html(); 		
+			}
+			function button_onmouseclick(){
+				$('#content').load('/arduino/capture/1');
+				
+			}
+		</script>
+    </head>
+    
+    <body onload="setInterval(refresh, 1000);">
+        <div align="center">
+            <font color="#0000FF" size="+4">
+                ArduCAM Yun Web Server
+            </font>
+        </div>
+        <div align="center">
+        	<img  id="photo" name="photo" src="" width="320" height="240" alt="" style="background-color: #CCCCCC" />
+            
+        </div>
+        <div align="center">
+			<table width="320" border="0" >
+              <tr>
+                <td height="30px"><div align="center"><span id="content">&nbsp;</span></div></td>
+              </tr>
+              <tr>
+                <td><div align="center">
+            		<input type="image" name="capture" src="shot.png" width="100px" height="100px" onclick="javascript:button_onmouseclick();"/>
+        		</div>
+        		</td>
+              </tr>
+            </table>
+        </div>        
+    </body>
+</html>

@@ -60,7 +60,7 @@ void setup()
   }
   
   //Change MCU mode
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+  myCAM.set_mode(MCU2LCD_MODE);
 
   myGLCD.InitLCD();
   
@@ -100,32 +100,30 @@ void loop()
   int total_time = 0;
 
   //Wait trigger from shutter buttom   
-  if(myCAM.read_reg(ARDUCHIP_TRIG) & SHUTTER_MASK)	
+  if(myCAM.get_bit(ARDUCHIP_TRIG , SHUTTER_MASK))	
   {
     isShowFlag = false;
-    myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+    myCAM.set_mode(MCU2LCD_MODE);
     myCAM.set_format(JPEG);
-  	myCAM.InitCAM();
-  	myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH
+    myCAM.InitCAM();
+    myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH
 
     //Wait until buttom released
-    while(myCAM.read_reg(ARDUCHIP_TRIG) & SHUTTER_MASK);
+    while(myCAM.get_bit(ARDUCHIP_TRIG, SHUTTER_MASK));
     delay(1000);
-    start_capture = 1;
-    	
+    start_capture = 1;	
   }
   else
   {
     if(isShowFlag )
     {
-      temp = myCAM.read_reg(ARDUCHIP_TRIG);
   
-      if(!(temp & VSYNC_MASK))				 			//New Frame is coming
+      if(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK))				 			//New Frame is coming
       {
-         myCAM.write_reg(ARDUCHIP_MODE, 0x00);    		//Switch to MCU
+         myCAM.set_mode(MCU2LCD_MODE);   		//Switch to MCU
          myGLCD.resetXY();
-         myCAM.write_reg(ARDUCHIP_MODE, 0x01);    		//Switch to CAM
-         while(!(myCAM.read_reg(ARDUCHIP_TRIG)&0x01)); 	//Wait for VSYNC is gone
+         myCAM.set_mode(CAM2LCD_MODE);    		//Switch to CAM
+         while(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK)); 	//Wait for VSYNC is gone
       }
     }
   }
@@ -140,22 +138,11 @@ void loop()
     Serial.println("Start Capture");     
   }
   
-  if(myCAM.read_reg(ARDUCHIP_TRIG) & CAP_DONE_MASK)
+  if(myCAM.get_bit(ARDUCHIP_TRIG ,CAP_DONE_MASK))
   {
 
     Serial.println("Capture Done!");
     
-    //Construct a file name
-    k = k + 1;
-    itoa(k, str, 10); 
-    strcat(str,".jpg");
-    //Open the new file  
-    outFile = SD.open(str,O_WRITE | O_CREAT | O_TRUNC);
-    if (! outFile) 
-    { 
-      Serial.println("open file failed");
-      return;
-    }
     total_time = millis();
     //Read first dummy byte
     //myCAM.read_fifo();

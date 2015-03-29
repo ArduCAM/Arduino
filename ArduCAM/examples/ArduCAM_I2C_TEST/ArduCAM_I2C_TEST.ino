@@ -15,6 +15,7 @@
 #include <ArduCAM.h>
 #include <SPI.h>
 #include <SD.h>
+#include "ov5642_regs.h"
 
 // set pin 10 as the slave select for the ArduCAM shield:
 const int slaveSelectPin = 10;
@@ -33,7 +34,7 @@ void setup()
 
   // initialize SPI:
   SPI.begin(); 
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+  myCAM.set_mode(MCU2LCD_MODE);
   delay(2000);
   myGLCD.InitLCD();
 
@@ -49,11 +50,11 @@ void loop()
   switch(temp)
   {
     case 0x11:
-      myCAM.rdSensorReg16_8(0x300a, &temp);
+      myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &temp);
       Serial.write(temp);
       break;
     case 0x12:
-      myCAM.rdSensorReg16_8(0x300b, &temp);
+      myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &temp);
       Serial.write(temp);
       break;
     default:

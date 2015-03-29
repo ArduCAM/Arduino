@@ -11,9 +11,9 @@
 // 4. Playback the capture photos one by one when shutter buttom hold on for 3 seconds.
 // This program requires the ArduCAM V3.4.0 (or above) library and Rev.C ArduCAM shield
 // and use Arduino IDE 1.5.2 compiler or above
-
+#include <Bridge.h>
 #include <UTFT_SPI.h>
-#include <SD.h>
+#include <FileIO.h>
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
@@ -72,7 +72,7 @@ void setup()
   }
   
   //Change MCU mode
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);
+  myCAM.set_mode(MCU2LCD_MODE);
   
   //Initialize the LCD Module
   myGLCD.InitLCD();
@@ -105,23 +105,22 @@ void loop()
   unsigned long previous_time = 0;
   static int k = 0;
   uint8_t temp;
-  myCAM.write_reg(ARDUCHIP_MODE, 0x01);		 	//Switch to CAM
+  myCAM.set_mode(CAM2LCD_MODE);		 	//Switch to CAM
   
   while(1)
   {
-    temp = myCAM.read_reg(ARDUCHIP_TRIG);
 
-    if(!(temp & VSYNC_MASK))				//New Frame is coming
+    if(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK))				//New Frame is coming
     {
-       myCAM.write_reg(ARDUCHIP_MODE, 0x00);    	//Switch to MCU
+       myCAM.set_mode(MCU2LCD_MODE);    	//Switch to MCU
        myGLCD.resetXY();
-       myCAM.write_reg(ARDUCHIP_MODE, 0x01);    	//Switch to CAM
-       while(!(myCAM.read_reg(ARDUCHIP_TRIG)&0x01)); 	//Wait for VSYNC is gone
+       myCAM.set_mode(CAM2LCD_MODE);    	//Switch to CAM
+       while(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK)); 	//Wait for VSYNC is gone
     }
-    else if(temp & SHUTTER_MASK)
+    else if(myCAM.get_bit(ARDUCHIP_TRIG,SHUTTER_MASK))
     {
        previous_time = millis();
-       while(myCAM.read_reg(ARDUCHIP_TRIG) & SHUTTER_MASK)
+       while(myCAM.get_bit(ARDUCHIP_TRIG,SHUTTER_MASK))
        {
          if((millis() - previous_time) > 1500)
          {
@@ -133,7 +132,7 @@ void loop()
          k = k + 1;
          itoa(k, str, 10); 
          strcat(str,".bmp");				//Generate file name
-         myCAM.write_reg(ARDUCHIP_MODE, 0x00);    	//Switch to MCU, freeze the screen 
+         myCAM.set_mode(MCU2LCD_MODE);    	//Switch to MCU, freeze the screen 
          GrabImage(str);
        }
     }
@@ -166,7 +165,7 @@ void GrabImage(char* str)
   Serial.println("Start Capture"); 
 
   //Polling the capture done flag
-  while(!(myCAM.read_reg(ARDUCHIP_TRIG) & CAP_DONE_MASK));
+  while(!myCAM.get_bit(ARDUCHIP_TRIG,CAP_DONE_MASK));
   Serial.println("Capture Done!");
   
   k = 0;
@@ -211,7 +210,7 @@ void Playback()
   File inFile;
   char str[8];
   int k = 0;
-  myCAM.write_reg(ARDUCHIP_MODE, 0x00);    		//Switch to MCU
+  myCAM.set_mode(MCU2LCD_MODE);    		//Switch to MCU
   myGLCD.InitLCD(PORTRAIT);
   
   while(1)
