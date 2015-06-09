@@ -1,6 +1,6 @@
 /*
   ArduCAM.h - Arduino library support for CMOS Image Sensor
-  Copyright (C)2011-2013 ArduCAM.com. All right reserved
+  Copyright (C)2011-2015 ArduCAM.com. All right reserved
   
   Basic functionality of this library are based on the demo-code provided by
   ArduCAM.com. You can find the latest version of the library at
@@ -25,7 +25,7 @@
   		-	Arduino Nano			(Tested)
   		-	Arduino DUE				(Tested)
   		- Arduino Yun				(Tested)  		
-  		-	Raspberry Pi			(In plan)
+  		-	Raspberry Pi			(Tested)
   		
 
   If you make any modifications or improvements to the code, I would appreciate
@@ -66,7 +66,8 @@
 	2014/05/01  V3.1.1  by Lee  Minor changes to add support Arduino IDE for linux distributions.	
 	2014/09/30  V3.2.0  by Lee  Improvement on OV5642 camera dirver.			
 	2014/10/06  V3.3.0  by Lee  Add OV7660,OV7725 camera support.			
-	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.																		
+	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.			
+	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments																
 --------------------------------------*/
 
 
@@ -108,8 +109,6 @@
 
 #define fontbyte(x) cfont.font[x]  
 
-//#define pgm_read_word(data) *((uint16_t*)data)
-//#define pgm_read_byte(data) *((uint8_t*)data)
 #define regtype volatile uint32_t
 #define regsize uint32_t
 #define PROGMEM
@@ -139,16 +138,20 @@
 #define BMP 	0
 #define JPEG	1
 
-#define OV7670	0	
-#define MT9D111	1
-#define OV7675	2
-#define OV5642	3
-#define OV3640  4
-#define OV2640  5
-#define OV9655	6
-#define MT9M112	7
-#define OV7725	8
-#define OV7660	9
+#define OV7670		0	
+#define MT9D111_A	1
+#define OV7675		2
+#define OV5642		3
+#define OV3640  	4
+#define OV2640  	5
+#define OV9655		6
+#define MT9M112		7
+#define OV7725		8
+#define OV7660		9
+#define MT9M001 	10
+#define OV5640 		11
+#define MT9D111_B	12
+#define OV9650		13
 
 #define OV2640_160x120 		0	//160x120
 #define OV2640_176x144 		1	//176x144
