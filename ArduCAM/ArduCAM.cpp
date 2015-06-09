@@ -542,6 +542,49 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 	#endif
 }
 
+void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
+{
+	#if defined OV5642_CAM
+	uint8_t reg_val;
+	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
+	//wrSensorRegs16_8(OV5642_VGA_preview_setting); 
+	delay(100); 
+	switch(size)
+	{
+		case OV5642_320x240:	
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			wrSensorReg16_8(0x4407,0x04);
+			break;
+		case OV5642_640x480:	
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_vga);
+			break;
+		case OV5642_1280x720:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			wrSensorRegs16_8(ov5642_res_720P);
+			break;
+		case OV5642_1920x1080:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			wrSensorRegs16_8(ov5642_res_1080P);
+			break;
+		case OV5642_2048x1563:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qxga);
+			break;
+		case OV5642_2592x1944:
+			//wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_5M);
+			wrSensorRegs16_8(OV5642_VGA_preview_setting); 
+			delay(100);
+			wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
+			wrSensorReg16_8(0x4407,0x0C); 
+
+			break;
+		default:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			break;
+	}
+
+	#endif
+}
+
 void ArduCAM::set_format(byte fmt)
 {
 	if(fmt == BMP)

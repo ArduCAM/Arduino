@@ -163,6 +163,13 @@
 #define OV2640_1280x1024	7	//1280x1024
 #define OV2640_1600x1200	8	//1600x1200
 
+#define OV5642_320x240 		1	//320x240
+#define OV5642_640x480		2	//640x480
+#define OV5642_1280x720 	3	//1280x720
+#define OV5642_1920x1080	4	//1920x1080
+#define OV5642_2048x1563	5	//2048x1563
+#define OV5642_2592x1944	6	//2592x1944
+
 /****************************************************/
 /* I2C Control Definition 													*/
 /****************************************************/
@@ -286,6 +293,7 @@ class ArduCAM
 		byte rdSensorReg16_16(uint16_t regID, uint16_t* regDat);
 		
 		void OV2640_set_JPEG_size(uint8_t size);
+		void OV5642_set_JPEG_size(uint8_t size);
 		void set_format(byte fmt);
 		
 		int bus_write(int address, int value);
