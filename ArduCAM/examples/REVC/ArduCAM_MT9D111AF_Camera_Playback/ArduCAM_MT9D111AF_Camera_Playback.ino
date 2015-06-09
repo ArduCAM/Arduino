@@ -40,7 +40,7 @@ const char bmp_header[BMPIMAGEOFFSET] PROGMEM =
   
 
 
-ArduCAM myCAM(MT9D111,SPI_CS);
+ArduCAM myCAM(MT9D111_B,SPI_CS);
 UTFT myGLCD(SPI_CS);
 
 void setup()
