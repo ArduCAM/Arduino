@@ -27,7 +27,7 @@
 #define BMPIMAGEOFFSET 66
 
 // set pin 10 as the slave select for the digital pot:
-const int CS = 10;
+const int CS = 9;
 bool is_header = false;
 int mode = 0;
 uint8_t start_capture = 0;
@@ -140,6 +140,8 @@ void loop() {
         myCAM.set_format(BMP);
         myCAM.InitCAM();
         myCAM.clear_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
+        myCAM.wrSensorReg16_8(0x3818, 0x81);
+        myCAM.wrSensorReg16_8(0x3621, 0xA7);
         break;
       default:
         break;

@@ -547,35 +547,48 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 	#if defined OV5642_CAM
 	uint8_t reg_val;
 	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
-	//wrSensorRegs16_8(OV5642_VGA_preview_setting); 
 	delay(100); 
 	switch(size)
 	{
 		case OV5642_320x240:	
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			wrSensorReg16_8(0x4407,0x04);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0x98); 
 			break;
 		case OV5642_640x480:	
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_vga);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0x98);  
 			break;
 		case OV5642_1280x720:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			wrSensorRegs16_8(ov5642_res_720P);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0x98);
 			break;
 		case OV5642_1920x1080:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			wrSensorRegs16_8(ov5642_res_1080P);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0x98);
 			break;
 		case OV5642_2048x1563:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qxga);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0x98); 
 			break;
 		case OV5642_2592x1944:
-			//wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_5M);
-			wrSensorRegs16_8(OV5642_VGA_preview_setting); 
-			delay(100);
-			wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
-			wrSensorReg16_8(0x4407,0x0C); 
-
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_5M);
+			wrSensorReg16_8(0x4407,0x08); 
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0x98);  
 			break;
 		default:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
@@ -661,26 +674,15 @@ void ArduCAM::InitCAM()
 			delay(100);
 			if(m_fmt == JPEG)
 			{
-				// wrSensorRegs16_8(OV5642_1080P_Video_setting);
-				// rdSensorReg16_8(0x3818,&reg_val);
-				// wrSensorReg16_8(0x3818, (reg_val | 0x20) & 0xBf);
-				// rdSensorReg16_8(0x3621,&reg_val);
-				// wrSensorReg16_8(0x3621, reg_val | 0x20);
 				wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
 				delay(100); 
 				wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga); 
-				// wrSensorReg16_8(0x4407,0x0C);
-				//******************Test************************//
-				//wrSensorRegs16_8(OV5642_VGA_preview_setting); 
-				//delay(100); 
-				//wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA); 
-				wrSensorReg16_8(0x4407,0x10);
+				wrSensorReg16_8(0x4407,0x0C);
 			}
 			else
 			{
 				wrSensorRegs16_8(OV5642_RGB_QVGA);
 				rdSensorReg16_8(0x3818,&reg_val);
-				//Serial.println(reg_val,HEX);
 				wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
 				rdSensorReg16_8(0x3621,&reg_val);
 				wrSensorReg16_8(0x3621, reg_val & 0xdf);
