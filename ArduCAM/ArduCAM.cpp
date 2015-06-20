@@ -14,7 +14,8 @@
 		-	OV3640
 		-	OV5642
 		-	OV7660
-		-	OV7725			
+		-	OV7725
+		- MT9M112			
 			
 	We will add support for many other sensors in next release.
         
@@ -68,7 +69,8 @@
 	2014/09/30  V3.2.0  by Lee  Improvement on OV5642 camera dirver.			
 	2014/10/06  V3.3.0  by Lee  Add OV7660,OV7725 camera support.	
 	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.		
-	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments															
+	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments			
+	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.														
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -213,6 +215,8 @@ ArduCAM::ArduCAM(byte model,int CS)
 			sensor_addr = 0x90;
 			break;
 		case MT9M112:
+			sensor_addr = 0x90;	
+			break;		
 		case MT9M001:
 			sensor_addr = 0xba;	
 			break;		
@@ -331,6 +335,7 @@ byte ArduCAM::wrSensorReg8_16(int regID, int regDat)
 //I2C Read 8bit address, 16bit data
 byte ArduCAM::rdSensorReg8_16(uint8_t regID, uint16_t* regDat)
 {
+	uint8_t temp;
 	Wire.beginTransmission(sensor_addr >> 1);
 	Wire.write(regID); 	
 	Wire.endTransmission();
@@ -338,8 +343,8 @@ byte ArduCAM::rdSensorReg8_16(uint8_t regID, uint16_t* regDat)
 	Wire.requestFrom((sensor_addr >> 1),2);
 	if(Wire.available())
 	{
-		*regDat = Wire.read(); 	
-		*regDat++ = Wire.read();
+		temp = Wire.read(); 	
+		*regDat = (temp << 8) | Wire.read();
 	}
 
 	delay(1);
@@ -729,7 +734,9 @@ void ArduCAM::InitCAM()
 		}
 		case MT9M112:
 		{
-			
+			#if defined MT9M112_CAM
+			wrSensorRegs8_16(MT9M112_QVGA);
+			#endif	
 			break;
 		}
 

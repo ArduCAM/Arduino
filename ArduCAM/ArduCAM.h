@@ -15,6 +15,8 @@
 		-	OV5642
 		-	OV7660
 		-	OV7725
+		- MT9M112		
+				
 	We will add support for many other sensors in next release.
 	
   Supported MCU platform
@@ -67,7 +69,8 @@
 	2014/09/30  V3.2.0  by Lee  Improvement on OV5642 camera dirver.			
 	2014/10/06  V3.3.0  by Lee  Add OV7660,OV7725 camera support.			
 	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.			
-	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments																
+	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments		
+	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.																	
 --------------------------------------*/
 
 
