@@ -16,7 +16,8 @@
 		-	OV7660
 		-	OV7725
 		- MT9M112			
-			
+		- MT9V111			
+				
 	We will add support for many other sensors in next release.
         
   Supported MCU platform
@@ -70,7 +71,8 @@
 	2014/10/06  V3.3.0  by Lee  Add OV7660,OV7725 camera support.	
 	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.		
 	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments			
-	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.														
+	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.					
+	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.											
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -230,7 +232,9 @@ ArduCAM::ArduCAM(byte model,int CS)
 		case OV9655:
 			sensor_addr = 0x60;
 			break;
-	
+		case MT9V111:
+			sensor_addr = 0xB8;
+			break;		
 		default:
 			sensor_addr = 0x42;
 			break;
@@ -737,6 +741,28 @@ void ArduCAM::InitCAM()
 			#if defined MT9M112_CAM
 			wrSensorRegs8_16(MT9M112_QVGA);
 			#endif	
+			break;
+		}
+		case MT9V111:
+		{
+			#if defined MT9V111_CAM
+			//Reset sensor core
+			wrSensorReg8_16(0x01, 0x04);
+			wrSensorReg8_16(0x0D, 0x01);
+			wrSensorReg8_16(0x0D, 0x00);
+			//Reset IFP 
+			wrSensorReg8_16(0x01, 0x01);
+			wrSensorReg8_16(0x07, 0x01);
+			wrSensorReg8_16(0x07, 0x00);
+			delay(100);
+			wrSensorRegs8_16(MT9V111_QVGA);
+			//delay(1000);
+			wrSensorReg8_16(0x97, 0x0020);
+			wrSensorReg8_16(0xf0, 0x00);
+			wrSensorReg8_16(0x21, 0x8403); //Mirror Column
+			wrSensorReg8_16(0xC6, 0xA103);//SEQ_CMD
+      wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
+      #endif	
 			break;
 		}
 

@@ -16,6 +16,7 @@
 		-	OV7660
 		-	OV7725
 		- MT9M112		
+		- MT9V111				
 				
 	We will add support for many other sensors in next release.
 	
@@ -70,7 +71,8 @@
 	2014/10/06  V3.3.0  by Lee  Add OV7660,OV7725 camera support.			
 	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.			
 	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments		
-	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.																	
+	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.			
+	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.																
 --------------------------------------*/
 
 
@@ -155,6 +157,7 @@
 #define OV5640 		11
 #define MT9D111_B	12
 #define OV9650		13
+#define MT9V111		14
 
 #define OV2640_160x120 		0	//160x120
 #define OV2640_176x144 		1	//176x144

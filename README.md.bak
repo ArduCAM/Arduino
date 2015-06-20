@@ -20,5 +20,5 @@ Supported MCU platform
 -	Arduino Leonardo R3		(Tested)
 -	Arduino Nano			(Tested)
 -	Arduino DUE			(Tested)
-- Arduino Yun			(Tested)
+- 	Arduino Yun			(Tested)
 -	Raspberry Pi			(Tested)
