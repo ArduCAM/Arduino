@@ -10,9 +10,8 @@ Now supported controllers:
 -	OV7660
 -	OV7725
 - MT9M112			
-	
 
-  Supported MCU platform
+Supported MCU platform
 -	Theoretically support all Arduino families
 -	Arduino UNO R3			(Tested)
 -	Arduino MEGA2560 R3		(Tested)
