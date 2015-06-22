@@ -12,7 +12,8 @@
 //#define MT9D111_CAM
 //#define MT9M112_CAM
 //#define MT9V111_CAM	
-#define OV5640_CAM
+//#define OV5640_CAM
+#define MT9M001_CAM	
 
 #if defined OV7660_CAM	
 	#include "ov7660_regs.h"
@@ -56,6 +57,10 @@
 
 #if defined OV5640_CAM	
 	#include "ov5640_regs.h"
+#endif
+
+#if defined MT9M001_CAM	
+	#include "mt9m001_regs.h"
 #endif
 
 #endif	//_MEMORYSAVER_

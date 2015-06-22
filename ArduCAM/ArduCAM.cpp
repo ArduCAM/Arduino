@@ -17,7 +17,8 @@
 		-	OV7725
 		- MT9M112			
 		- MT9V111			
-		- OV6540	
+		- OV5640	
+		- MT9M001
 						
 	We will add support for many other sensors in next release.
         
@@ -75,6 +76,7 @@
 	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.					
 	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.		
 	2015/06/22  V3.4.4  by Lee	Add support for OV5640 camera.										
+	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -777,6 +779,13 @@ void ArduCAM::InitCAM()
 			wrSensorRegs16_8(ov5640_vga_preview);
 			wrSensorRegs16_8(OV5640_RGB_QVGA);
 			#endif
+			break;
+		}
+		case MT9M001:
+		{
+			#if defined MT9M001_CAM
+			wrSensorRegs8_16(MT9M001_QVGA_30fps);		
+			#endif	
 			break;
 		}
 		default:
