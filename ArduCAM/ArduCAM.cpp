@@ -17,7 +17,8 @@
 		-	OV7725
 		- MT9M112			
 		- MT9V111			
-				
+		- OV6540	
+						
 	We will add support for many other sensors in next release.
         
   Supported MCU platform
@@ -72,7 +73,8 @@
 	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.		
 	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments			
 	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.					
-	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.											
+	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.		
+	2015/06/22  V3.4.4  by Lee	Add support for OV5640 camera.										
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -412,6 +414,7 @@ byte ArduCAM::wrSensorReg16_16(int regID, int regDat)
 //I2C Read 16bit address, 16bit data
 byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 {
+	uint8_t temp;	
 	Wire.beginTransmission(sensor_addr >> 1);
 	Wire.write(regID >> 8);
 	Wire.write(regID & 0x00FF); 	
@@ -420,8 +423,8 @@ byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 	Wire.requestFrom((sensor_addr >> 1),2);
 	if(Wire.available())
 	{
-		*regDat = Wire.read(); 	
-		*regDat++ = Wire.read(); 	
+		temp = Wire.read(); 	
+		*regDat = (temp << 8) | Wire.read();
 	}
 
 	delay(1);
@@ -765,7 +768,17 @@ void ArduCAM::InitCAM()
       #endif	
 			break;
 		}
-
+		case OV5640:
+		{
+			#if defined OV5640_CAM
+			wrSensorReg16_8(0x3008, 0x80);
+			delay(100);
+			wrSensorRegs16_8(OV5640YUV_Sensor_Dvp_Init);
+			wrSensorRegs16_8(ov5640_vga_preview);
+			wrSensorRegs16_8(OV5640_RGB_QVGA);
+			#endif
+			break;
+		}
 		default:
 			
 			break;	
