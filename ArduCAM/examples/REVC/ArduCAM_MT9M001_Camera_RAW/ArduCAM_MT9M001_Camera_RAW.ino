@@ -7,7 +7,7 @@
 // It will turn the ArduCAM into a real digital camera with capture and playback functions.
 // 
 // 1. Capture and buffer the image to FIFO when shutter pressed quickly.
-// 2. Store the image to Micro SD/TF card with BMP format.
+// 2. Store the image to Micro SD/TF card with RAW format.
 // 
 // This program requires the ArduCAM V3.4.5 (or above) library and Rev.C ArduCAM shield
 // and use Arduino IDE 1.5.8 compiler or above
