@@ -27,7 +27,7 @@
 #define BMPIMAGEOFFSET 66
 
 // set pin 10 as the slave select for the digital pot:
-const int CS = 9;
+const int CS = 10;
 bool is_header = false;
 int mode = 0;
 uint8_t start_capture = 0;
