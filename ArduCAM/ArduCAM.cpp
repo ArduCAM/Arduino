@@ -569,40 +569,40 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 			wrSensorReg16_8(0x4407,0x04);
 			wrSensorReg16_8(0x3818, 0xA8); 
 			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0x98); 
+			wrSensorReg16_8(0x3801 , 0xC8); 
 			break;
 		case OV5642_640x480:	
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_vga);
 			wrSensorReg16_8(0x3818, 0xA8); 
 			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0x98);  
+			wrSensorReg16_8(0x3801 , 0xC8);  
 			break;
 		case OV5642_1280x720:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			wrSensorRegs16_8(ov5642_res_720P);
 			wrSensorReg16_8(0x3818, 0xA8); 
 			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0x98);
+			wrSensorReg16_8(0x3801 , 0xC8);
 			break;
 		case OV5642_1920x1080:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			wrSensorRegs16_8(ov5642_res_1080P);
 			wrSensorReg16_8(0x3818, 0xA8); 
 			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0x98);
+			wrSensorReg16_8(0x3801 , 0xC8);
 			break;
 		case OV5642_2048x1563:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qxga);
 			wrSensorReg16_8(0x3818, 0xA8); 
 			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0x98); 
+			wrSensorReg16_8(0x3801 , 0xC8); 
 			break;
 		case OV5642_2592x1944:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_5M);
 			wrSensorReg16_8(0x4407,0x08); 
 			wrSensorReg16_8(0x3818, 0xA8); 
 			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0x98);  
+			wrSensorReg16_8(0x3801 , 0xC8);  
 			break;
 		default:
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
