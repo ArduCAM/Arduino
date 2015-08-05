@@ -76,7 +76,8 @@ void setup()
   myCAM.set_format(BMP);
 
   myCAM.InitCAM();
-
+  
+  
   
   //Initialize SD Card
   if (!SD.begin(SD_CS)) 
@@ -107,9 +108,7 @@ void loop()
     myCAM.set_mode(MCU2LCD_MODE);
     myCAM.set_format(JPEG);
     myCAM.InitCAM();
-      
     myCAM.OV5642_set_JPEG_size(OV5642_320x240);
-    
     myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH
 
     //Wait until buttom released
