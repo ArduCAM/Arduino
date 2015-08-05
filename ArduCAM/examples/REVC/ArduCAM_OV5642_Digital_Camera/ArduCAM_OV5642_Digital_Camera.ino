@@ -3,14 +3,14 @@
 // This program is a demo of how to use most of the functions
 // of the library with a supported camera modules, and can run on any Arduino platform.
 //
-// This demo was made for Omnivision OV2640 2MP sensor.
-// It will run the ArduCAM as a real 2MP digital camera, provide both preview and JPEG capture.
+// This demo was made for Omnivision OV5642 5MP sensor.
+// It will run the ArduCAM as a real 5MP digital camera, provide both preview and JPEG capture.
 // The demo sketch will do the following tasks:
 // 1. Set the sensor to BMP preview output mode.
 // 2. Switch to JPEG mode when shutter buttom pressed.
 // 3. Capture and buffer the image to FIFO. 
 // 4. Store the image to Micro SD/TF card with JPEG format.
-// 5. Resolution can be changed by myCAM.set_JPEG_size() function.
+// 5. Resolution can be changed by myCAM.OV5642_set_JPEG_size() function.
 // This program requires the ArduCAM V3.1.0 (or later) library and Rev.C ArduCAM shield
 // and use Arduino IDE 1.5.2 compiler or above
 
@@ -76,6 +76,7 @@ void setup()
   myCAM.set_format(BMP);
 
   myCAM.InitCAM();
+
   
   //Initialize SD Card
   if (!SD.begin(SD_CS)) 
@@ -106,6 +107,9 @@ void loop()
     myCAM.set_mode(MCU2LCD_MODE);
     myCAM.set_format(JPEG);
     myCAM.InitCAM();
+      
+    myCAM.OV5642_set_JPEG_size(OV5642_320x240);
+    
     myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH
 
     //Wait until buttom released
@@ -142,7 +146,17 @@ void loop()
   {
 
     Serial.println("Capture Done!");
-    
+    //Construct a file name
+    k = k + 1;
+    itoa(k, str, 10); 
+    strcat(str,".jpg");
+    //Open the new file  
+    outFile = SD.open(str,O_WRITE | O_CREAT | O_TRUNC);
+    if (! outFile) 
+    { 
+      Serial.println("open file failed");
+      return;
+    }
     total_time = millis();
     //Read first dummy byte
     //myCAM.read_fifo();
