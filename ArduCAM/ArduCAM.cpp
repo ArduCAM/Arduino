@@ -19,6 +19,7 @@
 		- MT9V111			
 		- OV5640	
 		- MT9M001
+		- MT9T112
 						
 	We will add support for many other sensors in next release.
         
@@ -77,6 +78,7 @@
 	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.		
 	2015/06/22  V3.4.4  by Lee	Add support for OV5640 camera.										
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
+	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.		
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -229,6 +231,7 @@ ArduCAM::ArduCAM(byte model,int CS)
 		case OV3640:
 		case OV5640:
 		case OV5642:
+		case MT9T112:
 			sensor_addr = 0x78;
 			break;
 		case OV2640:
@@ -785,6 +788,184 @@ void ArduCAM::InitCAM()
 		{
 			#if defined MT9M001_CAM
 			wrSensorRegs8_16(MT9M001_QVGA_30fps);		
+			#endif	
+			break;
+		}
+		case MT9T112:
+		{
+			#if defined MT9T112_CAM
+			
+			wrSensorReg16_16(0x001a , 0x0219 );  
+			wrSensorReg16_16(0x001a , 0x0018 );  
+			//reset camera 
+			wrSensorReg16_16(0x0014 , 0x2425 );  
+			wrSensorReg16_16(0x0014 , 0x2145 );  
+			wrSensorReg16_16(0x0010 , 0x0110 );  
+			wrSensorReg16_16(0x0012 , 0x00f0 );  
+			wrSensorReg16_16(0x002a , 0x7f77 );  
+			wrSensorReg16_16(0x0014 , 0x2545 );  
+			wrSensorReg16_16(0x0014 , 0x2547 );  
+			wrSensorReg16_16(0x0014 , 0x3447 );  
+			wrSensorReg16_16(0x0014 , 0x3047 );  
+			delay(10);
+			wrSensorReg16_16(0x0014 , 0x3046 );  
+			wrSensorReg16_16(0x0022 , 0x01f4 );  
+			wrSensorReg16_16(0x001e , 0x0707 );  
+			wrSensorReg16_16(0x3b84 , 0x01f4 );  
+			wrSensorReg16_16(0x002e , 0x0500 );  
+			wrSensorReg16_16(0x0018 , 0x402b );  
+			wrSensorReg16_16(0x3b82 , 0x0004 );  
+			wrSensorReg16_16(0x0018 , 0x402f );  
+			wrSensorReg16_16(0x0018 , 0x402e );  
+			delay(50);
+			wrSensorReg16_16(0x0614 , 0x0001 );  
+			delay(1);
+			wrSensorReg16_16(0x0614 , 0x0001 );  
+			delay(1);
+			wrSensorReg16_16(0x0614 , 0x0001 );  
+			delay(1);
+			wrSensorReg16_16(0x0614 , 0x0001 );  
+			delay(1);
+			wrSensorReg16_16(0x0614 , 0x0001 );  
+			delay(1);
+			wrSensorReg16_16(0x0614 , 0x0001 );  
+			delay(1);
+			delay(10);
+			//init pll 
+			wrSensorReg16_16(0x098e , 0x6800 );  
+			wrSensorReg16_16(0x0990 , 0x0140 );  
+			wrSensorReg16_16(0x098e , 0x6802 );  
+			wrSensorReg16_16(0x0990 , 0x00f0 );  
+			wrSensorReg16_16(0x098e , 0x68a0 );  
+			wrSensorReg16_16(0x098e , 0x68a0 );  
+			wrSensorReg16_16(0x0990 , 0x082d );  
+			wrSensorReg16_16(0x098e , 0x4802 );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x098e , 0x4804 );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x098e , 0x4806 );  
+			wrSensorReg16_16(0x0990 , 0x060d );  
+			wrSensorReg16_16(0x098e , 0x4808 );  
+			wrSensorReg16_16(0x0990 , 0x080d );  
+			wrSensorReg16_16(0x098e , 0x480c );  
+			wrSensorReg16_16(0x0990 , 0x046c );  
+			wrSensorReg16_16(0x098e , 0x480f );  
+			wrSensorReg16_16(0x0990 , 0x00cc );  
+			wrSensorReg16_16(0x098e , 0x4811 );  
+			wrSensorReg16_16(0x0990 , 0x0381 );  
+			wrSensorReg16_16(0x098e , 0x4813 );  
+			wrSensorReg16_16(0x0990 , 0x024f );  
+			wrSensorReg16_16(0x098e , 0x481d );  
+			wrSensorReg16_16(0x0990 , 0x0436 );  
+			wrSensorReg16_16(0x098e , 0x481f );  
+			wrSensorReg16_16(0x0990 , 0x05d0 );  
+			wrSensorReg16_16(0x098e , 0x4825 );  
+			wrSensorReg16_16(0x0990 , 0x1153 );  
+			wrSensorReg16_16(0x098e , 0x6ca0 );  
+			wrSensorReg16_16(0x098e , 0x6ca0 );  
+			wrSensorReg16_16(0x0990 , 0x082d );  
+			wrSensorReg16_16(0x098e , 0x484a );  
+			wrSensorReg16_16(0x0990 , 0x0004 );  
+			wrSensorReg16_16(0x098e , 0x484c );  
+			wrSensorReg16_16(0x0990 , 0x0004 );  
+			wrSensorReg16_16(0x098e , 0x484e );  
+			wrSensorReg16_16(0x0990 , 0x060b );  
+			wrSensorReg16_16(0x098e , 0x4850 );  
+			wrSensorReg16_16(0x0990 , 0x080b );  
+			wrSensorReg16_16(0x098e , 0x4857 );  
+			wrSensorReg16_16(0x0990 , 0x008c );  
+			wrSensorReg16_16(0x098e , 0x4859 );  
+			wrSensorReg16_16(0x0990 , 0x01f1 );  
+			wrSensorReg16_16(0x098e , 0x485b );  
+			wrSensorReg16_16(0x0990 , 0x00ff );  
+			wrSensorReg16_16(0x098e , 0x4865 );  
+			wrSensorReg16_16(0x0990 , 0x0668 );  
+			wrSensorReg16_16(0x098e , 0x4867 );  
+			wrSensorReg16_16(0x0990 , 0x0af0 );  
+			wrSensorReg16_16(0x098e , 0x486d );  
+			wrSensorReg16_16(0x0990 , 0x0af0 );  
+			wrSensorReg16_16(0x098e , 0xa005 );  
+			wrSensorReg16_16(0x0990 , 0x0001 );  
+			wrSensorReg16_16(0x098e , 0x6c11 );  
+			wrSensorReg16_16(0x0990 , 0x0003 );  
+			wrSensorReg16_16(0x098e , 0x6811 );  
+			wrSensorReg16_16(0x0990 , 0x0003 );  
+			wrSensorReg16_16(0x098e , 0xc8a5 );  
+			wrSensorReg16_16(0x0990 , 0x0025 );  
+			wrSensorReg16_16(0x098e , 0xc8a6 );  
+			wrSensorReg16_16(0x0990 , 0x0028 );  
+			wrSensorReg16_16(0x098e , 0xc8a7 );  
+			wrSensorReg16_16(0x0990 , 0x002c );  
+			wrSensorReg16_16(0x098e , 0xc8a8 );  
+			wrSensorReg16_16(0x0990 , 0x002f );  
+			wrSensorReg16_16(0x098e , 0xc844 );  
+			wrSensorReg16_16(0x0990 , 0x00ba );  
+			wrSensorReg16_16(0x098e , 0xc92f );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x098e , 0xc845 );  
+			wrSensorReg16_16(0x0990 , 0x009b );  
+			wrSensorReg16_16(0x098e , 0xc92d );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x098e , 0xc88c );  
+			wrSensorReg16_16(0x0990 , 0x0082 );  
+			wrSensorReg16_16(0x098e , 0xc930 );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x098e , 0xc88d );  
+			wrSensorReg16_16(0x0990 , 0x006d );  
+			wrSensorReg16_16(0x098e , 0xc92e );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x098e , 0xa002 );  
+			wrSensorReg16_16(0x0990 , 0x0010 );  
+			wrSensorReg16_16(0x098e , 0xa009 );  
+			wrSensorReg16_16(0x0990 , 0x0002 );  
+			wrSensorReg16_16(0x098e , 0xa00a );  
+			wrSensorReg16_16(0x0990 , 0x0003 );  
+			wrSensorReg16_16(0x098e , 0xa00c );  
+			wrSensorReg16_16(0x0990 , 0x000a );  
+			wrSensorReg16_16(0x098e , 0x4846 );  
+			wrSensorReg16_16(0x0990 , 0x0014 );  
+			wrSensorReg16_16(0x098e , 0x488e );  
+			wrSensorReg16_16(0x0990 , 0x0014 );  
+			wrSensorReg16_16(0x098e , 0xc844 );  
+			wrSensorReg16_16(0x0990 , 0x0085 );  
+			wrSensorReg16_16(0x098e , 0xc845 );  
+			wrSensorReg16_16(0x0990 , 0x006e );  
+			wrSensorReg16_16(0x098e , 0xc88c );  
+			wrSensorReg16_16(0x0990 , 0x0082 );  
+			wrSensorReg16_16(0x098e , 0xc88d );  
+			wrSensorReg16_16(0x0990 , 0x006c );  
+			wrSensorReg16_16(0x098e , 0xc8a5 );  
+			wrSensorReg16_16(0x0990 , 0x001b );  
+			wrSensorReg16_16(0x098e , 0xc8a6 );  
+			wrSensorReg16_16(0x0990 , 0x001e );  
+			wrSensorReg16_16(0x098e , 0xc8a7 );  
+			wrSensorReg16_16(0x0990 , 0x0020 );  
+			wrSensorReg16_16(0x098e , 0xc8a8 );  
+			wrSensorReg16_16(0x0990 , 0x0023 );  
+			//init setting 
+			wrSensorReg16_16(0x0018 , 0x002a );  
+			wrSensorReg16_16(0x3084 , 0x2409 );  
+			wrSensorReg16_16(0x3092 , 0x0a49 );  
+			wrSensorReg16_16(0x3094 , 0x4949 );  
+			wrSensorReg16_16(0x3096 , 0x4950 );  
+			wrSensorReg16_16(0x098e , 0x68a0 );  
+			wrSensorReg16_16(0x0990 , 0x0a2e );  
+			wrSensorReg16_16(0x098e , 0x6ca0 );  
+			wrSensorReg16_16(0x0990 , 0x0a2e );  
+			wrSensorReg16_16(0x098e , 0x6c90 );  
+			wrSensorReg16_16(0x0990 , 0x0cb4 );  
+			wrSensorReg16_16(0x098e , 0x6807 );  
+			wrSensorReg16_16(0x0990 , 0x0004 );  
+			wrSensorReg16_16(0x098e , 0xe88e );  
+			wrSensorReg16_16(0x0990 , 0x0000 );  
+			wrSensorReg16_16(0x316c , 0x350f );  
+			wrSensorReg16_16(0x001e , 0x0777 );  
+			wrSensorReg16_16(0x098e , 0x8400 );  
+			wrSensorReg16_16(0x0990 , 0x0001 );  
+			delay(100);
+			wrSensorReg16_16(0x098e , 0x8400 );  
+			wrSensorReg16_16(0x0990 , 0x0006 );  
+			//Serial.println("MT9T112 init done");
 			#endif	
 			break;
 		}

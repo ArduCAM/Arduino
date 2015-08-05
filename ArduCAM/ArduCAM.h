@@ -19,6 +19,7 @@
 		- MT9V111
 		- OV5640		
 		- MT9M001			
+		- MT9T112
 				
 	We will add support for many other sensors in next release.
 	
@@ -76,7 +77,8 @@
 	2015/06/19  V3.4.2  by Lee	Add support for MT9M112 camera.			
 	2015/06/20  V3.4.3  by Lee	Add support for MT9V111 camera.			
 	2015/06/22  V3.4.4  by Lee	Add support for OV5640 camera.										
-	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.																
+	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
+	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.																
 --------------------------------------*/
 
 
@@ -162,6 +164,7 @@
 #define MT9D111_B	12
 #define OV9650		13
 #define MT9V111		14
+#define MT9T112		15
 
 #define OV2640_160x120 		0	//160x120
 #define OV2640_176x144 		1	//176x144

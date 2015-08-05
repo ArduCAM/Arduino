@@ -14,6 +14,7 @@ Now supported cameras:
 -	MT9V111		0.3MP
 -	OV5640		5MP
 -	MT9M001		1.3MP Mono
+- MT9T112		3MP
 
 Supported MCU platform
 -	Theoretically support all Arduino families
