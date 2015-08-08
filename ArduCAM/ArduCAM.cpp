@@ -20,6 +20,7 @@
 		- OV5640	
 		- MT9M001
 		- MT9T112
+		- MT9D112
 						
 	We will add support for many other sensors in next release.
         
@@ -79,6 +80,7 @@
 	2015/06/22  V3.4.4  by Lee	Add support for OV5640 camera.										
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.		
+	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -232,6 +234,7 @@ ArduCAM::ArduCAM(byte model,int CS)
 		case OV5640:
 		case OV5642:
 		case MT9T112:
+		case MT9D112:
 			sensor_addr = 0x78;
 			break;
 		case OV2640:
@@ -419,7 +422,7 @@ byte ArduCAM::wrSensorReg16_16(int regID, int regDat)
 //I2C Read 16bit address, 16bit data
 byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 {
-	uint8_t temp;	
+	uint16_t temp;	
 	Wire.beginTransmission(sensor_addr >> 1);
 	Wire.write(regID >> 8);
 	Wire.write(regID & 0x00FF); 	
@@ -506,16 +509,19 @@ int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 	
 	unsigned int reg_addr,reg_val;
 	const struct sensor_reg *next = reglist;
-	
+	reg_addr = pgm_read_word(&next->reg);
+	reg_val = pgm_read_word(&next->val);
 	while ((reg_addr != 0xffff) | (reg_val != 0xffff))
 	{		
-		reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
 		err = wrSensorReg16_16(reg_addr, reg_val);
 		//if (!err)
 	    //   return err;
-	   next++;
-	} 
+	  next++;
+	  reg_addr = pgm_read_word(&next->reg);
+		reg_val = pgm_read_word(&next->val);
+
+	}
+	
 	
 	return 1;
 }
@@ -563,6 +569,7 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
 	#if defined OV5642_CAM
 	uint8_t reg_val;
+
 	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
 	delay(100); 
 	switch(size)
@@ -627,6 +634,7 @@ void ArduCAM::InitCAM()
 {
 	byte rtn = 0;
 	byte reg_val;
+	uint16_t val;
 	switch(sensor_model)
 	{
 		case OV7660:
@@ -968,6 +976,28 @@ void ArduCAM::InitCAM()
 			//Serial.println("MT9T112 init done");
 			#endif	
 			break;
+		}
+		case MT9D112:
+		{
+			#if defined MT9D112_CAM
+				wrSensorReg16_16(0x301a , 0x0acc );  
+				wrSensorReg16_16(0x3202 , 0x0008 );  
+				delay(100 );
+				wrSensorReg16_16(0x341e , 0x8f09 );  
+				wrSensorReg16_16(0x341c , 0x020c );  
+				delay(100 );
+				wrSensorRegs16_16(MT9D112_default_setting);
+				wrSensorReg16_16(0x338c , 0xa103 );  
+				wrSensorReg16_16(0x3390 , 0x0006 );
+				delay(100 );
+				wrSensorReg16_16(0x338c , 0xa103 );  
+				wrSensorReg16_16(0x3390 , 0x0005 );  
+				delay(100 );
+				wrSensorRegs16_16(MT9D112_soc_init);
+				delay(200); 
+				wrSensorReg16_16(0x332E, 0x0020);	//RGB565
+
+			#endif
 		}
 		default:
 			
