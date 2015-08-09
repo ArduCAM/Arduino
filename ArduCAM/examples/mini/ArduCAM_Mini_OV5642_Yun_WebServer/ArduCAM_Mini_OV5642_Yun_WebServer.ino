@@ -125,7 +125,7 @@ void setup()
   p.running();
   Process q;
   //if you use wlan, change the eth1 to wlan0
-  q.runShellCommand("/sbin/ifconfig eth1 | awk '/inet addr/ {print $2}' | cut -f2 -d ':'");
+  q.runShellCommand("/sbin/ifconfig wlan0 | awk '/inet addr/ {print $2}' | cut -f2 -d ':'");
   q.running();
   m = 0;
   while (q.available())
