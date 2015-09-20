@@ -190,7 +190,7 @@
 
 #endif
 
-#if defined(__arm__)
+#if defined(__arm__) || defined(ESP8266)
 	#include "Arduino.h"
 	#include "HW_AVR_SPI_defines.h"
 #endif

@@ -59,7 +59,7 @@
 	#include "HW_AVR_SPI_defines.h"
 #endif
 
-#if defined(__arm__)
+#if defined(__arm__) || defined(ESP8266)
 	#include "Arduino.h"
 	#include "HW_AVR_SPI_defines.h"
 #endif
@@ -70,14 +70,17 @@ UTFT::UTFT()
 
 UTFT::UTFT(int CS)
 { 
+#if defined(ESP8266)
+	B_CS = CS;
+#else	
 	P_CS	= portOutputRegister(digitalPinToPort(CS));
 	B_CS	= digitalPinToBitMask(CS);
-	
+#endif	
 
 	pinMode(CS,OUTPUT);
 	
 	//Must initialize the Bus default status
-	sbi(P_CS, B_CS);
+	UTFT_sbi(P_CS, B_CS);
 	model = SSD1289;
 	disp_x_size=239;
 	disp_y_size=319;
@@ -86,26 +89,26 @@ UTFT::UTFT(int CS)
 	display_model=model;
 
 	//_set_direction_registers(display_transfer_mode);
-	P_CS	= portOutputRegister(digitalPinToPort(CS));
-	B_CS	= digitalPinToBitMask(CS);
-	pinMode(CS,OUTPUT);
+	//P_CS	= portOutputRegister(digitalPinToPort(CS));
+	//B_CS	= digitalPinToBitMask(CS);
+	//pinMode(CS,OUTPUT);
 }
 
 int UTFT::bus_write(int address, int value) 
 {
-  cbi(P_CS, B_CS);
+  UTFT_cbi(P_CS, B_CS);
   SPI.transfer(address);
   SPI.transfer(value);
-  sbi(P_CS, B_CS);
+  UTFT_sbi(P_CS, B_CS);
 }
 
 uint8_t UTFT::bus_read(int address) 
 {
   uint8_t value = 0;
-  cbi(P_CS, B_CS);
+  UTFT_cbi(P_CS, B_CS);
   SPI.transfer(address);
   value = SPI.transfer(0x00);
-  sbi(P_CS, B_CS);
+  UTFT_sbi(P_CS, B_CS);
   return value;
 }
 
@@ -124,6 +127,7 @@ void UTFT::LCD_Write_COM_DATA(char com1,int dat1)
 {
      LCD_Write_COM(com1);
      LCD_Write_DATA(dat1>>8,dat1);
+     
 }
 
 void UTFT::LCD_Writ_Bus(char VH,char VL)
@@ -326,7 +330,7 @@ void UTFT::drawCircle(int x, int y, int radius)
 	int x1 = 0;
 	int y1 = radius;
  
-	cbi(P_CS, B_CS);
+	UTFT_cbi(P_CS, B_CS);
 	setXY(x, y + radius, x, y + radius);
 	LCD_Write_DATA(fch,fcl);
 	setXY(x, y - radius, x, y - radius);
@@ -364,7 +368,7 @@ void UTFT::drawCircle(int x, int y, int radius)
 		setXY(x - y1, y - x1, x - y1, y - x1);
 		LCD_Write_DATA(fch,fcl);
 	}
-	sbi(P_CS, B_CS);
+	UTFT_sbi(P_CS, B_CS);
 	clrXY();
 }
 
@@ -394,8 +398,13 @@ void UTFT::clrScr()
 		{
 			LCD_Writ_Bus(1,0);
 			LCD_Writ_Bus(1,0);
+			
 			//LCD_Writ_Bus(00,0x55);
 		}
+		//delay(1);
+#if defined(ESP8266)   	
+	  yield(); 	
+#endif	  
 	}
 }
 
@@ -424,6 +433,9 @@ void UTFT::fillScr(word color)
 			LCD_Writ_Bus(1,ch);
 			LCD_Writ_Bus(1,cl);
 		}
+#if defined(ESP8266)   	
+	  yield(); 	
+#endif	  		
 	}
 
 }
@@ -1014,4 +1026,9 @@ void UTFT::setDisplayPage(byte page)
 void UTFT::setWritePage(byte page)
 {
 
+}
+
+void UTFT::_convert_float(char *buf, double num, int width, byte prec)
+{
+	
 }

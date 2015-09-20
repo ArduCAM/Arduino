@@ -33,6 +33,7 @@
   		-	Arduino DUE				(Tested)
   		- Arduino Yun				(Tested)
   		-	Raspberry Pi			(Tested)
+  		- ESP8266-12				(Tested)
   		      
   If you make any modifications or improvements to the code, I would appreciate
   that you share the code with me so that I might include it in the next release.
@@ -81,6 +82,7 @@
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.		
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.
+	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -199,9 +201,12 @@ ArduCAM::ArduCAM()
 
 ArduCAM::ArduCAM(byte model,int CS)
 { 
+#if defined(ESP8266)
+	B_CS = CS;
+#else
 	P_CS	= portOutputRegister(digitalPinToPort(CS));
 	B_CS	= digitalPinToBitMask(CS);
-	
+#endif	
 	pinMode(CS,OUTPUT);
 	
 	//Must initialize the Bus default status
@@ -453,7 +458,9 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 		reg_val = pgm_read_word(&next->val);
 		err = wrSensorReg8_8(reg_addr, reg_val);
    	next++;
-	   	
+#if defined(ESP8266)   	
+	  yield(); 	
+#endif	  
 	} 
 	
 	return 1;
@@ -474,7 +481,10 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 		err = wrSensorReg8_16(reg_addr, reg_val);
 		//	if (!err)
 	   	//return err;
-	   	next++;
+	  next++;
+#if defined(ESP8266)   	
+	  yield(); 	
+#endif	  
 	}  
 	
 	return 1;
@@ -496,7 +506,10 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 		err = wrSensorReg16_8(reg_addr, reg_val);
 		//if (!err)
 	   	//return err;
-	   next++;
+	  next++;
+#if defined(ESP8266)   	
+	  yield(); 	
+#endif	  
 	} 
 	
 	return 1;
@@ -519,7 +532,9 @@ int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 	  next++;
 	  reg_addr = pgm_read_word(&next->reg);
 		reg_val = pgm_read_word(&next->val);
-
+#if defined(ESP8266)   	
+	  yield(); 	
+#endif	  
 	}
 	
 	

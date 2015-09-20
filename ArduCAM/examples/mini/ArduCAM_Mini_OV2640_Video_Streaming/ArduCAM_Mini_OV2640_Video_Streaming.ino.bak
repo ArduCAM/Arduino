@@ -51,7 +51,7 @@ void setup() {
   // put your setup code here, to run once:
   uint8_t vid, pid;
   uint8_t temp;
-#if defined(__AVR__) || defined(ESP8266)
+#if defined(__AVR__) || defined(ESP8226)
   Wire.begin();
 #endif
 #if defined(__arm__)

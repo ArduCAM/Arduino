@@ -33,7 +33,7 @@
   		-	Arduino DUE				(Tested)
   		- Arduino Yun				(Tested)  		
   		-	Raspberry Pi			(Tested)
-  		
+  		- ESP8266-12				(Tested)  		
 
   If you make any modifications or improvements to the code, I would appreciate
   that you share the code with me so that I might include it in the next release.
@@ -80,7 +80,8 @@
 	2015/06/22  V3.4.4  by Lee	Add support for OV5640 camera.										
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.	
-	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.															
+	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.							
+	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.									
 --------------------------------------*/
 
 
@@ -142,6 +143,25 @@
   #endif
   #define F(X) (X)
 
+	
+#endif	
+
+#if defined(ESP8266)
+
+#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+
+#define swap(type, i, j) {type t = i; i = j; j = t;}
+
+#define fontbyte(x) cfont.font[x]  
+
+#define regtype volatile uint32_t
+#define regsize uint32_t
 	
 #endif	
 

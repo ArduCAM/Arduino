@@ -26,14 +26,8 @@
 
 #define BMPIMAGEOFFSET 66
 
-
-#if defined(ESP8266)
-// set GPIO15 as the slave select for the digital pot:
-const int CS = 16;
-#else
 // set pin 10 as the slave select for the digital pot:
-const int CS = 10;
-#endif
+const int CS = 16;
 int mode = 0;
 
 const char bmp_header[BMPIMAGEOFFSET] PROGMEM =
@@ -51,13 +45,17 @@ void setup() {
   // put your setup code here, to run once:
   uint8_t vid, pid;
   uint8_t temp;
-#if defined(__AVR__) || defined(ESP8266)
+#if defined (ESP8266)
+  Wire.begin();
+#endif  
+#if defined (__AVR__)
   Wire.begin();
 #endif
 #if defined(__arm__)
   Wire1.begin();
 #endif
   Serial.begin(921600);
+  delay(1000);
   Serial.println("ArduCAM Start!");
 
   // set the CS as an output:
