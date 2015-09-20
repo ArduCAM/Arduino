@@ -25,3 +25,4 @@ Supported MCU platform
 -	Arduino DUE			(Tested)
 - Arduino Yun			(Tested)
 -	Raspberry Pi			(Tested)
+-	ESP8266-12			(Tested)
