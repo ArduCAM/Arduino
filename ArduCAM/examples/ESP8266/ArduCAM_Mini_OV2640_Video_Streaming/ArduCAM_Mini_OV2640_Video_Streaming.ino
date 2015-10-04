@@ -54,7 +54,7 @@ void setup() {
 #if defined(__arm__)
   Wire1.begin();
 #endif
-  Serial.begin(921600);
+  Serial.begin(115200);
   delay(1000);
   Serial.println("ArduCAM Start!");
 

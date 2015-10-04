@@ -1,0 +1,538 @@
+/*!
+ * Simple link css v1.0
+ 
+ * Copyright 2013 Texas Instruments 
+ *
+ */
+
+/* Fonts definition */  
+html {
+  font-family: sans-serif;
+/*   -webkit-text-size-adjust: 100%; */
+/*       -ms-text-size-adjust: 100%; */
+}
+
+html {
+   font-size: 62.5%;
+/*   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
+}
+
+body {
+  font-family: Arial, Helvetica, "Helvetica Neue", sans-serif;
+  font-size: medium; /* Default */
+  line-height: 1.428571429;
+  color: #333333;
+  background-color: #ffffff;
+  margin: 0 auto;
+  width: 100%;  
+}
+
+body.in-frame, body.inside-window
+{
+  //background-image:url('images/camera2.jpg');
+  background-repeat:repeat-x;
+}
+
+input 
+{
+/* Solves the duplicated input field in Android but causes fails in typing on other devices */
+/*	-webkit-user-modify: read-write-plaintext-only; */
+}
+
+div.safe_bar_style
+{
+ position:relative;
+ margin: 0 auto;
+ width:100%;
+ color:#FFFFFF;
+ background-color: #CC0000;
+ /* font-size:larger; */
+ padding-top: 10px;
+ padding-bottom: 10px;
+ margin-top: 5px;
+ margin-bottom: 5px;
+}
+
+div.safe-text
+{
+ padding-left: 5px;
+}
+.safe-button
+{
+ position: absolute;
+ top: 10%;
+ right: 1%;
+ color:#FFFFFF;
+ background-color: #CC0000;
+ display:block;
+ border: none;
+ border:2px solid #FFF;
+ padding-top: 5px;
+ padding-bottom: 5px; 
+}
+.safe-button:hover
+{
+ color:#222222;
+ background-color: #FFFFFF;
+ transition: all 0.5s ease-out;
+ -webkit-transition: all 0.5s ease-out;
+}
+
+div.navbar
+{
+  width:100%; /* Default */
+  background-color: #222222;
+}
+
+ul.navbar-menu
+{
+list-style-type:none;
+padding:0;
+overflow:hidden;
+margin: 0 auto;
+width:100%; /* Default */
+}
+.navbar-menu li
+{
+  float:left;
+}
+
+.navbar-menu a:link,.navbar-menu a:visited
+{
+display:block;
+color:#FFFFFF;
+background-color:#222222;
+text-align:center;
+text-decoration:none;
+}
+
+.navbar-menu a:hover,.navbar-menu a:active
+{
+color:#CC0000;
+background-color:#EEEEEE;
+}
+ 
+td.page-title
+ {
+background-color:#CC0000;
+font-size:larger;
+color:white;
+ }
+ 
+ td.alert
+ {
+  font-size:smaller;
+  text-align: right;
+ }
+ 
+ td.frame-title
+ {
+ font-weight:bold;
+ padding:0in 5pt 0in 5pt;
+ background-color:#aaaaaa;
+ color:#000000;
+ border: solid #999999 1.0pt;
+ }
+ 
+ td.label, td.check-box
+ {
+ font-weight:bold;
+ width:40%;
+ padding-left:10%;
+ }
+ 
+ /*td.value
+ {
+ }
+*/
+  td.aligned_text
+ {
+ padding-left:10%;
+ }
+
+ td.user-input
+ {
+ font-size:small;
+ font-style: italic;
+ }
+ 
+input
+{
+    font-size:small;
+}
+
+td.empty-line
+ {
+ height:5pt;
+ }
+ 
+ /* empty-line-in-box*/
+td.empty-l-in-box
+ {
+ height:10pt;
+ }
+ 
+ td.l_first_col
+ {
+ width:40%;
+ padding-left:10%;
+ }
+ 
+ td.l_middle_col
+ {
+ width:20%;
+}
+ 
+td.in-a-box
+ {
+ height:10pt;
+ }
+
+/* border-line-top */ 
+td.border-l-top
+ {
+ border-top:solid #999999 1.0pt;
+}
+
+/* border-line-bottom*/
+td.border-l-bottom
+ {
+ border-bottom:solid #999999 1.0pt;
+}
+
+
+/* Android - Lenovo A66 Portrait checked */
+
+@media screen and (-webkit-device-pixel-ratio:1)
+{
+ 	 body, input, td.user-input
+	 {
+   	   font-size: 28px; 
+	 }
+
+	/* Don't draw menu separation lines here since it will also show on PC */
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{  
+	    padding:15px 10px;
+	}	
+	
+}
+
+/* Nexus one (portrait), Samsung Galaxy S Portrait, HTC G7 portrait,   - Checked */
+@media only screen and (-webkit-device-pixel-ratio:1.5)
+{
+	 body, input, td.user-input
+	 {
+	   font-size: 26px;
+	 }
+	 	
+	.navbar-menu li
+	{
+	  border-right: solid #FFFFFF 2.0pt;
+	}
+
+	.navbar-menu li:first-child
+	{
+	  border-left: solid #FFFFFF 2.0pt;
+	}
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{  
+		font-weight:bold;
+	    padding:15px 8px;
+	}
+	
+ 	td.page-title
+	{
+	  font-weight:bold;
+	}	 
+
+}
+
+/* Smartphones + iphone(portrait and landscape) ----------- */
+/* @media screen and (min-device-width : 320px) and (max-device-width : 480px) - iphone 3 (portrait & landscape) better,  Lenovo A66 Portrait and Samsung Galaxy S and HTC G7 (for first time) - checked */
+@media screen and (max-device-width : 480px)
+{
+	body, input, td.user-input
+	{
+	  font-size: 28px;
+	}
+	
+	.navbar-menu li
+	{
+	  border-right: solid #FFFFFF 2.0pt;
+	}
+
+	.navbar-menu li:first-child
+	{
+	  border-left: solid #FFFFFF 2.0pt;
+	}
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{  
+		font-weight:bold;
+	    padding:10px 5px;
+	}
+	
+	td.page-title
+	{
+	  font-weight:bold;
+	}
+}
+
+/* Android Smartphones - Motorola razer portrait, ipad portrait, - checked */
+ @media only screen and (min-device-width : 480px) and (max-device-width : 768px)
+{
+	body
+	{
+	  font-size: xx-large;
+	}
+	 
+	input, td.user-input
+	{
+		font-size:x-large;
+	}
+		
+	.navbar-menu li
+	{
+	  border-right: solid #FFFFFF 2.0pt;
+	}
+
+	.navbar-menu li:first-child
+	{
+	  border-left: solid #FFFFFF 2.0pt;
+	}
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{  
+		font-weight:bold;
+	    padding:15px 10px;
+	}
+	
+	td.page-title
+	{
+	  font-weight:bold;
+	}
+	
+}
+
+/* iPads (portrait and landscape) ----------- ipad Landscape, nexus one (Landscape), Motorola Razer Landscape,  Samsung Galaxy S Landscape, HTC G7 Landscape - Checked*/
+/* @media only screen and (min-device-width : 481px) and (max-device-width : 1024px)  */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape)
+{
+	body
+	{
+	  font-size: x-large;
+	}
+
+	input, td.user-input
+	{
+		font-size: large;
+	}
+	
+	.navbar-menu li
+	{
+	  border-right: solid #FFFFFF 2.0pt;
+	}
+
+	.navbar-menu li:first-child
+	{
+	  border-left: solid #FFFFFF 2.0pt;
+	}
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{  
+		font-weight:bold;
+ 	    padding:15px 10px;
+	}
+	
+	td.page-title
+	{
+	  font-weight:bold;
+	}
+	
+}
+
+
+/* iphone Retina display + Samsung Galaxy, LG nexus 4 portrait, LG nexus 4 landscape  - Checked */
+@media only screen and (-webkit-min-device-pixel-ratio: 2)
+{
+	 body
+	 {
+	   font-size: xx-large;
+	 }
+
+	input, td.user-input
+	{
+		font-size:x-large;
+	}
+	
+	.navbar-menu li
+	{
+	  border-right: solid #FFFFFF 2.0pt;
+	}
+
+	.navbar-menu li:first-child
+	{
+	  border-left: solid #FFFFFF 2.0pt;
+	}
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{  
+		font-weight:bold;
+	    padding:20px 10px;
+	}
+	
+	td.page-title
+	{
+	  font-weight:bold;
+	}	 
+}
+
+
+
+/* PC high resolution 1024 and up, - Checked */
+/* @media screen and (min-device-width: 768px) */
+@media screen and (min-device-width: 1024px) 
+{	
+	body
+	{
+		font-size: medium;
+	}
+
+	input, td.user-input
+	{
+		font-size: small;
+	}	 
+	
+	
+	  body.in-frame
+	  {
+ 	   width: 974px;
+	 }
+	 
+	 body.inside-window
+	 {
+	  width: 700px;
+	 }
+	 
+	div.logo
+	 {
+	   width:974px;
+	 }
+	 
+	img.logo
+	{
+  	  height:6%;
+	  width:12%;
+	}
+
+	 div.navbar
+	 {
+	   max-width: 2800px;
+	 }
+	 
+	 ul.navbar-menu, div.safe_bar_style
+	 {
+	  width: 974px;
+	 }
+	 
+	 .navbar-menu a:link,.navbar-menu a:visited
+	{
+ 	  width:150px;
+	  padding:5px;
+	}
+	
+	 td.label, td.l_first_col
+	 {
+	  border-left: solid #999999 1.0pt;
+	 }
+	 	 
+	 td.value, td.l_last_col, td.user-input
+	 {
+	  border-right: solid #999999 1.0pt;
+	 }
+
+	 td.aligned_text, td.empty-l-in-box, td.check-box, td.in-a-box
+	 {
+	  border-left: solid #999999 1.0pt;
+	  border-right: solid #999999 1.0pt;
+	 }
+}
+
+/* PC for IE - Checked*/
+
+ .ie body
+{
+ font-size: medium;
+}
+
+.ie input, .ie td.user-input
+{
+font-size: small;
+}	 
+
+.ie body.in-frame
+{
+width: 974px;
+}
+
+.ie body.inside-window
+{
+width: 700px;
+}
+
+.ie div.logo
+{
+width:974px;
+}
+
+.ie img.logo
+{
+height:6%;
+width:12%;
+}
+
+.ie div.navbar
+{
+max-width: 2800px;
+}
+
+.ie ul.navbar-menu, div.safe_bar_style
+{
+width: 974px;
+}
+
+.ie .navbar-menu a:link,.ie .navbar-menu a:visited
+{
+width:150px;
+padding:5px;
+}
+
+.ie td.label, .ie td.l_first_col
+{
+border-left: solid #999999 1.0pt;
+}
+
+.ie td.value
+{
+border-right: solid #999999 1.0pt;
+}
+
+.ie td.aligned_text, .ie td.empty-l-in-box, .ie td.check-box, .ie td.in-a-box
+{
+border-left: solid #999999 1.0pt;
+border-right: solid #999999 1.0pt;
+}
+
+
+.ie td.l_last_col
+{
+  border-right: solid #999999 1.0pt;
+}
+
+.ie td.user-input
+{
+  border-right: solid #999999 1.0pt;
+}

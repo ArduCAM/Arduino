@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<!--[if lte IE 9 ]> <html class="ie"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html> <!--<![endif]-->
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="camera_demo.css">
+<script src="js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+var sl_ws;
+//var wsRecvMsg; 
+var HTTPrequest = new XMLHttpRequest();
+function encode (input) {
+    var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var output = "";
+    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+    var i = 0;
+
+    while (i < input.length) {
+        chr1 = input[i++];
+        chr2 = i < input.length ? input[i++] : Number.NaN; 
+        chr3 = i < input.length ? input[i++] : Number.NaN;
+
+        enc1 = chr1 >> 2;
+        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+        enc4 = chr3 & 63;
+
+        if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+        } else if (isNaN(chr3)) {
+            enc4 = 64;
+        }
+        output += keyStr.charAt(enc1) + keyStr.charAt(enc2) +
+                  keyStr.charAt(enc3) + keyStr.charAt(enc4);
+    }
+    return output;
+}
+
+function StartCamera() {
+
+	var url = $('#wsURL').val();
+	sl_ws = new WebSocket(url);
+	sl_ws.binaryType = 'arraybuffer';
+
+	sl_ws.onopen = function() {
+	alert("WebSocket Connected");
+	// TBD - Send Start Command on Socket
+	};
+
+	sl_ws.onerror = function() {
+	    alert("WebSocket Error");
+	};
+
+	sl_ws.onmessage = function(event) {
+	   //alert("WebSocket Data Received");
+	   var wsRecvMsg = event.data;
+	   var cameraStream = new Uint8Array(wsRecvMsg);
+	   var camerascreen = document.getElementById('camerascreen');
+	   camerascreen.src = 'data:image/jpg;base64,'+encode(cameraStream);
+		//camerascreen.src = encode(cameraStream);
+	   //camerascreen.src = images/camera2.jpg;
+	   //alert ('Server Says:  '+wsRecvMsg+' ');
+	   //Receive and Handle Data
+	   
+	};
+
+	sl_ws.onclose = function() {
+		alert("WebSocket Closed");
+	};
+	
+}
+
+function StopCamera() {
+
+	//Close Websocket
+	sl_ws.close();
+	alert("WebSocket Closed");
+}
+
+function SendMessage() {
+
+	//Close Websocket
+	var data = $('#wsMessage').val();
+	console.log("SENT: " + data);
+	sl_ws.send(data);
+}
+
+</script>
+
+</head>
+
+<body class="in-frame">
+
+<table border="0"  width="100%" cellpadding="3" cellspacing="0">
+
+<tr>
+<td class="page-title" colspan=2 >
+	Camera Demo</td>
+</tr>
+
+ 
+<tr>
+<td align=center class = "in-a-box" colspan=2> <br>
+<img src="images/ESP8266_demo.jpg" id="camerascreen" style="max-width:640px;height:480px\0/IE8+9;" />
+<br>
+Location:<br>
+<input type="text" maxlength="100" id="wsURL" name="URL" value="ws://192.168.1.1" />
+<button onclick="StartCamera()" >Connect</button>
+<button onclick="StopCamera()" >Disonnect</button><br><br>
+Websocket Message:<br>
+<input type="text" maxlength="100" id="wsMessage" name="Message" value="capture" />
+<button onclick="SendMessage()" >Send</button></td>
+</td>
+</tr>
+
+
+ <tr >
+  <td class = "border-l-top" colspan=2 >
+  </td>
+</tr>
+</table>
+
+</body>
+</html>
