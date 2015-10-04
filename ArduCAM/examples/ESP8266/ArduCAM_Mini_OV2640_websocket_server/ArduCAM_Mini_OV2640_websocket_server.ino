@@ -38,12 +38,9 @@ const int CS = 16;
 const int CS = 10;
 #endif
 
-//const char* ssid = "TP-LINK_Lee";
-const char* ssid = "JL_network";
-const char* password = "00180605";
 
-//const char* ssid = "your_ssid";
-//const char* password = "your_passpwd";
+const char* ssid = "your_ssid";
+const char* password = "your_passpwd";
 
 
 // Create an instance of the server
