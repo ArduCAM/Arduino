@@ -483,8 +483,9 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 {
 
-	
-	unsigned int reg_addr,reg_val;
+	unsigned int reg_addr = 0;
+	unsigned int reg_val = 0;
+	//unsigned int reg_addr,reg_val;
 	const struct sensor_reg *next = reglist;
 	
 	while ((reg_addr != 0xff) | (reg_val != 0xffff))
@@ -507,8 +508,8 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 {
 	
-	unsigned int reg_addr;
-	unsigned char reg_val;
+	unsigned int reg_addr = 0;
+	unsigned char reg_val = 0;
 	const struct sensor_reg *next = reglist;
 	
 	while ((reg_addr != 0xffff) | (reg_val != 0xff))
