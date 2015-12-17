@@ -109,8 +109,16 @@ void setup() {
   myCAM1.set_format(JPEG);
   myCAM1.InitCAM();
   myCAM1.OV2640_set_JPEG_size(OV2640_1600x1200);
+  
   myCAM1.clear_fifo_flag();
+  myCAM2.clear_fifo_flag();
+  myCAM3.clear_fifo_flag();
+  myCAM4.clear_fifo_flag();
+  
   myCAM1.write_reg(ARDUCHIP_FRAMES, 0x00);
+  myCAM2.write_reg(ARDUCHIP_FRAMES, 0x00);
+  myCAM3.write_reg(ARDUCHIP_FRAMES, 0x00);
+  myCAM4.write_reg(ARDUCHIP_FRAMES, 0x00);
   ////////////////////////////////////////////////////
   if (!SD.begin(SD_CS))
   {
