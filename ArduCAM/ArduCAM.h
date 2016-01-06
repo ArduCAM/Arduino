@@ -33,7 +33,10 @@
   		-	Arduino DUE				(Tested)
   		- Arduino Yun				(Tested)  		
   		-	Raspberry Pi			(Tested)
-  		- ESP8266-12				(Tested)  		
+  		- ESP8266-12				(Tested)  	
+		- Teensy 3.0				(compile)
+		- Teensy LC					(compile)
+		- Teensy 3.1/3.2			(compile)
 
   If you make any modifications or improvements to the code, I would appreciate
   that you share the code with me so that I might include it in the next release.
@@ -81,7 +84,8 @@
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.	
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.							
-	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.									
+	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.
+	2015/11/25  V3.4.9  added support for Teensy's (by sumotoy)
 --------------------------------------*/
 
 
@@ -109,7 +113,7 @@
 
 #endif
 	
-#if defined(__arm__)
+#if defined(__arm__) && !defined(TEENSYDUINO)
 
 #define cbi(reg, bitmask) *reg &= ~bitmask
 #define sbi(reg, bitmask) *reg |= bitmask
@@ -145,6 +149,25 @@
 
 	
 #endif	
+//teensy' ARM
+#if defined(TEENSYDUINO)
+
+#define cbi(reg, bitmask) digitalWriteFast(bitmask, LOW)
+#define sbi(reg, bitmask) digitalWriteFast(bitmask, HIGH)
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+
+#define swap(type, i, j) {type t = i; i = j; j = t;}
+
+#define fontbyte(x) cfont.font[x]  
+
+#define regtype volatile uint8_t
+#define regsize uint8_t
+
+#endif
 
 #if defined(ESP8266)
 

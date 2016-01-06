@@ -90,7 +90,7 @@
 #include <Wire.h>
 #include <SPI.h>
 
-#if defined(__arm__)
+#if defined(__arm__) && !defined(TEENSYDUINO)
 #define Wire Wire1
 #endif 
 
@@ -157,6 +157,9 @@ void ArduCAM::set_mode(uint8_t mode)
 
 //Low level SPI write operation
 int ArduCAM::bus_write(int address, int value) {
+	#if defined(SPI_HAS_TRANSACTION)
+	SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+	#endif
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
@@ -164,11 +167,18 @@ int ArduCAM::bus_write(int address, int value) {
   SPI.transfer(value);
   // take the SS pin high to de-select the chip:
   sbi(P_CS, B_CS);
+	#if defined(SPI_HAS_TRANSACTION)
+	SPI.endTransaction();
+	#endif
+	return 1;
 }
 
 //Low level SPI read operation
 uint8_t ArduCAM::bus_read(int address) {
   uint8_t value = 0;
+	#if defined(SPI_HAS_TRANSACTION)
+	SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+	#endif
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
@@ -176,6 +186,9 @@ uint8_t ArduCAM::bus_read(int address) {
   value = SPI.transfer(0x00);
   // take the SS pin high to de-select the chip:
   sbi(P_CS, B_CS);
+	#if defined(SPI_HAS_TRANSACTION)
+	SPI.endTransaction();
+	#endif
   return value;
 }
 
@@ -201,7 +214,7 @@ ArduCAM::ArduCAM()
 
 ArduCAM::ArduCAM(byte model,int CS)
 { 
-#if defined(ESP8266)
+#if defined(ESP8266) || defined(TEENSYDUINO)
 	B_CS = CS;
 #else
 	P_CS	= portOutputRegister(digitalPinToPort(CS));
@@ -447,7 +460,7 @@ byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 //I2C Array Write 8bit address, 8bit data
 int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 {
-	int err = 0;
+
 	uint16_t reg_addr = 0;
 	uint16_t reg_val = 0;
 	const struct sensor_reg *next = reglist;
@@ -456,7 +469,7 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 	{		
 		reg_addr = pgm_read_word(&next->reg);
 		reg_val = pgm_read_word(&next->val);
-		err = wrSensorReg8_8(reg_addr, reg_val);
+		wrSensorReg8_8(reg_addr, reg_val);
    	next++;
 #if defined(ESP8266)   	
 	  yield(); 	
@@ -469,16 +482,17 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 //I2C Array Write 8bit address, 16bit data
 int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 {
-	int err = 0;
-	
-	unsigned int reg_addr,reg_val;
+
+	unsigned int reg_addr = 0;
+	unsigned int reg_val = 0;
+	//unsigned int reg_addr,reg_val;
 	const struct sensor_reg *next = reglist;
 	
 	while ((reg_addr != 0xff) | (reg_val != 0xffff))
 	{		
 		reg_addr = pgm_read_word(&next->reg);
 		reg_val = pgm_read_word(&next->val);
-		err = wrSensorReg8_16(reg_addr, reg_val);
+		wrSensorReg8_16(reg_addr, reg_val);
 		//	if (!err)
 	   	//return err;
 	  next++;
@@ -493,17 +507,16 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 //I2C Array Write 16bit address, 8bit data
 int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 {
-	int err = 0;
 	
-	unsigned int reg_addr;
-	unsigned char reg_val;
+	unsigned int reg_addr = 0;
+	unsigned char reg_val = 0;
 	const struct sensor_reg *next = reglist;
 	
 	while ((reg_addr != 0xffff) | (reg_val != 0xff))
 	{		
 		reg_addr = pgm_read_word(&next->reg);
 		reg_val = pgm_read_word(&next->val);
-		err = wrSensorReg16_8(reg_addr, reg_val);
+		wrSensorReg16_8(reg_addr, reg_val);
 		//if (!err)
 	   	//return err;
 	  next++;
@@ -518,7 +531,7 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 //I2C Array Write 16bit address, 16bit data
 int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 {
-	int err = 0;
+	//int err = 0;
 	
 	unsigned int reg_addr,reg_val;
 	const struct sensor_reg *next = reglist;
@@ -526,7 +539,7 @@ int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 	reg_val = pgm_read_word(&next->val);
 	while ((reg_addr != 0xffff) | (reg_val != 0xffff))
 	{		
-		err = wrSensorReg16_16(reg_addr, reg_val);
+		wrSensorReg16_16(reg_addr, reg_val);
 		//if (!err)
 	    //   return err;
 	  next++;
@@ -583,7 +596,7 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
 	#if defined OV5642_CAM
-	uint8_t reg_val;
+	//uint8_t reg_val;
 
 	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
 	delay(100); 
@@ -647,9 +660,9 @@ void ArduCAM::set_format(byte fmt)
 			
 void ArduCAM::InitCAM()
 {
-	byte rtn = 0;
+	//byte rtn = 0;
 	byte reg_val;
-	uint16_t val;
+	//uint16_t val;
 	switch(sensor_model)
 	{
 		case OV7660:
@@ -657,7 +670,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7660_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7660_QVGA);
+			wrSensorRegs8_8(OV7660_QVGA);
 			#endif
 			break;
 		}
@@ -666,7 +679,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7725_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7725_QVGA);
+			wrSensorRegs8_8(OV7725_QVGA);
 			rdSensorReg8_8(0x15,&reg_val);
 			wrSensorReg8_8(0x15, (reg_val | 0x02));
 			#endif
@@ -677,7 +690,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7670_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7670_QVGA);
+			wrSensorRegs8_8(OV7670_QVGA);
 			#endif
 			break;
 		}
@@ -686,8 +699,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7675_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7675_QVGA);
-			
+			wrSensorRegs8_8(OV7675_QVGA);
 			#endif
 			break;
 		}
@@ -701,8 +713,8 @@ void ArduCAM::InitCAM()
 			wrSensorReg8_16(0xf0, 0x00);
 			wrSensorReg8_16(0x21, 0x8403); //Mirror Column
 			wrSensorReg8_16(0xC6, 0xA103);//SEQ_CMD
-      wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
-      #endif
+			wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
+			#endif
 			break;
 
 		}  
@@ -792,8 +804,8 @@ void ArduCAM::InitCAM()
 			wrSensorReg8_16(0xf0, 0x00);
 			wrSensorReg8_16(0x21, 0x8403); //Mirror Column
 			wrSensorReg8_16(0xC6, 0xA103);//SEQ_CMD
-      wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
-      #endif	
+			wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
+			#endif	
 			break;
 		}
 		case OV5640:
