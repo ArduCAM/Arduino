@@ -46,6 +46,7 @@ const char bmp_header[BMPIMAGEOFFSET] PROGMEM =
 };
 
 ArduCAM myCAM(OV2640, CS);
+void read_fifo_burst(ArduCAM myCAM);
 
 void setup() {
   // put your setup code here, to run once:

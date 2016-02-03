@@ -34,6 +34,7 @@ ArduCAM myCAM1(OV5642, CS1);
 ArduCAM myCAM2(OV5642, CS2);
 ArduCAM myCAM3(OV5642, CS3);
 ArduCAM myCAM4(OV5642, CS4);
+uint8_t read_fifo_burst(ArduCAM myCAM);
 
 void setup() {
   // put your setup code here, to run once:
