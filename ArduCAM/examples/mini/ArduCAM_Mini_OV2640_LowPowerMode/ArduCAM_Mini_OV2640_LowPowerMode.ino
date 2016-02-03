@@ -11,12 +11,11 @@ ArduCAM myCAM(OV2640,CS);
 void setup() {
   uint8_t vid,pid;
   uint8_t temp;
-#if defined (__AVR__)
-  Wire.begin(); 
-#endif
-#if defined(__arm__)
+#if defined(__SAM3X8E__)
   Wire1.begin();
-#endif 
+#else
+  Wire.begin();
+#endif
   Serial.begin(921600);
   Serial.println("ArduCAM Start!"); 
 

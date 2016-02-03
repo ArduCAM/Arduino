@@ -49,12 +49,11 @@ void setup()
   uint8_t vid,pid;
   uint8_t temp; 
   
-  #if defined (__AVR__)
-    Wire.begin(); 
-  #endif
-  #if defined(__arm__)
-    Wire1.begin(); 
-  #endif
+#if defined(__SAM3X8E__)
+  Wire1.begin();
+#else
+  Wire.begin();
+#endif
   Serial.begin(115200);
   Serial.println("ArduCAM Start!"); 
 

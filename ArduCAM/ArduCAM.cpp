@@ -83,6 +83,7 @@
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.		
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.
 	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
+	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -90,7 +91,7 @@
 #include <Wire.h>
 #include <SPI.h>
 
-#if defined(__arm__)
+#if defined(__SAM3X8E__)
 #define Wire Wire1
 #endif 
 
