@@ -332,6 +332,10 @@ class ArduCAM
 		void OV5642_set_JPEG_size(uint8_t size);
 		void set_format(byte fmt);
 		
+		 void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
+    void transferBytes(uint8_t * out, uint8_t * in, uint32_t size);
+    inline void setDataBits(uint16_t bits);
+    
 		int bus_write(int address, int value);
 		uint8_t bus_read(int address);	
 	protected:
@@ -339,8 +343,8 @@ class ArduCAM
 		regsize B_CS;
   		byte m_fmt;
 		byte sensor_model;
-		byte sensor_addr;
-
+		byte sensor_addr; 
+   
 };
 
 #endif

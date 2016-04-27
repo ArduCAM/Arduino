@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-tap-highlight" content="no">
+<title>Arducam Mini + ESP8266 Capture Demo</title>
+
+<meta name="description" content="< DESCRIPTION >">
+<meta name="author" content="< AUTHOR >">
+
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="materialize/css/materialize.min.css">
+
+<!-- Compiled and minified JavaScript -->
+<script src="materialize/js/jquery-2.1.1.min.js"></script>
+<script src="materialize/js/materialize.min.js"></script>
+
+<style>
+body {overflow-x: hidden; font-family: "微软雅黑";}
+</style>
+
+</head>
+<body>
+<script type="text/javascript">
+  function imgLoad(){
+    $("#captureBtns a").each(function(i, o){
+      $(o).removeClass("disabled");
+    });
+  }
+
+  function capture(ql){
+    $("#captureBtns a").each(function(i, o){
+      $(o).addClass("disabled");
+    });
+    $.get("http://" + $("#cameraIP").val() + "/?plen=" +
+     $("#cameraPLEN").val() + "&ql=" + ql + "&t=" + Math.random(), function(result){
+      $("input[name='captureBtn']").addClass("disabled");
+      if (result.indexOf("Server is running!") == -1){
+        alert("Please input the correct 'Camera IP Address'!");
+        $("#captureBtns a").each(function(i, o){
+          $(o).removeClass("disabled");
+        });
+      }else{
+        $("#capturePic").attr("src", "http://" + $("#cameraIP").val() + "/capture?t=" + Math.random());
+      }
+    });
+  }
+</script>
+<div class="container">
+  <div class="row">
+    <nav>
+      <div class="nav-wrapper">
+        <div class="brand-logo center">Arducam Mini + ESP8266 Capture Demo</div>
+      </div>
+    </nav>
+  </div>
+</div>
+<div class="row center">
+  <img id="capturePic" src="images/demo.jpg" onload="imgLoad()">
+</div>
+<div class="container">
+  <div class="row">
+    <div class="input-field col s12 m4 offset-m4">
+      <input id="cameraIP" type="text" class="validate" value="192.168.1.1">
+      <label for="cameraIP">Camera IP Address</label>
+    </div>
+  </div>
+  <div class="row center">
+    <span class="red accent-3">
+      If no response, please check the <b>Camera IP Address</b> above.
+    </span>
+  </div>
+  <div id="captureBtns" class="row center">
+    <p>
+      <a class="waves-effect waves-light btn" onclick="capture(0)">160x120</a>
+      <a class="waves-effect waves-light btn" onclick="capture(1)">176x144</a>
+      <a class="waves-effect waves-light btn" onclick="capture(2)">320x240</a>
+      <a class="waves-effect waves-light btn" onclick="capture(3)">352x288</a>
+      <a class="waves-effect waves-light btn" onclick="capture(4)">640x480</a>
+    </p>
+    <p>
+      <a class="waves-effect waves-light btn" onclick="capture(5)">800x600</a>
+      <a class="waves-effect waves-light btn" onclick="capture(6)">1024x768</a>
+      <a class="waves-effect waves-light btn" onclick="capture(7)">1280x1024</a>
+      <a class="waves-effect waves-light btn" onclick="capture(8)">1600x1200</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

@@ -90,7 +90,7 @@
 #include "memorysaver.h"
 #include <Wire.h>
 #include <SPI.h>
-
+#include "HardwareSerial.h"
 #if defined(__SAM3X8E__)
 #define Wire Wire1
 #endif 
@@ -161,6 +161,7 @@ int ArduCAM::bus_write(int address, int value) {
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
+  
   SPI.transfer(address);
   SPI.transfer(value);
   // take the SS pin high to de-select the chip:
@@ -173,11 +174,38 @@ uint8_t ArduCAM::bus_read(int address) {
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
-  SPI.transfer(address);
-  value = SPI.transfer(0x00);
-  // take the SS pin high to de-select the chip:
-  sbi(P_CS, B_CS);
-  return value;
+  #if defined(ESP8266)
+  
+  #if defined(OV5642_CAM)
+      SPI.transfer(address);
+		  value = SPI.transfer(0x00);
+		  
+		  // correction for bit rotation from readback
+		  
+		  value = (byte)(value >> 1) | (value << 7); 
+		  
+		  // take the SS pin high to de-select the chip:
+		  sbi(P_CS, B_CS);
+		  return value;
+	
+  
+ #endif
+ #if defined(OV2640_CAM)
+  	
+  		SPI.transfer(address);
+		  value = SPI.transfer(0x00);
+		  // take the SS pin high to de-select the chip:
+		  sbi(P_CS, B_CS);
+		  return value;
+  	#endif
+  	#else
+  		SPI.transfer(address);
+		  value = SPI.transfer(0x00);
+		  // take the SS pin high to de-select the chip:
+		  sbi(P_CS, B_CS);
+		  return value;
+		#endif
+  	
 }
 
 //Write ArduChip internal registers
@@ -198,10 +226,12 @@ ArduCAM::ArduCAM()
 {
 	sensor_model = OV7670;
 	sensor_addr = 0x42;
+	
+  
 }
 
 ArduCAM::ArduCAM(byte model,int CS)
-{ 
+{
 #if defined(ESP8266)
 	B_CS = CS;
 #else
@@ -645,7 +675,72 @@ void ArduCAM::set_format(byte fmt)
 	else
 		m_fmt = JPEG;
 }
-			
+
+#if defined(ESP8266)
+inline void ArduCAM::setDataBits(uint16_t bits) {
+    const uint32_t mask = ~((SPIMMOSI << SPILMOSI) | (SPIMMISO << SPILMISO));
+    bits--;
+    SPI1U1 = ((SPI1U1 & mask) | ((bits << SPILMOSI) | (bits << SPILMISO)));
+}
+
+void ArduCAM::transferBytes_(uint8_t * out, uint8_t * in, uint8_t size) {
+    while(SPI1CMD & SPIBUSY) {}
+    // Set in/out Bits to transfer
+
+    setDataBits(size * 8);
+
+    volatile uint32_t * fifoPtr = &SPI1W0;
+    uint8_t dataSize = ((size + 3) / 4);
+
+    if(out) {
+        uint32_t * dataPtr = (uint32_t*) out;
+        while(dataSize--) {
+            *fifoPtr = *dataPtr;
+            dataPtr++;
+            fifoPtr++;
+        }
+    } else {
+        // no out data only read fill with dummy data!
+        while(dataSize--) {
+            *fifoPtr = 0xFFFFFFFF;
+            fifoPtr++;
+        }
+    }
+
+    SPI1CMD |= SPIBUSY;
+    while(SPI1CMD & SPIBUSY) {}
+
+    if(in) {
+        volatile uint8_t * fifoPtr8 = (volatile uint8_t *) &SPI1W0;
+        dataSize = size;
+        while(dataSize--) {
+        		#if defined(OV5642_CAM)
+        		*in = *fifoPtr8;
+						*in = (byte)(*in >> 1) | (*in << 7); 
+						#else
+						 *in = *fifoPtr8;
+					  #endif
+            in++;
+            fifoPtr8++;
+        }
+    }
+}
+	
+	void ArduCAM::transferBytes(uint8_t * out, uint8_t * in, uint32_t size) {
+    while(size) {
+        if(size > 64) {
+            transferBytes_(out, in, 64);
+            size -= 64;
+            if(out) out += 64;
+            if(in) in += 64;
+        } else {
+            transferBytes_(out, in, size);
+            size = 0;
+        }
+    }
+}		
+#endif
+
 void ArduCAM::InitCAM()
 {
 	byte rtn = 0;
