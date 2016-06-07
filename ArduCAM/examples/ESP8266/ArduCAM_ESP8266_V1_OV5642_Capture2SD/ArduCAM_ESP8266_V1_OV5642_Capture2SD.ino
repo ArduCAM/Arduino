@@ -3,14 +3,14 @@
 // This program is a demo of how to use most of the functions
 // of the library with a supported camera modules, and can run on any Arduino platform.
 //
-// This demo was made for Omnivision OV2640 2MP sensor.
-// It will run the ArduCAM ESP8266 2MP as a real 2MP digital camera, provide both JPEG capture.
+// This demo was made for Omnivision OV5642 5MP sensor.
+// It will run the ArduCAM ESP8266 5MP as a real 2MP digital camera, provide both JPEG capture.
 // The demo sketch will do the following tasks:
 // 1. Set the sensor to JPEG mode.
 // 2. Capture and buffer the image to FIFO every 5 seconds 
 // 3. Store the image to Micro SD/TF card with JPEG format in sequential.
 // 4. Resolution can be changed by myCAM.set_JPEG_size() function.
-// This program requires the ArduCAM V3.4.0 (or later) library and ArduCAM ESP8266 2MP shield
+// This program requires the ArduCAM V3.4.0 (or later) library and ArduCAM ESP8266 5MP shield
 // and use Arduino IDE 1.5.2 compiler or above
 #include <ArduCAM.h>
 #include <Wire.h>
@@ -19,9 +19,9 @@
 #include "memorysaver.h"
 // set GPIO16 as the slave select :
 const int CS = 16;
-// set GPIO1 as the slave select :
+// Version 1,set GPIO1 as the slave select :
 const int SD_CS = 1;
-ArduCAM myCAM(OV2640, CS);
+ArduCAM myCAM(OV5642, CS);
 
 void myCAMSaveToSDFile(){
   char str[8];
@@ -55,12 +55,12 @@ void myCAMSaveToSDFile(){
  myCAM.CS_LOW();
  myCAM.set_fifo_burst();
  temp=SPI.transfer(0x00);
-
+ temp = (byte)(temp >> 1) | (temp << 7); // correction for bit rotation from readback
  //Read JPEG data from FIFO
  while ( (temp !=0xD9) | (temp_last !=0xFF)){
   temp_last = temp;
   temp = SPI.transfer(0x00);
-
+  temp = (byte)(temp >> 1) | (temp << 7); // correction for bit rotation from readback
   //Write image data to buffer if not full
   if( i < 256)
    buf[i++] = temp;
@@ -89,6 +89,7 @@ void myCAMSaveToSDFile(){
 void setup(){
   uint8_t vid, pid;
   uint8_t temp;
+
   Wire.begin();
   Serial.begin(115200);
   Serial.println("ArduCAM Start!");
@@ -96,43 +97,49 @@ void setup(){
   //set the CS as an output:
   pinMode(CS,OUTPUT);
 
-  //initialize SPI:
+  // initialize SPI:
   SPI.begin();
-  SPI.setFrequency(4000000); //4MHZ
-
+  SPI.setFrequency(4000000); //4MHz
   delay(1000);
   //Check if the ArduCAM SPI bus is OK
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM.read_reg(ARDUCHIP_TEST1);
+   
   if (temp != 0x55){
     Serial.println("SPI1 interface Error!");
-    while(1);
+    //while(1);
   }
-  
     //Initialize SD Card
   if(!SD.begin(SD_CS)){
     Serial.println("SD Card Error");
   }
   else
   Serial.println("SD Card detected!");
-  
-
-  
-//Check if the camera module type is OV2640
-  myCAM.wrSensorReg8_8(0xff, 0x01);
-  myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
-  myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
-  if ((vid != 0x26 ) && (( !pid != 0x41 ) || ( pid != 0x42 )))
-   Serial.println("Can't find OV2640 module!");
+   
+  myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK); //disable low power
+  delay(100);
+//Check if the camera module type is OV5642
+  myCAM.wrSensorReg16_8(0xff, 0x01);
+  myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
+  myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
+   if((vid != 0x56) || (pid != 0x42))
+   Serial.println("Can't find OV5642 module!");
    else
-   Serial.println("OV2640 detected.");
+   Serial.println("OV5642 detected.");
    myCAM.set_format(JPEG);
    myCAM.InitCAM();
+   myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
+   myCAM.OV5642_set_JPEG_size(OV5642_320x240);
 }
 
 void loop(){
-  delay(5000);
   myCAMSaveToSDFile();
+  myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);  //enable low power
+  delay(3000);
+   myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK); //disable low power
+   delay(2000);
+  
+  
 }
 
 

@@ -31,8 +31,8 @@
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
-// set pin 1 as the slave select for SD:
-#define SD_CS 1
+// Verson 2,set pin 0 as the slave select for SD:
+#define SD_CS 0
 // set the num of picture
 #define pic_num 200
 //set pin 16 as the slave select for SPI:
