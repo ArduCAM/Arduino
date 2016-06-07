@@ -84,6 +84,7 @@
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.
 	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
 	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
+	2016/06/07	V3.5.0	by Lee	Fixed the bit rotation issue for upgraded firmware 5MP camera, old firmware still need to use the bit rotation workaournd.	
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -190,6 +191,13 @@ uint8_t ArduCAM::bus_read(int address) {
 	
   
  #endif
+ #if defined(OV5642_CAM_BIT_ROTATION_FIXED)
+   SPI.transfer(address);
+		  value = SPI.transfer(0x00);
+		  // take the SS pin high to de-select the chip:
+		  sbi(P_CS, B_CS);
+		  return value;
+ #endif
  #if defined(OV2640_CAM)
   	
   		SPI.transfer(address);
@@ -233,7 +241,7 @@ ArduCAM::ArduCAM()
 ArduCAM::ArduCAM(byte model,int CS)
 {
 #if defined(ESP8266)
-	B_CS = CS;
+	B_CS = CS;	
 #else
 	P_CS	= portOutputRegister(digitalPinToPort(CS));
 	B_CS	= digitalPinToBitMask(CS);
@@ -406,8 +414,8 @@ byte ArduCAM::wrSensorReg16_8(int regID, int regDat)
 {
 	Wire.beginTransmission(sensor_addr >> 1);
 	Wire.write(regID >> 8);            // sends instruction byte, MSB first
-  	Wire.write(regID & 0x00FF); 	
-  	Wire.write(regDat & 0x00FF);  	
+  Wire.write(regID & 0x00FF); 	
+  Wire.write(regDat & 0x00FF);  	
 
 	if(Wire.endTransmission())
 	{
@@ -441,10 +449,10 @@ byte ArduCAM::wrSensorReg16_16(int regID, int regDat)
 	Wire.beginTransmission(sensor_addr >> 1);
 	
 	Wire.write(regID >> 8);            // sends instruction byte, MSB first
-  	Wire.write(regID & 0x00FF); 	
+  Wire.write(regID & 0x00FF); 	
 
-  	Wire.write(regDat >> 8);            // sends data byte, MSB first
-  	Wire.write(regDat & 0x00FF);  	
+  Wire.write(regDat >> 8);            // sends data byte, MSB first
+  Wire.write(regDat & 0x00FF);  	
 
 	if(Wire.endTransmission())
 	{
@@ -613,7 +621,7 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
-	#if defined OV5642_CAM
+#if defined OV5642_CAM
 	uint8_t reg_val;
 
 	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
@@ -664,8 +672,59 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			break;
 	}
+#elif defined(OV5642_CAM_BIT_ROTATION_FIXED)
+  uint8_t reg_val;
 
-	#endif
+	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
+	delay(100); 
+	switch(size)
+	{
+		case OV5642_320x240:	
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			wrSensorReg16_8(0x4407,0x04);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0xC8); 
+			break;
+		case OV5642_640x480:	
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_vga);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0xC8);  
+			break;
+		case OV5642_1280x720:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			wrSensorRegs16_8(ov5642_res_720P);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0xC8);
+			break;
+		case OV5642_1920x1080:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			wrSensorRegs16_8(ov5642_res_1080P);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0xC8);
+			break;
+		case OV5642_2048x1563:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qxga);
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0xC8); 
+			break;
+		case OV5642_2592x1944:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_5M);
+			wrSensorReg16_8(0x4407,0x08); 
+			wrSensorReg16_8(0x3818, 0xA8); 
+			wrSensorReg16_8(0x3621, 0x10); 
+			wrSensorReg16_8(0x3801 , 0xC8);  
+			break;
+		default:
+			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
+			break;
+	}
+#endif
+	
 }
 
 void ArduCAM::set_format(byte fmt)
@@ -823,7 +882,25 @@ void ArduCAM::InitCAM()
 				rdSensorReg16_8(0x3621,&reg_val);
 				wrSensorReg16_8(0x3621, reg_val & 0xdf);
 			}
-			
+			#elif defined(OV5642_CAM_BIT_ROTATION_FIXED)
+			wrSensorReg16_8(0x3008, 0x80);
+	
+			delay(100);
+			if(m_fmt == JPEG)
+			{
+				wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
+				delay(100); 
+				wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga); 
+				wrSensorReg16_8(0x4407,0x0C);
+			}
+			else
+			{
+				wrSensorRegs16_8(OV5642_RGB_QVGA);
+				rdSensorReg16_8(0x3818,&reg_val);
+				wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
+				rdSensorReg16_8(0x3621,&reg_val);
+				wrSensorReg16_8(0x3621, reg_val & 0xdf);
+			}
 			#endif
 			break;
 		}
@@ -1112,6 +1189,6 @@ void ArduCAM::InitCAM()
 		}
 		default:
 			
-			break;	
+		break;	
 	}
 }

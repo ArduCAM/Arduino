@@ -9,6 +9,7 @@
 #define OV2640_CAM
 //#define OV3640_CAM
 //#define OV5642_CAM
+//#define OV5642_CAM_BIT_ROTATION_FIXED
 //#define MT9D111_CAM
 //#define MT9M112_CAM
 //#define MT9V111_CAM	
@@ -39,6 +40,10 @@
 #endif
 
 #if defined OV5642_CAM	
+	#include "ov5642_regs.h"
+#endif
+
+#if defined OV5642_CAM_BIT_ROTATION_FIXED
 	#include "ov5642_regs.h"
 #endif
 
