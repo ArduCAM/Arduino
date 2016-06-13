@@ -81,7 +81,10 @@
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.	
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.							
-	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.									
+	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.			
+	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
+	2016/06/07  V3.5.0  by Lee	Fixed the bit rotation issue for upgraded firmware 5MP camera, old firmware still need to use the bit rotation workaournd.
+	2016/06/14	V3.5.1	by Lee	Macro definition optimization.							
 --------------------------------------*/
 
 
@@ -91,24 +94,22 @@
 #include "Arduino.h"
 #include <pins_arduino.h>
 
+
 #if defined (__AVR__)
+
 #define cbi(reg, bitmask) *reg &= ~bitmask
 #define sbi(reg, bitmask) *reg |= bitmask
 #define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
 #define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-
 #define cport(port, data) port &= data
 #define sport(port, data) port |= data
-
 #define swap(type, i, j) {type t = i; i = j; j = t;}
-
 #define fontbyte(x) pgm_read_byte(&cfont.font[x])  
-
 #define regtype volatile uint8_t
 #define regsize uint8_t
-
 #endif
-	
+
+
 #if defined(__arm__)
 
 #define cbi(reg, bitmask) *reg &= ~bitmask
@@ -232,7 +233,7 @@
 #define ARDUCHIP_TEST1       	0x00  //TEST register
 #define ARDUCHIP_TEST2      	0x01  //TEST register
 
-#define ARDUCHIP_FRAMES			0x01  //Bit[2:0]Number of frames to be captured
+#define ARDUCHIP_FRAMES			  0x01  //Bit[2:0]Number of frames to be captured
 
 #define ARDUCHIP_MODE      		0x02  //Mode register
 #define MCU2LCD_MODE       		0x00
@@ -246,7 +247,7 @@
 #define DELAY_MASK         		0x08  //0 = no delay, 			1 = delay one clock
 #define MODE_MASK          		0x10  //0 = LCD mode, 			1 = FIFO mode
 #define FIFO_PWRDN_MASK	   		0x20  //0 = Normal operation, 	1 = FIFO power down
-#define LOW_POWER_MODE			0x40  //0 = Normal mode, 		1 = Low power mode
+#define LOW_POWER_MODE			  0x40  //0 = Normal mode, 		1 = Low power mode
 
 #define ARDUCHIP_FIFO      		0x04  //FIFO and I2C control
 #define FIFO_CLEAR_MASK    		0x01
@@ -254,7 +255,7 @@
 #define FIFO_RDPTR_RST_MASK     0x10
 #define FIFO_WRPTR_RST_MASK     0x20
 
-#define ARDUCHIP_GPIO			0x06  //GPIO Write Register
+#define ARDUCHIP_GPIO			  0x06  //GPIO Write Register
 #define GPIO_RESET_MASK			0x01  //0 = default state,		1 =  Sensor reset IO value
 #define GPIO_PWDN_MASK			0x02  //0 = Sensor power down IO value, 1 = Sensor power enable IO value
 
@@ -332,7 +333,7 @@ class ArduCAM
 		void OV5642_set_JPEG_size(uint8_t size);
 		void set_format(byte fmt);
 		
-		 void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
+		void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
     void transferBytes(uint8_t * out, uint8_t * in, uint32_t size);
     inline void setDataBits(uint16_t bits);
     

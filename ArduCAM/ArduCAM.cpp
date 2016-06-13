@@ -84,7 +84,9 @@
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.
 	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
 	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
-	2016/06/07	V3.5.0	by Lee	Fixed the bit rotation issue for upgraded firmware 5MP camera, old firmware still need to use the bit rotation workaournd.	
+	2016/06/07  V3.5.0  by Lee	Fixed the bit rotation issue for upgraded firmware 5MP camera, old firmware still need to use the bit rotation workaournd.
+	2016/06/14	V3.5.1	by Lee	Macro definition optimization.
+	
 --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -162,7 +164,6 @@ int ArduCAM::bus_write(int address, int value) {
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
-  
   SPI.transfer(address);
   SPI.transfer(value);
   // take the SS pin high to de-select the chip:
@@ -175,30 +176,18 @@ uint8_t ArduCAM::bus_read(int address) {
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
-  #if defined(ESP8266)
-  
+  #if defined(ESP8266) 
   #if defined(OV5642_CAM)
       SPI.transfer(address);
-		  value = SPI.transfer(0x00);
-		  
-		  // correction for bit rotation from readback
-		  
-		  value = (byte)(value >> 1) | (value << 7); 
-		  
-		  // take the SS pin high to de-select the chip:
-		  sbi(P_CS, B_CS);
-		  return value;
-	
-  
- #endif
- #if defined(OV5642_CAM_BIT_ROTATION_FIXED)
-   SPI.transfer(address);
-		  value = SPI.transfer(0x00);
+		  value = SPI.transfer(0x00);  
+		  // correction for bit rotation from readback	  
+		  value = (byte)(value >> 1) | (value << 7);  
 		  // take the SS pin high to de-select the chip:
 		  sbi(P_CS, B_CS);
 		  return value;
  #endif
- #if defined(OV2640_CAM)
+
+ #if defined(OV2640_CAM) ||defined (OV5642_CAM_BIT_ROTATION_FIXED)
   	
   		SPI.transfer(address);
 		  value = SPI.transfer(0x00);
@@ -212,8 +201,7 @@ uint8_t ArduCAM::bus_read(int address) {
 		  // take the SS pin high to de-select the chip:
 		  sbi(P_CS, B_CS);
 		  return value;
-		#endif
-  	
+		#endif	
 }
 
 //Write ArduChip internal registers
@@ -233,9 +221,7 @@ uint8_t ArduCAM::read_reg(uint8_t addr)
 ArduCAM::ArduCAM()
 {
 	sensor_model = OV7670;
-	sensor_addr = 0x42;
-	
-  
+	sensor_addr = 0x42;  
 }
 
 ArduCAM::ArduCAM(byte model,int CS)
@@ -246,13 +232,10 @@ ArduCAM::ArduCAM(byte model,int CS)
 	P_CS	= portOutputRegister(digitalPinToPort(CS));
 	B_CS	= digitalPinToBitMask(CS);
 #endif	
-	pinMode(CS,OUTPUT);
-	
+	pinMode(CS,OUTPUT);	
 	//Must initialize the Bus default status
-	sbi(P_CS, B_CS);
-	
-	//flush_fifo();
-	
+	sbi(P_CS, B_CS);	
+	//flush_fifo();	
 	sensor_model=model;
 	switch(sensor_model)
 	{
@@ -414,14 +397,12 @@ byte ArduCAM::wrSensorReg16_8(int regID, int regDat)
 {
 	Wire.beginTransmission(sensor_addr >> 1);
 	Wire.write(regID >> 8);            // sends instruction byte, MSB first
-  Wire.write(regID & 0x00FF); 	
-  Wire.write(regDat & 0x00FF);  	
-
+  	Wire.write(regID & 0x00FF); 	
+  	Wire.write(regDat & 0x00FF);  	
 	if(Wire.endTransmission())
 	{
 		return 0; 
 	}
-
 	delay(1);
   return(1);
 }
@@ -432,8 +413,7 @@ byte ArduCAM::rdSensorReg16_8(uint16_t regID, uint8_t* regDat)
 	Wire.beginTransmission(sensor_addr >> 1);
 	Wire.write(regID >> 8);
 	Wire.write(regID & 0x00FF); 	
-	Wire.endTransmission();
-	
+	Wire.endTransmission();	
 	Wire.requestFrom((sensor_addr >> 1),1);
 	if(Wire.available())
 	{
@@ -446,19 +426,15 @@ byte ArduCAM::rdSensorReg16_8(uint16_t regID, uint8_t* regDat)
 //I2C Write 16bit address, 16bit data
 byte ArduCAM::wrSensorReg16_16(int regID, int regDat)
 {
-	Wire.beginTransmission(sensor_addr >> 1);
-	
+	Wire.beginTransmission(sensor_addr >> 1);	
 	Wire.write(regID >> 8);            // sends instruction byte, MSB first
   Wire.write(regID & 0x00FF); 	
-
   Wire.write(regDat >> 8);            // sends data byte, MSB first
   Wire.write(regDat & 0x00FF);  	
-
 	if(Wire.endTransmission())
 	{
 		return 0; 
 	}
-
 	delay(1);
   return(1);
 }
@@ -471,14 +447,12 @@ byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 	Wire.write(regID >> 8);
 	Wire.write(regID & 0x00FF); 	
 	Wire.endTransmission();
-	
 	Wire.requestFrom((sensor_addr >> 1),2);
 	if(Wire.available())
 	{
 		temp = Wire.read(); 	
 		*regDat = (temp << 8) | Wire.read();
 	}
-
 	delay(1);
   return(1);
 }
@@ -490,7 +464,6 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 	uint16_t reg_addr = 0;
 	uint16_t reg_val = 0;
 	const struct sensor_reg *next = reglist;
-	
 	while ((reg_addr != 0xff) | (reg_val != 0xff))
 	{		
 		reg_addr = pgm_read_word(&next->reg);
@@ -621,7 +594,7 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
-#if defined OV5642_CAM
+	#if defined (OV5642_CAM) ||defined (OV5642_CAM_BIT_ROTATION_FIXED)
 	uint8_t reg_val;
 
 	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
@@ -672,58 +645,7 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
 			break;
 	}
-#elif defined(OV5642_CAM_BIT_ROTATION_FIXED)
-  uint8_t reg_val;
-
-	wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
-	delay(100); 
-	switch(size)
-	{
-		case OV5642_320x240:	
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
-			wrSensorReg16_8(0x4407,0x04);
-			wrSensorReg16_8(0x3818, 0xA8); 
-			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0xC8); 
-			break;
-		case OV5642_640x480:	
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_vga);
-			wrSensorReg16_8(0x3818, 0xA8); 
-			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0xC8);  
-			break;
-		case OV5642_1280x720:
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
-			wrSensorRegs16_8(ov5642_res_720P);
-			wrSensorReg16_8(0x3818, 0xA8); 
-			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0xC8);
-			break;
-		case OV5642_1920x1080:
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
-			wrSensorRegs16_8(ov5642_res_1080P);
-			wrSensorReg16_8(0x3818, 0xA8); 
-			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0xC8);
-			break;
-		case OV5642_2048x1563:
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qxga);
-			wrSensorReg16_8(0x3818, 0xA8); 
-			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0xC8); 
-			break;
-		case OV5642_2592x1944:
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_5M);
-			wrSensorReg16_8(0x4407,0x08); 
-			wrSensorReg16_8(0x3818, 0xA8); 
-			wrSensorReg16_8(0x3621, 0x10); 
-			wrSensorReg16_8(0x3801 , 0xC8);  
-			break;
-		default:
-			wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga);
-			break;
-	}
-#endif
+	#endif
 	
 }
 
@@ -863,28 +785,9 @@ void ArduCAM::InitCAM()
 		}  
 		case OV5642:
 		{
-			#if defined OV5642_CAM
+			#if defined (OV5642_CAM) ||defined (OV5642_CAM_BIT_ROTATION_FIXED)
 			wrSensorReg16_8(0x3008, 0x80);
 
-			delay(100);
-			if(m_fmt == JPEG)
-			{
-				wrSensorRegs16_8(ov5642_dvp_fmt_global_init); 
-				delay(100); 
-				wrSensorRegs16_8(ov5642_dvp_fmt_jpeg_qvga); 
-				wrSensorReg16_8(0x4407,0x0C);
-			}
-			else
-			{
-				wrSensorRegs16_8(OV5642_RGB_QVGA);
-				rdSensorReg16_8(0x3818,&reg_val);
-				wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
-				rdSensorReg16_8(0x3621,&reg_val);
-				wrSensorReg16_8(0x3621, reg_val & 0xdf);
-			}
-			#elif defined(OV5642_CAM_BIT_ROTATION_FIXED)
-			wrSensorReg16_8(0x3008, 0x80);
-	
 			delay(100);
 			if(m_fmt == JPEG)
 			{
@@ -1189,6 +1092,6 @@ void ArduCAM::InitCAM()
 		}
 		default:
 			
-		break;	
+			break;	
 	}
 }
