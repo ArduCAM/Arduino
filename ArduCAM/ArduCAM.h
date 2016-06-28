@@ -81,10 +81,10 @@
 	2015/06/22  V3.4.5  by Lee	Add support for MT9M001 camera.		
 	2015/08/05  V3.4.6  by Lee	Add support for MT9T112 camera.	
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.							
-	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.			
+	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
 	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
-	2016/06/07  V3.5.0  by Lee	Fixed the bit rotation issue for upgraded firmware 5MP camera, old firmware still need to use the bit rotation workaournd.
-	2016/06/14	V3.5.1	by Lee	Macro definition optimization.							
+	2016/06/07  V3.5.0  by Lee	Add support for OV5642_CAM_BIT_ROTATION_FIXED.
+	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.							
 --------------------------------------*/
 
 
@@ -200,12 +200,23 @@
 #define OV2640_1280x1024	7	//1280x1024
 #define OV2640_1600x1200	8	//1600x1200
 
-#define OV5642_320x240 		1	//320x240
-#define OV5642_640x480		2	//640x480
-#define OV5642_1280x720 	3	//1280x720
-#define OV5642_1920x1080	4	//1920x1080
-#define OV5642_2048x1563	5	//2048x1563
-#define OV5642_2592x1944	6	//2592x1944
+#define OV5642_320x240 		0	//320x240
+#define OV5642_640x480		1	//640x480
+#define OV5642_1280x720 	2	//1280x720
+#define OV5642_1920x1080	3	//1920x1080
+#define OV5642_2048x1563	4	//2048x1563
+#define OV5642_2592x1944	5	//2592x1944
+
+
+#define OV5640_320x240 		0	//320x240 
+#define OV5640_352x288		1	//352x288
+#define OV5640_640x480 	  2	//640x480
+#define OV5640_800x480	  3	//800x480
+#define OV5640_1024x768	  4	//1024x768
+#define OV5640_1280x960	  5	//1280x960	
+#define OV5640_1600x1200	6	 //1600x1200
+#define OV5640_2048x1536	7  //2048x1536
+#define OV5640_2592x1944	8	 //2592x1944
 
 /****************************************************/
 /* I2C Control Definition 													*/
@@ -331,6 +342,7 @@ class ArduCAM
 		
 		void OV2640_set_JPEG_size(uint8_t size);
 		void OV5642_set_JPEG_size(uint8_t size);
+		void OV5640_set_JPEG_size(uint8_t size);
 		void set_format(byte fmt);
 		
 		void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);

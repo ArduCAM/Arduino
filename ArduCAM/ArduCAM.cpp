@@ -84,8 +84,8 @@
 	2015/08/08  V3.4.7  by Lee	Add support for MT9D112 camera.
 	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
 	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
-	2016/06/07  V3.5.0  by Lee	Fixed the bit rotation issue for upgraded firmware 5MP camera, old firmware still need to use the bit rotation workaournd.
-	2016/06/14	V3.5.1	by Lee	Macro definition optimization.
+	2016/06/07  V3.5.0  by Lee	Add support for OV5642_CAM_BIT_ROTATION_FIXED.
+	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
 	
 --------------------------------------*/
 #include "Arduino.h"
@@ -177,7 +177,7 @@ uint8_t ArduCAM::bus_read(int address) {
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
   #if defined(ESP8266) 
-  #if defined(OV5642_CAM)
+   #if defined(OV5642_CAM)
       SPI.transfer(address);
 		  value = SPI.transfer(0x00);  
 		  // correction for bit rotation from readback	  
@@ -186,8 +186,7 @@ uint8_t ArduCAM::bus_read(int address) {
 		  sbi(P_CS, B_CS);
 		  return value;
  #endif
-
- #if defined(OV2640_CAM) ||defined (OV5642_CAM_BIT_ROTATION_FIXED)
+ #if defined(OV2640_CAM) ||defined (OV5642_CAM_BIT_ROTATION_FIXED)|| defined (OV5640_CAM)
   	
   		SPI.transfer(address);
 		  value = SPI.transfer(0x00);
@@ -311,8 +310,8 @@ uint32_t ArduCAM::read_fifo_length(void)
 	uint32_t len1,len2,len3,length=0;
 	len1 = read_reg(FIFO_SIZE1);
   len2 = read_reg(FIFO_SIZE2);
-  len3 = read_reg(FIFO_SIZE3) & 0x07;
-  length = ((len3 << 16) | (len2 << 8) | len1) & 0x07ffff;
+  len3 = read_reg(FIFO_SIZE3) & 0x7f;
+  length = ((len3 << 16) | (len2 << 8) | len1) & 0x07fffff;
 	return length;
 }
 
@@ -649,6 +648,49 @@ void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 	
 }
 
+
+void ArduCAM::OV5640_set_JPEG_size(uint8_t size)
+{
+	#if defined (OV5640_CAM)
+ 
+	switch(size)
+	{
+		case OV5640_320x240:	
+			wrSensorRegs16_8(OV5640_QSXGA2QVGA);
+			break;
+		case OV5640_352x288:	
+			wrSensorRegs16_8(OV5640_QSXGA2CIF);
+			break;
+		case OV5640_640x480:	
+			wrSensorRegs16_8(OV5640_QSXGA2VGA);  
+			break;
+		case OV5640_800x480:	
+			wrSensorRegs16_8(OV5640_QSXGA2WVGA);  
+			break;
+		case OV5640_1024x768:	
+			wrSensorRegs16_8(OV5640_QSXGA2XGA);  
+			break;
+		case OV5640_1280x960:
+			wrSensorRegs16_8(OV5640_QSXGA2SXGA);
+			break;
+		case OV5640_1600x1200:
+			wrSensorRegs16_8(OV5640_QSXGA2UXGA);
+			break;
+		case OV5640_2048x1536:
+			wrSensorRegs16_8(OV5640_QSXGA2QXGA); 
+			break;
+		case OV5640_2592x1944:
+			wrSensorRegs16_8(OV5640_JPEG_QSXGA); 
+			break;
+		default:
+			    //320x240
+			wrSensorRegs16_8(OV5640_QSXGA2QVGA);
+			break;
+	}
+	#endif
+	
+}
+
 void ArduCAM::set_format(byte fmt)
 {
 	if(fmt == BMP)
@@ -807,6 +849,32 @@ void ArduCAM::InitCAM()
 			#endif
 			break;
 		}
+		case OV5640:
+		{
+			#if defined OV5640_CAM
+			delay(100);
+		if(m_fmt == JPEG)
+		{
+			wrSensorReg16_8(0x3103, 0x11);
+			wrSensorReg16_8(0x3008, 0x82);
+			delay(100);
+			wrSensorRegs16_8(OV5640YUV_Sensor_Dvp_Init);
+			delay(500);
+			wrSensorRegs16_8(OV5640_JPEG_QSXGA);
+			wrSensorRegs16_8(OV5640_QSXGA2QVGA);
+		}
+           else
+			{
+				wrSensorReg16_8(0x3103, 0x11);
+				wrSensorReg16_8(0x3008, 0x82);
+				delay(500);
+			    wrSensorRegs16_8(OV5640YUV_Sensor_Dvp_Init);
+				wrSensorRegs16_8(OV5640_RGB_QVGA);
+			}
+
+		#endif
+		break;
+		}
 		case OV3640:
 		{
 			#if defined OV3640_CAM
@@ -872,17 +940,7 @@ void ArduCAM::InitCAM()
       #endif	
 			break;
 		}
-		case OV5640:
-		{
-			#if defined OV5640_CAM
-			wrSensorReg16_8(0x3008, 0x80);
-			delay(100);
-			wrSensorRegs16_8(OV5640YUV_Sensor_Dvp_Init);
-			wrSensorRegs16_8(ov5640_vga_preview);
-			wrSensorRegs16_8(OV5640_RGB_QVGA);
-			#endif
-			break;
-		}
+	
 		case MT9M001:
 		{
 			#if defined MT9M001_CAM
