@@ -23,8 +23,6 @@
 #include <SPI.h>
 #include <SD.h>
 #include "memorysaver.h"
-
-#define BMPIMAGEOFFSET  66
 #define   FIFO_SIZE     0x07FFFFF
 #define   FRAMES_NUM    0x06
 // set pin 10 as the slave select for the digital pot:
@@ -87,7 +85,6 @@ void setup() {
   myCAM.set_format(JPEG);
   myCAM.InitCAM();
   myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
-
   myCAM.clear_fifo_flag();
   myCAM.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
 
@@ -97,14 +94,13 @@ void loop() {
   // put your main code here, to run repeatedly:
   uint8_t temp, temp_last;
   bool is_header = false;
-  myCAM.OV5640_set_JPEG_size(OV5640_640x480);
-
   myCAM.flush_fifo();
   myCAM.clear_fifo_flag();
+  myCAM.OV5640_set_JPEG_size(OV5640_640x480);
   //Start capture
   myCAM.start_capture();
-    Serial.println("start capture!");
-     total_time = millis();
+  Serial.println("start capture!");
+    total_time = millis();
   while ( !myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)); 
   Serial.println("CAM Capture Done!");
   total_time = millis() - total_time;
@@ -136,7 +132,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   length = myCAM.read_fifo_length();
   Serial.print("The fifo length is :");
   Serial.println(length, DEC);
-  if (length >= 0x07fffff) //1M
+  if (length >= 0x07fffff) //8M
   {
     Serial.println("Over size.");
     return 0;

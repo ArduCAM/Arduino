@@ -185,7 +185,7 @@ void loop() {
       {
         uint32_t length = 0;
         length = myCAM.read_fifo_length();
-        if ((length >= 524288) | (length == 0))
+        if ((length >= FIFO_SIZE) | (length == 0))
         {
           myCAM.clear_fifo_flag();
           start_capture = 2;
@@ -228,7 +228,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   uint32_t length = 0;
   length = myCAM.read_fifo_length();
   Serial.println(length, DEC);
-  if (length >= 0x07fffff) //1M
+  if (length >= FIFO_SIZE) //8M
   {
     Serial.println("Over size.");
     return 0;

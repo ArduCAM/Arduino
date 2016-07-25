@@ -21,61 +21,53 @@
 //18-1B :Hdr1 contains avih piece of identification 
 //1C-1F :The size of the avih
 //20-23 :Maintain time per frame picture
-
+//Shoot video button, began to shoot video, now LED by frequency of 1 hz flicker, 
+//After take photos finished, the LED normally on began to write.
 // This program requires the ArduCAM V3.4.1 (or later) library and ArduCAM ESP8266 5MP camera
 // and use Arduino IDE 1.5.8 compiler or above
-
-
-
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
 #include <SD.h>
 #include "memorysaver.h"
-
-#define BMPIMAGEOFFSET  66
 #define   FIFO_SIZE     0x07FFFFF
 #define   FRAMES_NUM    0x07
-#define   FRAME_RATE     0x05
+#define   FRAME_RATE     0x0A
+#define SD_CS 9
+#define KEY 2
+#define AVIOFFSET 240
 // set pin 10 as the slave select for the digital pot:
 const int CS = 7;
-#define SD_CS 9
 bool is_header = false;
 uint32_t total_time = 0;
-
-#define AVIOFFSET 240
 unsigned long movi_size = 0;
 unsigned long jpeg_size = 0;
 const char zero_buf[4] = {0x00, 0x00, 0x00, 0x00};
 const char avi_header[AVIOFFSET] PROGMEM ={
-   0x52, 0x49, 0x46, 0x46, 0xD8, 0x01, 0x0E, 0x00, 0x41, 0x56, 0x49, 0x20, 0x4C, 0x49, 0x53, 0x54,
+  0x52, 0x49, 0x46, 0x46, 0xD8, 0x01, 0x0E, 0x00, 0x41, 0x56, 0x49, 0x20, 0x4C, 0x49, 0x53, 0x54,
   0xD0, 0x00, 0x00, 0x00, 0x68, 0x64, 0x72, 0x6C, 0x61, 0x76, 0x69, 0x68, 0x38, 0x00, 0x00, 0x00,
   0xA0, 0x86, 0x01, 0x00, 0x80, 0x66, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00,
   0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x80, 0x02, 0x00, 0x00, 0xE0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4C, 0x49, 0x53, 0x54, 0x84, 0x00, 0x00, 0x00,
   0x73, 0x74, 0x72, 0x6C, 0x73, 0x74, 0x72, 0x68, 0x30, 0x00, 0x00, 0x00, 0x76, 0x69, 0x64, 0x73,
   0x4D, 0x4A, 0x50, 0x47, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x73, 0x74, 0x72, 0x66,
-  0x28, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00,
+  0x28, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x80, 0x02, 0x00, 0x00, 0xE0, 0x01, 0x00, 0x00,
   0x01, 0x00, 0x18, 0x00, 0x4D, 0x4A, 0x50, 0x47, 0x00, 0x84, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4C, 0x49, 0x53, 0x54,
   0x10, 0x00, 0x00, 0x00, 0x6F, 0x64, 0x6D, 0x6C, 0x64, 0x6D, 0x6C, 0x68, 0x04, 0x00, 0x00, 0x00,
   0x64, 0x00, 0x00, 0x00, 0x4C, 0x49, 0x53, 0x54, 0x00, 0x01, 0x0E, 0x00, 0x6D, 0x6F, 0x76, 0x69,
 };
-
 void print_quartet(unsigned long i,File fd){
   fd.write(i % 0x100);  i = i >> 8;   //i /= 0x100;
   fd.write(i % 0x100);  i = i >> 8;   //i /= 0x100;
   fd.write(i % 0x100);  i = i >> 8;   //i /= 0x100;
   fd.write(i % 0x100);
 }
-
-
-
 ArduCAM myCAM(OV5640, CS);
-uint8_t read_fifo_burst(ArduCAM myCAM);
+uint8_t read_fifo_burst();
 
 void setup() {
   // put your setup code here, to run once:
@@ -91,7 +83,8 @@ void setup() {
 
   // set the CS as an output:
   pinMode(CS, OUTPUT);
-
+  pinMode(SD_CS, OUTPUT);
+  pinMode(KEY, INPUT);
   // initialize SPI:
   SPI.begin();
   //Check if the ArduCAM SPI bus is OK
@@ -128,49 +121,78 @@ void setup() {
   myCAM.clear_fifo_flag();
   myCAM.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
 }
-
+boolean isCaptureFlag = false;
+bool keyState;
+uint8_t temp, temp_last;
+uint32_t length = 0;
+uint32_t flash_time = 0;
 void loop() {
   // put your main code here, to run repeatedly:
-  uint8_t temp, temp_last;
-  uint32_t length = 0;
-  bool is_header = false;
+  keyState= digitalRead(KEY);
+  if(!keyState)  {
+   isCaptureFlag = true;
+   while(!digitalRead(KEY));  
+  }
+  if(isCaptureFlag){
   myCAM.flush_fifo();
   myCAM.clear_fifo_flag();
   //Start capture
   myCAM.start_capture();
   Serial.println("start capture!");
   total_time = millis();
-  while ( !myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)); 
+  flash_time =millis();
+  while ( !myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)){
+    if((millis() - flash_time)>=500)
+    {
+      digitalWrite(SD_CS,LOW);
+    }
+    if((millis() - flash_time)>=1000)
+    {
+      flash_time=millis();
+      digitalWrite(SD_CS,HIGH);
+    }
+  }
   length = myCAM.read_fifo_length();
   if( length < 0x3FFFFF){
   myCAM.flush_fifo();
   myCAM.clear_fifo_flag();
   //Start capture
   myCAM.start_capture();
-  while ( !myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK));
-  Serial.println("CAM Capture Done!");
-     total_time = millis() - total_time;
-      Serial.print("capture total_time used (in miliseconds):");
-      Serial.println(total_time, DEC);
+  while ( !myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)){
+     if((millis() - flash_time)>=500)
+    {
+      digitalWrite(SD_CS,LOW);
+    }
+    if((millis() - flash_time)>=1000)
+    {
+      flash_time=millis();
+      digitalWrite(SD_CS,HIGH);
+    }
+  }
+      Serial.println("CAM Capture Done!");
+      total_time = millis() - total_time;
+     // Serial.print("capture total_time used (in miliseconds):");
+     // Serial.println(total_time, DEC);
   }else{
      Serial.println("CAM Capture Done!");
      total_time = millis() - total_time;
-      Serial.print("capture total_time used (in miliseconds):");
-      Serial.println(total_time, DEC);
+     //Serial.print("capture total_time used (in miliseconds):");
+   //  Serial.println(total_time, DEC);
   }
+   digitalWrite(SD_CS,HIGH);
   total_time = millis();
-  read_fifo_burst(myCAM);
+  read_fifo_burst();
   total_time = millis() - total_time;
-  Serial.print("save video total_time used (in miliseconds):");
-  Serial.println(total_time, DEC);
+ // Serial.print("save video total_time used (in miliseconds):");
+  //Serial.println(total_time, DEC);
   //Clear the capture done flag
   myCAM.clear_fifo_flag();
-  delay(5000);
+  isCaptureFlag = false;
+  }
 }
 
-uint8_t read_fifo_burst(ArduCAM myCAM)
-{
-  
+uint8_t read_fifo_burst()
+{  
   uint8_t temp, temp_last;
   uint32_t length = 0;
   static int i = 0;
@@ -178,15 +200,15 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   unsigned long position = 0;
   uint16_t frame_cnt = 0;
   uint8_t remnant = 0;
+   File outFile;
   char quad_buf[4] = {};
   char str[8];
-  File outFile;
   byte buf[256]; 
   length = myCAM.read_fifo_length();
   Serial.print("The fifo length is :");
   Serial.println(length, DEC);
  // Serial.println("writting the data to the SD !");
-  if (length >= 0x07fffff) //1M
+  if (length >= 0x07fffff) //8M
   {
     Serial.println("Over size.");
     return 0;
@@ -196,6 +218,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     Serial.println("Size is 0.");
     return 0;
   }
+    movi_size = 0;
  //Create a avi file
   k = k + 1;
   itoa(k, str, 10);
@@ -213,9 +236,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     char ch = pgm_read_byte(&avi_header[i]);
     buf[i] = ch;
   }
-  outFile.write(buf, AVIOFFSET);
- 
-  
+  outFile.write(buf, AVIOFFSET); 
   myCAM.CS_LOW();
   myCAM.set_fifo_burst();//Set fifo burst mode
   SPI.transfer(0x00);//First byte is 0x00 ,not 0xff
@@ -225,7 +246,6 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   {
     temp_last = temp;
     temp =  SPI.transfer(0x00);
-    // Serial.println(temp,HEX);
     //Read JPEG data from FIFO
      if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
     {
@@ -234,14 +254,11 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
          myCAM.CS_HIGH();
          outFile.write(buf, i);
          jpeg_size += i;
-     
         remnant = (4 - (jpeg_size & 0x00000003)) & 0x00000003;
         jpeg_size = jpeg_size + remnant;
         movi_size = movi_size + jpeg_size;
         if (remnant > 0)
           outFile.write(zero_buf, remnant);
-        //Serial.println(movi_size, HEX);
-    
         position = outFile.position();
         outFile.seek(position - 4 - jpeg_size);
         print_quartet(jpeg_size, outFile);
@@ -254,7 +271,6 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
         frame_cnt++;
         myCAM.CS_LOW();
         myCAM.set_fifo_burst();
-        i = 0;
     } 
     if (is_header == true)
     { 
@@ -273,7 +289,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
           jpeg_size += 256;
         }        
     }
-    else if ((temp == 0xD8) & (temp_last == 0xFF))
+    else if ((temp == 0xD8) && (temp_last == 0xFF))
     {
       is_header = true;
       myCAM.CS_HIGH();
@@ -290,8 +306,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
    myCAM.CS_HIGH();
   //Modify the MJPEG header from the beginning of the file
   outFile.seek(4);
-  print_quartet(movi_size + 0xd8, outFile);//riff file size
-  
+  print_quartet(movi_size +12*frame_cnt+4, outFile);//riff file size
   //overwrite hdrl
   unsigned long us_per_frame = 1000000 / FRAME_RATE; //(per_usec); //hdrl.avih.us_per_frame
   outFile.seek(0x20);
@@ -299,20 +314,17 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   unsigned long max_bytes_per_sec = movi_size * FRAME_RATE/ frame_cnt; //hdrl.avih.max_bytes_per_sec
   outFile.seek(0x24);
   print_quartet(max_bytes_per_sec, outFile);
-  //unsigned long tot_frames = framecnt;    //hdrl.avih.tot_frames
+  unsigned long tot_frames = frame_cnt;    //hdrl.avih.tot_frames
   outFile.seek(0x30);
-  print_quartet(max_bytes_per_sec, outFile);
-  
+  print_quartet(tot_frames, outFile);
   outFile.seek(0x84);
-  print_quartet(FRAME_RATE, outFile);// size again
-  
-  //unsigned long frames =framecnt;// (TOTALFRAMES); //hdrl.strl.list_odml.frames
+  print_quartet(FRAME_RATE, outFile);// set frame rate
+  unsigned long frames =frame_cnt;// (TOTALFRAMES); //hdrl.strl.list_odml.frames
   outFile.seek(0xe0);
-  print_quartet(max_bytes_per_sec, outFile);
+  print_quartet(frames, outFile);
   outFile.seek(0xe8);
   print_quartet(movi_size, outFile);// size again
   //Close the file
   outFile.close();
-  Serial.println("The movie capture is OK");
-  frame_cnt = 0;
+  is_header = false;
 }

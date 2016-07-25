@@ -27,7 +27,7 @@
 #define BMPIMAGEOFFSET  66
 #define   FIFO_SIZE     0x07FFFFF
 // set pin 10 as the slave select for the digital pot:
-const int CS = 10;
+const int CS = 7;
 bool is_header = false;
 int mode = 0;
 uint8_t start_capture = 0;
@@ -86,13 +86,13 @@ void setup() {
   myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
 
   myCAM.clear_fifo_flag();
-  myCAM.write_reg(ARDUCHIP_FRAMES, 0x06);
+  myCAM.write_reg(ARDUCHIP_FRAMES, 0x00);
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  uint8_t temp, temp_last;
+  uint8_t temp=0xFF, temp_last;
   bool is_header = false;
   if (Serial.available())
   {
@@ -192,7 +192,7 @@ void loop() {
       {
         uint32_t length = 0;
         length = myCAM.read_fifo_length();
-        if ((length >= 524288) | (length == 0))
+        if ((length >= FIFO_SIZE) | (length == 0))
         {
           myCAM.clear_fifo_flag();
           start_capture = 2;
@@ -200,7 +200,7 @@ void loop() {
         }
         myCAM.CS_LOW();
         myCAM.set_fifo_burst();//Set fifo burst mode
-        //SPI.transfer(0x00);
+        SPI.transfer(0x00);
         length--;
         while ( length-- )
         {
@@ -245,7 +245,7 @@ void loop() {
       uint8_t temp, temp_last;
       uint32_t length = 0;
       length = myCAM.read_fifo_length();
-      if (length >= FIFO_SIZE ) // 1M
+      if (length >= FIFO_SIZE ) // 8M
       {
         Serial.println("Over size.");
         myCAM.clear_fifo_flag();
@@ -300,7 +300,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   length = myCAM.read_fifo_length();
   Serial.println(length, DEC);
 
-  if (length >= 524288) //512 kb
+  if (length >= FIFO_SIZE) //8M
   {
     Serial.println("Over size.");
     return 0;
