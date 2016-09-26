@@ -36,6 +36,10 @@ void setup() {
   
   myCAM.set_mode(MCU2LCD_MODE);
 
+  // make sure the device is not in low power mode
+  myCAM.clear_bit(ARDUCHIP_GPIO, GPIO_PWDN_MASK);
+  delay(100);
+
   //Check if the camera module type is OV2640
   myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
   myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
