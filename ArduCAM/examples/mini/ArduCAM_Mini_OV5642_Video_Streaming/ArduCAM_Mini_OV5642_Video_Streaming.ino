@@ -27,7 +27,7 @@
 #define BMPIMAGEOFFSET 66
 
 // set pin 10 as the slave select for the digital pot:
-const int CS = 10;
+const int CS = 7;
 bool is_header = false;
 int mode = 0;
 uint8_t start_capture = 0;
@@ -68,6 +68,7 @@ void setup() {
   if (temp != 0x55)
   {
     Serial.println("SPI interface Error!");
+    Serial.println(temp,HEX);
     //while(1);
   }
 
@@ -105,13 +106,13 @@ void loop() {
         myCAM.OV5642_set_JPEG_size(OV5642_640x480);
         break;
       case 2:
-        myCAM.OV5642_set_JPEG_size(OV5642_1280x720);
+        myCAM.OV5642_set_JPEG_size(OV5642_1024x768);
         break;
       case 3:
-        myCAM.OV5642_set_JPEG_size(OV5642_1920x1080);
+        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);
         break;
       case 4:
-        myCAM.OV5642_set_JPEG_size(OV5642_2048x1563);
+        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);
         break;
       case 5:
         myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);
@@ -198,7 +199,7 @@ void loop() {
         }
         myCAM.CS_LOW();
         myCAM.set_fifo_burst();//Set fifo burst mode
-        //SPI.transfer(0x00);
+        SPI.transfer(0x00);
         length--;
         while ( length-- )
         {
@@ -216,7 +217,7 @@ void loop() {
           }
           if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
             break;
-          delayMicroseconds(12);
+          delayMicroseconds(15);
         }
         myCAM.CS_HIGH();
         myCAM.clear_fifo_flag();
@@ -276,9 +277,9 @@ void loop() {
           VH = SPI.transfer(0x00);;
           VL = SPI.transfer(0x00);;
           Serial.write(VL);
-          delayMicroseconds(12);
+          delayMicroseconds(15);
           Serial.write(VH);
-          delayMicroseconds(12);
+          delayMicroseconds(15);
         }
       }
       Serial.write(0xBB);
@@ -328,7 +329,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     }
     if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
       break;
-    delayMicroseconds(12);
+    delayMicroseconds(15);
   }
   myCAM.CS_HIGH();
   is_header = false;

@@ -84,8 +84,7 @@
 	2015/09/20  V3.4.8  by Lee	Add support for ESP8266 processor.	
 	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
 	2016/06/07  V3.5.0  by Lee	Add support for OV5642_CAM_BIT_ROTATION_FIXED.
-	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
-	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings						
+	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.							
 --------------------------------------*/
 
 

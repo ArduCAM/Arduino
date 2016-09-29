@@ -33,7 +33,11 @@ void setup() {
     Serial.println("SPI1 interface Error!");
     //while(1);
   }
-
+  
+	// make sure the device is not in low power mode
+  myCAM.clear_bit(ARDUCHIP_GPIO, GPIO_PWDN_MASK);
+  delay(100);
+  
   //Check if the camera module type is OV5642
   myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
   myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
@@ -71,17 +75,17 @@ void loop() {
       break;
     case 2:
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
-      myCAM.OV5642_set_JPEG_size(OV5642_1280x720);
+      myCAM.OV5642_set_JPEG_size(OV5642_1024x768);
       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       break;
     case 3:
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
-      myCAM.OV5642_set_JPEG_size(OV5642_1920x1080);
+      myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);
       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       break;
     case 4:
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
-      myCAM.OV5642_set_JPEG_size(OV5642_2048x1563);
+      myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);
       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       break;
     case 5:

@@ -117,10 +117,10 @@ void loop() {
       myCAM1.OV5642_set_JPEG_size(OV5642_640x480);
       break;
     case 2:
-      myCAM1.OV5642_set_JPEG_size(OV5642_1280x720);
+      myCAM1.OV5642_set_JPEG_size(OV5642_1024x768);
       break;
     case 3:
-      myCAM1.OV5642_set_JPEG_size(OV5642_1920x1080);
+      myCAM1.OV5642_set_JPEG_size(OV5642_1600x1200);
       break;
     case 4:
       myCAM1.OV5642_set_JPEG_size(OV5642_2048x1563);
@@ -341,7 +341,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
       }
       if( (temp == 0xD9) && (temp_last == 0xFF) )
         break;
-      delayMicroseconds(12);
+      delayMicroseconds(15);
     }
     myCAM.CS_HIGH();
     is_header = false;
