@@ -10,13 +10,22 @@
 // 2. Capture and buffer the image to FIFO every 5 seconds 
 // 3. Store the image to Micro SD/TF card with JPEG format in sequential.
 // 4. Resolution can be changed by myCAM.set_JPEG_size() function.
-// This program requires the ArduCAM V3.4.0 (or later) library and ArduCAM ESP8266 5MP shield
+// This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM ESP8266 5MP shield
 // and use Arduino IDE 1.5.2 compiler or above
 #include <ArduCAM.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
 #include "memorysaver.h"
+#if !(defined ESP8266 )
+#error Please select the ArduCAM ESP8266 UNO board in the Tools/Board
+#endif
+
+//This demo can only work on OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED
+//or OV5640_MINI_5MP_PLUS or ARDUCAM_SHIELD_V2 platform.
+#if !(defined (OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined (OV5642_MINI_5MP_PLUS) ||(defined (ARDUCAM_SHIELD_V2) && defined (OV5642_CAM)))
+#error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
+#endif
 // set GPIO16 as the slave select :
 const int CS = 16;
 // Version 1,set GPIO1 as the slave select :
@@ -54,13 +63,19 @@ void myCAMSaveToSDFile(){
  i = 0;
  myCAM.CS_LOW();
  myCAM.set_fifo_burst();
+#if !( defined (OV5642_MINI_5MP_PLUS) ||(defined (ARDUCAM_SHIELD_V2) && defined (OV5642_CAM)))
  temp=SPI.transfer(0x00);
+  #if defined (OV5642_MINI_5MP)
  temp = (byte)(temp >> 1) | (temp << 7); // correction for bit rotation from readback
+ #endif
+ #endif
  //Read JPEG data from FIFO
  while ( (temp !=0xD9) | (temp_last !=0xFF)){
   temp_last = temp;
   temp = SPI.transfer(0x00);
+   #if defined (OV5642_MINI_5MP)
   temp = (byte)(temp >> 1) | (temp << 7); // correction for bit rotation from readback
+  #endif
   //Write image data to buffer if not full
   if( i < 256)
    buf[i++] = temp;
@@ -130,6 +145,7 @@ void setup(){
    myCAM.InitCAM();
    myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
    myCAM.OV5642_set_JPEG_size(OV5642_320x240);
+   delay(1000);
 }
 
 void loop(){

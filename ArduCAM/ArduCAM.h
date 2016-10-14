@@ -85,7 +85,8 @@
 	2016/02/03	V3.4.9	by Lee	Add support for Arduino ZERO board.
 	2016/06/07  V3.5.0  by Lee	Add support for OV5642_CAM_BIT_ROTATION_FIXED.
 	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
-	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings						
+	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings		
+	2016/10/05	V4.0.0	by Lee	Add support for second generation of ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).				
 --------------------------------------*/
 
 
@@ -94,6 +95,7 @@
 
 #include "Arduino.h"
 #include <pins_arduino.h>
+#include "memorysaver.h"
 
 
 #if defined (__AVR__)
@@ -238,15 +240,26 @@
 #define SENSOR_VAL_TERM_8BIT                0xFF
 #define SENSOR_VAL_TERM_16BIT               0xFFFF
 
+//Define maximum frame buffer size
+#if (defined OV2640_MINI_2MP)
+#define MAX_FIFO_SIZE		0x5FFFF			//384KByte
+#elif (defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined ARDUCAM_SHIELD_REVC)
+#define MAX_FIFO_SIZE		0x7FFFF			//512KByte
+#else
+#define MAX_FIFO_SIZE		0x7FFFFF		//8MByte
+#endif 
+
 /****************************************************/
-/* ArduChip related definition 											*/
+/* ArduChip registers definition 											*/
 /****************************************************/
-#define RWBIT					0x80  //READ AND WRITE BIT IS BIT[7]
+#define RWBIT									0x80  //READ AND WRITE BIT IS BIT[7]
 
 #define ARDUCHIP_TEST1       	0x00  //TEST register
-#define ARDUCHIP_TEST2      	0x01  //TEST register
 
-#define ARDUCHIP_FRAMES			  0x01  //Bit[2:0]Number of frames to be captured
+#if !(defined OV2640_MINI_2MP)
+	#define ARDUCHIP_FRAMES			  0x01  //FRAME control register, Bit[2:0] = Number of frames to be captured
+																		//On 5MP_Plus platforms bit[2:0] = 7 means continuous capture until frame buffer is full
+#endif
 
 #define ARDUCHIP_MODE      		0x02  //Mode register
 #define MCU2LCD_MODE       		0x00
@@ -254,13 +267,19 @@
 #define LCD2MCU_MODE       		0x02
 
 #define ARDUCHIP_TIM       		0x03  //Timming control
-#define HREF_LEVEL_MASK    		0x01  //0 = High active , 		1 = Low active
-#define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
-#define LCD_BKEN_MASK      		0x04  //0 = Enable, 			1 = Disable
-#define DELAY_MASK         		0x08  //0 = no delay, 			1 = delay one clock
-#define MODE_MASK          		0x10  //0 = LCD mode, 			1 = FIFO mode
-#define FIFO_PWRDN_MASK	   		0x20  //0 = Normal operation, 	1 = FIFO power down
-#define LOW_POWER_MODE			  0x40  //0 = Normal mode, 		1 = Low power mode
+#if !(defined OV2640_MINI_2MP)
+	#define HREF_LEVEL_MASK    		0x01  //0 = High active , 		1 = Low active
+	#define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
+	#define LCD_BKEN_MASK      		0x04  //0 = Enable, 					1 = Disable
+	#if (defined ARDUCAM_SHIELD_V2)
+		#define PCLK_REVERSE_MASK  	0x08  //0 = Normal PCLK, 		1 = REVERSED PCLK
+	#else
+		#define PCLK_DELAY_MASK  		0x08  //0 = data no delay,		1 = data delayed one PCLK
+	#endif
+	//#define MODE_MASK          		0x10  //0 = LCD mode, 				1 = FIFO mode
+#endif
+//#define FIFO_PWRDN_MASK	   		0x20  	//0 = Normal operation, 1 = FIFO power down
+//#define LOW_POWER_MODE			  0x40  	//0 = Normal mode, 			1 = Low power mode
 
 #define ARDUCHIP_FIFO      		0x04  //FIFO and I2C control
 #define FIFO_CLEAR_MASK    		0x01
@@ -269,8 +288,11 @@
 #define FIFO_WRPTR_RST_MASK     0x20
 
 #define ARDUCHIP_GPIO			  0x06  //GPIO Write Register
-#define GPIO_RESET_MASK			0x01  //0 = default state,		1 =  Sensor reset IO value
-#define GPIO_PWDN_MASK			0x02  //0 = Sensor power down IO value, 1 = Sensor power enable IO value
+#if !(defined (ARDUCAM_SHIELD_V2) || defined (ARDUCAM_SHIELD_REVC))
+#define GPIO_RESET_MASK			0x01  //0 = Sensor reset,							1 =  Sensor normal operation
+#define GPIO_PWDN_MASK			0x02  //0 = Sensor normal operation, 	1 = Sensor standby
+#define GPIO_PWREN_MASK			0x04	//0 = Sensor LDO disable, 			1 = sensor LDO enable
+#endif
 
 #define BURST_FIFO_READ			0x3C  //Burst FIFO read operation
 #define SINGLE_FIFO_READ		0x3D  //Single FIFO read operation
@@ -361,5 +383,61 @@ class ArduCAM
 		byte sensor_addr; 
    
 };
+
+#if defined OV7660_CAM	
+	#include "ov7660_regs.h"
+#endif
+
+#if defined OV7725_CAM	
+	#include "ov7725_regs.h"
+#endif
+
+#if defined OV7670_CAM	
+	#include "ov7670_regs.h"
+#endif
+
+#if defined OV7675_CAM
+	#include "ov7675_regs.h"
+#endif
+
+#if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )	
+	#include "ov5642_regs.h"
+#endif
+
+#if defined OV3640_CAM	
+	#include "ov3640_regs.h"
+#endif
+
+#if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP))
+	#include "ov2640_regs.h"
+#endif
+
+#if defined MT9D111_CAM	
+	#include "mt9d111_regs.h"
+#endif
+
+#if defined MT9M112_CAM	
+	#include "mt9m112_regs.h"
+#endif
+
+#if defined MT9V111_CAM	
+	#include "mt9v111_regs.h"
+#endif
+
+#if ( defined(OV5640_CAM)	|| defined(OV5640_MINI_5MP_PLUS) )
+	#include "ov5640_regs.h"
+#endif
+
+#if defined MT9M001_CAM	
+	#include "mt9m001_regs.h"
+#endif
+
+#if defined MT9T112_CAM	
+	#include "mt9t112_regs.h"
+#endif
+
+#if defined MT9D112_CAM	
+	#include "mt9d112_regs.h"
+#endif
 
 #endif

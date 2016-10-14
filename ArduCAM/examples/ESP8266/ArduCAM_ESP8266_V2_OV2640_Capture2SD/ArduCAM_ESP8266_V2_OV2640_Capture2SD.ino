@@ -2,7 +2,6 @@
 // web: http://www.ArduCAM.com
 // This program is a demo of how to use most of the functions
 // of the library with a supported camera modules, and can run on any Arduino platform.
-//
 // This demo was made for Omnivision OV2640 2MP sensor.
 // It will run the ArduCAM ESP8266 2MP as a real 2MP digital camera, provide both JPEG capture.
 // The demo sketch will do the following tasks:
@@ -10,16 +9,24 @@
 // 2. Capture and buffer the image to FIFO every 5 seconds 
 // 3. Store the image to Micro SD/TF card with JPEG format in sequential.
 // 4. Resolution can be changed by myCAM.set_JPEG_size() function.
-// This program requires the ArduCAM V3.4.0 (or later) library and ArduCAM ESP8266 2MP shield
+// This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM ESP8266 2MP shield
 // and use Arduino IDE 1.5.2 compiler or above
 #include <ArduCAM.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
 #include "memorysaver.h"
+#if !(defined ESP8266 )
+#error Please select the ArduCAM ESP8266 UNO board in the Tools/Board
+#endif
+
+//This demo can only work on OV2640_MINI_2MP or ARDUCAM_SHIELD_V2 platform.
+#if !(defined (OV2640_MINI_2MP)||(defined (ARDUCAM_SHIELD_V2) && defined (OV2640_CAM)))
+#error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
+#endif
 // set GPIO16 as the slave select :
 const int CS = 16;
-// Version 2,set GPIO0 as the slave select:
+//Version 2,set GPIO0 as the slave select :
 const int SD_CS = 0;
 ArduCAM myCAM(OV2640, CS);
 
@@ -54,8 +61,9 @@ void myCAMSaveToSDFile(){
  i = 0;
  myCAM.CS_LOW();
  myCAM.set_fifo_burst();
- temp=SPI.transfer(0x00);
-
+#if !(defined (ARDUCAM_SHIELD_V2) && defined (OV2640_CAM))
+SPI.transfer(0xFF);
+#endif
  //Read JPEG data from FIFO
  while ( (temp !=0xD9) | (temp_last !=0xFF)){
   temp_last = temp;

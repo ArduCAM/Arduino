@@ -115,19 +115,24 @@ uint8_t UTFT::bus_read(int address)
 void UTFT::LCD_Write_COM(char VL)  
 {   
 	bus_write(0xBE, VL);
+	#if defined(ESP8266)
+	yield();
+	   #endif 
 }
 
 void UTFT::LCD_Write_DATA(char VH,char VL)
 {
 	bus_write(0xBF, VH);
   	bus_write(0xBF, VL);
+	#if defined(ESP8266)
+	yield();
+	   #endif 
 }
 
 void UTFT::LCD_Write_COM_DATA(char com1,int dat1)
 {
      LCD_Write_COM(com1);
-     LCD_Write_DATA(dat1>>8,dat1);
-     
+     LCD_Write_DATA(dat1>>8,dat1);   
 }
 
 void UTFT::LCD_Writ_Bus(char VH,char VL)
@@ -138,7 +143,7 @@ void UTFT::LCD_Writ_Bus(char VH,char VL)
 void UTFT::InitLCD(byte orientation)
 {
 	orient=orientation;
-
+    
 	LCD_Write_COM_DATA(0x00,0x0001);
 	LCD_Write_COM_DATA(0x03,0xA8A4);
 	LCD_Write_COM_DATA(0x0C,0x0000);
@@ -181,7 +186,7 @@ void UTFT::InitLCD(byte orientation)
 	LCD_Write_COM_DATA(0x4f,0x0000);
 	LCD_Write_COM_DATA(0x4e,0x0000);
 	LCD_Write_COM(0x22);
-
+     
 	//setColor(255, 255, 255);
 	//setBackColor(0, 0, 0);
 	cfont.font=0;
@@ -197,6 +202,9 @@ void UTFT::setXY(word x1, word y1, word x2, word y2)
 		y1=disp_y_size-y1;
 		y2=disp_y_size-y2;
 		swap(word, y1, y2)
+		#if defined(ESP8266)
+	    yield();
+           #endif 
 	}
 	
 	LCD_Write_COM_DATA(0x44,(x2<<8)+x1);

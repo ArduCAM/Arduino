@@ -51,7 +51,7 @@ body {overflow-x: hidden; font-family: "微软雅黑";}
   <div class="row">
     <nav>
       <div class="nav-wrapper">
-        <div class="brand-logo center">Arducam Mini + ESP8266 Capture Demo</div>
+        <div class="brand-logo center">ArduCAM_ESP8266_OV5642_Capture Demo</div>
       </div>
     </nav>
   </div>
@@ -62,7 +62,7 @@ body {overflow-x: hidden; font-family: "微软雅黑";}
 <div class="container">
   <div class="row">
     <div class="input-field col s12 m4 offset-m4">
-      <input id="cameraIP" type="text" class="validate" value="192.168.1.1">
+      <input id="cameraIP" type="text" class="validate" value="192.168.4.1">
       <label for="cameraIP">Camera IP Address</label>
     </div>
   </div>
@@ -73,17 +73,15 @@ body {overflow-x: hidden; font-family: "微软雅黑";}
   </div>
   <div id="captureBtns" class="row center">
     <p>
-      <a class="waves-effect waves-light btn" onclick="capture(0)">160x120</a>
-      <a class="waves-effect waves-light btn" onclick="capture(1)">176x144</a>
-      <a class="waves-effect waves-light btn" onclick="capture(2)">320x240</a>
-      <a class="waves-effect waves-light btn" onclick="capture(3)">352x288</a>
-      <a class="waves-effect waves-light btn" onclick="capture(4)">640x480</a>
+      <a class="waves-effect waves-light btn" onclick="capture(0)">320x240</a>
+      <a class="waves-effect waves-light btn" onclick="capture(1)">640x480</a>
+      <a class="waves-effect waves-light btn" onclick="capture(2)">1024x768</a>
+      <a class="waves-effect waves-light btn" onclick="capture(3)">1280x960</a>
+      <a class="waves-effect waves-light btn" onclick="capture(4)">1600x1200</a>
     </p>
     <p>
-      <a class="waves-effect waves-light btn" onclick="capture(5)">800x600</a>
-      <a class="waves-effect waves-light btn" onclick="capture(6)">1024x768</a>
-      <a class="waves-effect waves-light btn" onclick="capture(7)">1280x1024</a>
-      <a class="waves-effect waves-light btn" onclick="capture(8)">1600x1200</a>
+      <a class="waves-effect waves-light btn" onclick="capture(5)">2048x1536</a>
+      <a class="waves-effect waves-light btn" onclick="capture(6)">2592x1944</a>
     </p>
   </div>
 </div>

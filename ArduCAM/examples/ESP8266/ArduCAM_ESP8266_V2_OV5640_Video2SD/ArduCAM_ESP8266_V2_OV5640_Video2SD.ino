@@ -23,7 +23,7 @@
 //1C-1F :The size of the avih
 //20-23 :Maintain time per frame picture
 
-// This program requires the ArduCAM V3.4.1 (or later) library and ArduCAM ESP8266 5MP camera
+// This program requires the ArduCAM V4.0.0(or later) library and ArduCAM ESP8266 5MP camera
 // and use Arduino IDE 1.5.8 compiler or above
 
 #include <SD.h>
@@ -31,10 +31,19 @@
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
+#if !(defined ESP8266 )
+#error Please select the ArduCAM ESP8266 UNO board in the Tools/Board
+#endif
+
+//This demo can only work on OV5640_MINI_5MP_PLUS or ARDUCAM_SHIELD_V2 platform.
+#if !(defined (OV5640_MINI_5MP_PLUS)||(defined (ARDUCAM_SHIELD_V2) && defined (OV5640_CAM)))
+#error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
+#endif
 //Vwesion 2, set pin 0 as the slave select for SD:
 #define SD_CS 0
 // set the num of picture
 #define pic_num 200
+#define rate 0x05
 //set pin 16 as the slave select for SPI:
 const int SPI_CS = 16;
 
@@ -43,7 +52,7 @@ unsigned long movi_size = 0;
 unsigned long jpeg_size = 0;
 const char zero_buf[4] = {0x00, 0x00, 0x00, 0x00};
 const char avi_header[AVIOFFSET] PROGMEM ={
-   0x52, 0x49, 0x46, 0x46, 0xD8, 0x01, 0x0E, 0x00, 0x41, 0x56, 0x49, 0x20, 0x4C, 0x49, 0x53, 0x54,
+  0x52, 0x49, 0x46, 0x46, 0xD8, 0x01, 0x0E, 0x00, 0x41, 0x56, 0x49, 0x20, 0x4C, 0x49, 0x53, 0x54,
   0xD0, 0x00, 0x00, 0x00, 0x68, 0x64, 0x72, 0x6C, 0x61, 0x76, 0x69, 0x68, 0x38, 0x00, 0x00, 0x00,
   0xA0, 0x86, 0x01, 0x00, 0x80, 0x66, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00,
   0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -51,7 +60,7 @@ const char avi_header[AVIOFFSET] PROGMEM ={
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4C, 0x49, 0x53, 0x54, 0x84, 0x00, 0x00, 0x00,
   0x73, 0x74, 0x72, 0x6C, 0x73, 0x74, 0x72, 0x68, 0x30, 0x00, 0x00, 0x00, 0x76, 0x69, 0x64, 0x73,
   0x4D, 0x4A, 0x50, 0x47, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x01, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
+  0x01, 0x00, 0x00, 0x00, rate, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x73, 0x74, 0x72, 0x66,
   0x28, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00,
   0x01, 0x00, 0x18, 0x00, 0x4D, 0x4A, 0x50, 0x47, 0x00, 0x84, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -74,7 +83,7 @@ void Video2SD(){
  
   static int i = 0;
   static int k = 0;
-  uint8_t temp, temp_last;
+  uint8_t temp = 0, temp_last = 0;
   unsigned long position = 0;
   uint16_t frame_cnt = 0;
   uint8_t remnant = 0;
@@ -99,6 +108,7 @@ void Video2SD(){
   }
   outFile.write(buf, AVIOFFSET);
   //Write video data
+   Serial.println("Recording video, please wait...");
   for ( frame_cnt = 0; frame_cnt < pic_num; frame_cnt ++)
   {
         yield(); 
@@ -118,9 +128,10 @@ void Video2SD(){
     jpeg_size = 0;
     myCAM.CS_LOW();
     myCAM.set_fifo_burst();
-    temp = SPI.transfer(0x00);  
-    //Read JPEG data from FIFO
-    
+    #if !(defined (ARDUCAM_SHIELD_V2) && defined (OV5640_CAM))
+    SPI.transfer(0xFF);
+    #endif
+    //Read JPEG data from FIFO 
     while ( (temp != 0xD9) | (temp_last != 0xFF))
     {
       temp_last = temp;
@@ -141,6 +152,7 @@ void Video2SD(){
         jpeg_size += 256;
       }
     }
+    
     //Write the remain bytes in the buffer
     if (i > 0)
     {
@@ -148,6 +160,7 @@ void Video2SD(){
       outFile.write(buf, i);
       jpeg_size += i;
     }
+    temp = 0;temp_last =0;
     remnant = (4 - (jpeg_size & 0x00000003)) & 0x00000003;
     jpeg_size = jpeg_size + remnant;
     movi_size = movi_size + jpeg_size;
@@ -172,10 +185,10 @@ void Video2SD(){
   //Serial.println(movi_size, HEX);
 
   //overwrite hdrl
-  unsigned long us_per_frame = 1000000 / 5; //(per_usec); //hdrl.avih.us_per_frame
+  unsigned long us_per_frame = 1000000 / rate; //(per_usec); //hdrl.avih.us_per_frame
   outFile.seek(0x20);
   print_quartet(us_per_frame, outFile);
-  unsigned long max_bytes_per_sec = movi_size * 5/ frame_cnt; //hdrl.avih.max_bytes_per_sec
+  unsigned long max_bytes_per_sec = movi_size * rate/ frame_cnt; //hdrl.avih.max_bytes_per_sec
   outFile.seek(0x24);
   print_quartet(max_bytes_per_sec, outFile);
   //unsigned long tot_frames = framecnt;    //hdrl.avih.tot_frames
@@ -186,9 +199,10 @@ void Video2SD(){
   print_quartet(max_bytes_per_sec, outFile);
   outFile.seek(0xe8);
   print_quartet(movi_size, outFile);// size again
+   myCAM.CS_HIGH();
   //Close the file
   outFile.close();
-  Serial.println("OK");
+ Serial.println("Record video OK");
 }
 void setup(){
   uint8_t vid, pid;
