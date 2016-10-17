@@ -83,97 +83,94 @@ void setup() {
 }
 
 void loop() {
-  uint8_t temp,temp_last;
+  uint8_t temp = 0xff,temp_last = 0;
   uint8_t start_capture = 0;
 
   temp = Serial.read();
   switch(temp)
   {
     case 0:
-      #if defined (OV5640_MINI_5MP_PLUS)
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+    temp = 0xff;
+     myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
-      myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #else
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5642_set_JPEG_size(OV5642_320x240);
+       myCAM.OV5642_set_JPEG_size(OV5642_320x240);
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
        #endif
         break;
       case 1:
+      temp = 0xff;
+       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
        #if defined (OV5640_MINI_5MP_PLUS)
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
        myCAM.OV5640_set_JPEG_size(OV5640_352x288);delay(1000);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #else
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-       myCAM.OV5642_set_JPEG_size(OV5642_640x480);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+       myCAM.OV5642_set_JPEG_size(OV5642_640x480);      
       #endif
+      myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 2:
-       #if defined (OV5640_MINI_5MP_PLUS)
-        myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+      temp = 0xff;
+      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+       #if defined (OV5640_MINI_5MP_PLUS)        
        myCAM.OV5640_set_JPEG_size(OV5640_640x480);delay(1000);
-       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
        #else
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);      
        #endif
+        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 3:
-      #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+      temp = 0xff;
+      #if defined (OV5640_MINI_5MP_PLUS)    
        myCAM.OV5640_set_JPEG_size(OV5640_800x480);delay(1000);
-       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
- 
        #else
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);      
        #endif
+        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 4:
-      #if defined (OV5640_MINI_5MP_PLUS)
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+      #if defined (OV5640_MINI_5MP_PLUS)      
        myCAM.OV5640_set_JPEG_size(OV5640_1024x768);delay(1000);
-       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #else
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);        
       #endif
+      myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
        break;
       case 5:
-      #if defined (OV5640_MINI_5MP_PLUS)
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-       myCAM.OV5640_set_JPEG_size(OV5640_1280x960);delay(1000);
-       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
-      #else
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+      #if defined (OV5640_MINI_5MP_PLUS)   
+       myCAM.OV5640_set_JPEG_size(OV5640_1280x960);delay(1000);
+      #else
+        myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);    
         #endif
+         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
        #if defined (OV5640_MINI_5MP_PLUS)
         case 6:
+        temp = 0xff;
         myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
         myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);delay(1000);
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 7:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
         myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);delay(1000);
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 8:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
         myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);delay(1000);
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       #endif
     case 0x10:
+    temp = 0xff;
       start_capture = 1;  
       Serial.println("ACK CMD CAM start single shot.");
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);//disable low power  

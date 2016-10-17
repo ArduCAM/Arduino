@@ -16,7 +16,7 @@
 //IF the FRAMES_NUM is 0X05, take five photos
 //IF the FRAMES_NUM is 0X06, take six photos
 //IF the FRAMES_NUM is 0X07, continue shooting until the FIFO is full
-//You can see the picture in the SD card.\
+//You can see the picture in the SD card.
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM_Mini_5MP_Plus
 // and use Arduino IDE 1.5.2 compiler or above
 
@@ -111,8 +111,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  uint8_t temp, temp_last;
-  bool is_header = false;
   myCAM.flush_fifo();
   myCAM.clear_fifo_flag();
  #if defined (OV5640_MINI_5MP_PLUS)
@@ -141,14 +139,10 @@ void loop() {
 
 uint8_t read_fifo_burst(ArduCAM myCAM)
 {
-  uint8_t temp, temp_last;
+  uint8_t temp = 0, temp_last = 0;
   uint32_t length = 0;
   static int i = 0;
   static int k = 0;
-  unsigned long position = 0;
-  uint16_t frame_cnt = 0;
-  uint8_t remnant = 0;
-  char quad_buf[4] = {};
   char str[8];
   File outFile;
   byte buf[256]; 
@@ -226,4 +220,5 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     
   }
    myCAM.CS_HIGH();
+   return 1;
 }

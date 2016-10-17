@@ -88,6 +88,7 @@
   2016/06/14  V3.5.1  by Lee  Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.
   2016/09/29  V3.5.2  by Lee  Optimize the OV5642 register settings
 	2016/10/05	V4.0.0	by Lee	Add support for second generation hardware platforms like ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).	  
+	2016/10/17	V4.0.1	by Lee	Add support for Arduino Genuino 101 board	
   --------------------------------------*/
 #include "Arduino.h"
 #include "ArduCAM.h"
@@ -169,6 +170,7 @@ int ArduCAM::bus_write(int address, int value) {
   SPI.transfer(value);
   // take the SS pin high to de-select the chip:
   sbi(P_CS, B_CS);
+  return 1;
 }
 
 //Low level SPI read operation

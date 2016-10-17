@@ -49,16 +49,35 @@
 #define UTFT_cbi(reg, bitmask) digitalWrite(bitmask,LOW)
 #define UTFT_sbi(reg, bitmask) digitalWrite(bitmask,HIGH)
 
-
 #define swap(type, i, j) {type t = i; i = j; j = t;}
 
 #define fontbyte(x) cfont.font[x]  
 
 #define bitmapdatatype unsigned short*
 
-
 #define regtype volatile uint32_t
 #define regsize uint32_t
 
-	
 #endif	
+
+#if defined (__CPU_ARC__)
+#define UTFT_cbi(reg, bitmask) *reg &= ~bitmask
+#define UTFT_sbi(reg, bitmask) *reg |= bitmask
+#define pulse_high(reg, bitmask) UTFT_sbi(reg, bitmask); UTFT_cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) UTFT_cbi(reg, bitmask); UTFT_sbi(reg, bitmask);
+
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+
+#define swap(type, i, j) {type t = i; i = j; j = t;}
+
+#define fontbyte(x) pgm_read_byte(&cfont.font[x])  
+
+#define regtype volatile uint32_t
+#define regsize uint32_t
+#define bitmapdatatype unsigned int*
+#endif
+
+
+
+	

@@ -12,20 +12,21 @@
 // 4. Playback the capture photos one by one when shutter buttom hold on for 3 seconds.
 // This program requires the ArduCAM V4.0.0 (or later) library and ARDUCAM_SHIELD_REVC
 // and use Arduino IDE 1.5.2 compiler or above
-#include <UTFT_SPI.h>
+
 #include <SD.h>
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
+#include <UTFT_SPI.h>
 #include "memorysaver.h"
 
 //This demo was made for Omnivision MT9D111A/MT9D111B/MT9M112/MT9V111_CAM/
 //                                  MT9M001/MT9T112/MT9D112/OV7670/OV7675/
 //                                  OV7725/OV2640/OV5640/OV5642 sensor.
-#if !(defined (ARDUCAM_SHIELD_REVC) && (defined MT9D111A_CAM|| defined MT9D111B_CAM || defined MT9M112_CAM\ 
+#if !(defined (ARDUCAM_SHIELD_REVC) && (defined MT9D111A_CAM|| defined MT9D111B_CAM || defined MT9M112_CAM  \
                                  || defined MT9V111_CAM || defined MT9M001_CAM || defined MT9T112_CAM \
-                                 || defined MT9D112_CAM || defined OV7670_CAM  || defined OV7675_CAM \
-                                 || defined OV7725_CAM  || defined OV2640_CAM  || defined OV5640_CAM \
+                                 || defined MT9D112_CAM || defined OV7670_CAM  || defined OV7675_CAM  \
+                                 || defined OV7725_CAM  || defined OV2640_CAM  || defined OV5640_CAM  \
                                  || defined OV5642_CAM))
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
@@ -41,7 +42,7 @@
  const int SPI_CS =10;
 #endif
 #define BMPIMAGEOFFSET 66
-const char bmp_header[BMPIMAGEOFFSET] PROGMEM =
+const int bmp_header[BMPIMAGEOFFSET] PROGMEM =
 {
   0x42, 0x4D, 0x36, 0x58, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00, 0x28, 0x00,
   0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10, 0x00, 0x03, 0x00,
@@ -82,8 +83,8 @@ UTFT myGLCD(SPI_CS);
 
 void setup()
 {
-  uint8_t vid, pid;
-  uint8_t temp;
+  uint8_t vid = 0, pid = 0;
+  uint8_t temp = 0;
 
 #if defined(__SAM3X8E__)
   Wire1.begin();
@@ -115,6 +116,25 @@ void setup()
   myGLCD.InitLCD();
 
   myCAM.InitCAM();
+  
+   #if defined (OV2640_CAM)
+  //Check if the camera module type is OV2640
+    myCAM.wrSensorReg8_8(0xff, 0x01);
+    myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
+    myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
+    if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 )))
+    Serial.println("Can't find OV2640 module!");
+    else
+    Serial.println("OV2640 detected.");
+ #elif defined (OV5642_CAM)  
+    //Check if the camera module type is OV5642
+    myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
+    myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
+    if ((vid != 0x56) || (pid != 0x42))
+      Serial.println("Can't find OV5642 module!");
+    else
+      Serial.println("OV5642 detected.");
+  #endif
 
   //Initialize SD Card
   if (!SD.begin(SD_CS))
@@ -131,7 +151,6 @@ void loop()
   char str[8];
   unsigned long previous_time = 0;
   static int k = 0;
-  uint8_t temp;
   myCAM.set_mode(CAM2LCD_MODE);		 	//Switch to CAM
 
   while (1)
@@ -172,8 +191,7 @@ void loop()
 void GrabImage(char* str)
 {
   File outFile;
-  char VH, VL;
-  uint8_t temp;
+  char VH = 0, VL = 0;
   byte buf[256];
   static int k = 0;
   int i, j = 0;
@@ -263,8 +281,8 @@ void Playback()
 //Only support RGB565 bmp format
 void dispBitmap(File inFile)
 {
-  char VH, VL;
-  int i, j = 0;
+  char VH = 0, VL = 0;
+  int i = 0, j = 0;
   for (i = 0 ; i < BMPIMAGEOFFSET; i++)
     inFile.read();
   for (i = 0; i < 320; i++)

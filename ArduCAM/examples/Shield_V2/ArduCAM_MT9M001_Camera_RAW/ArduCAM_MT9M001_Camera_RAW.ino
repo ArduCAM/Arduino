@@ -3,6 +3,8 @@
 // This program is a demo of how to use most of the functions
 // of the library with a supported camera modules.
 //
+//This demo is compatible with ESP8266
+//
 // This demo was made for Aptina MT9M001 sensor.
 // It will turn the ArduCAM into a real digital camera with capture and playback functions.
 // 
@@ -30,10 +32,13 @@
   #include <itoa.h>
 #endif
 
-#define SD_CS 9 
-
-// set pin 10 as the slave select for the ArduCAM shield
-const int SPI_CS = 10;
+#if defined(ESP8266)
+ #define SD_CS 0 
+ const int SPI_CS = 16;
+#else 
+ #define SD_CS 9 
+ const int SPI_CS =10;
+#endif
 
 
 ArduCAM myCAM(MT9M001,SPI_CS);
@@ -42,7 +47,7 @@ UTFT myGLCD(SPI_CS);
 void setup()
 {
   uint16_t vid;
-  uint8_t temp; 
+  uint8_t temp = 0; 
   
 #if defined(__SAM3X8E__)
   Wire1.begin();
@@ -99,14 +104,14 @@ void setup()
 void loop()
 {
   char str[8];
-  unsigned long previous_time = 0;
   static int k = 0;
-  uint8_t temp;
   myCAM.set_mode(CAM2LCD_MODE);		 	//Switch to CAM
   
   while(1)
   {
-
+    #if defined(ESP8266)
+     yield();
+    #endif
     if(!myCAM.get_bit(ARDUCHIP_TRIG,VSYNC_MASK))		//New Frame is coming
     {
        myCAM.set_mode(MCU2LCD_MODE);    	//Switch to MCU
@@ -131,8 +136,7 @@ void loop()
 void GrabImage(char* str)
 {
   File outFile;
-  char VH,VL;
-  uint8_t temp;
+  char VL;
   byte buf[256];
   static int k = 0;
   int i,j = 0;
@@ -163,8 +167,11 @@ void GrabImage(char* str)
     for(j = 0; j < 1024; j++)
   {
       VL = myCAM.read_fifo();
-
+      
       buf[k++] = VL;
+      #if defined(ESP8266)
+       yield();
+      #endif
 
       //Write image data to bufer if not full
       if(k >= 256)

@@ -10,16 +10,16 @@
 // 5.Write the video data to the SD card
 // 6.More updates AVI file header
 // 7.close the file
-//The file header introduction
-//00-03 :RIFF
-//04-07 :The size of the data
-//08-0B :File identifier
-//0C-0F :The first list of identification number
-//10-13 :The size of the first list
-//14-17 :The hdr1 of identification
-//18-1B :Hdr1 contains avih piece of identification 
-//1C-1F :The size of the avih
-//20-23 :Maintain time per frame picture
+// The file header introduction
+// 00-03 :RIFF
+// 04-07 :The size of the data
+// 08-0B :File identifier
+// 0C-0F :The first list of identification number
+// 10-13 :The size of the first list
+// 14-17 :The hdr1 of identification
+// 18-1B :Hdr1 contains avih piece of identification 
+// 1C-1F :The size of the avih
+// 20-23 :Maintain time per frame picture
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM_Mini_5MP_Plus
 // and use Arduino IDE 1.5.2 compiler or above
 #include <Wire.h>
@@ -44,7 +44,7 @@ uint32_t total_time = 0;
 unsigned long movi_size = 0;
 unsigned long jpeg_size = 0;
 const char zero_buf[4] = {0x00, 0x00, 0x00, 0x00};
-const char avi_header[AVIOFFSET] PROGMEM ={
+const int avi_header[AVIOFFSET] PROGMEM ={
   0x52, 0x49, 0x46, 0x46, 0xD8, 0x01, 0x0E, 0x00, 0x41, 0x56, 0x49, 0x20, 0x4C, 0x49, 0x53, 0x54,
   0xD0, 0x00, 0x00, 0x00, 0x68, 0x64, 0x72, 0x6C, 0x61, 0x76, 0x69, 0x68, 0x38, 0x00, 0x00, 0x00,
   0xA0, 0x86, 0x01, 0x00, 0x80, 0x66, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00,
@@ -190,7 +190,7 @@ void loop() {
 
 uint8_t read_fifo_burst()
 {  
-  uint8_t temp, temp_last;
+  uint8_t temp = 0, temp_last = 0;
   uint32_t length = 0;
   static int i = 0;
   static int k = 0;
@@ -198,7 +198,6 @@ uint8_t read_fifo_burst()
   uint16_t frame_cnt = 0;
   uint8_t remnant = 0;
    File outFile;
-  char quad_buf[4] = {};
   char str[8];
   byte buf[256]; 
   length = myCAM.read_fifo_length();
@@ -321,4 +320,5 @@ uint8_t read_fifo_burst()
   outFile.close();
   is_header = false;
   Serial.println("Save OK");
+  return 1;
 }

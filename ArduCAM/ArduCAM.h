@@ -87,6 +87,7 @@
 	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
 	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings		
 	2016/10/05	V4.0.0	by Lee	Add support for second generation of ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).				
+	2016/10/17	V4.0.1	by Lee	Add support for Arduino Genuino 101 board	
 --------------------------------------*/
 
 
@@ -97,9 +98,7 @@
 #include <pins_arduino.h>
 #include "memorysaver.h"
 
-
 #if defined (__AVR__)
-
 #define cbi(reg, bitmask) *reg &= ~bitmask
 #define sbi(reg, bitmask) *reg |= bitmask
 #define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
@@ -111,7 +110,6 @@
 #define regtype volatile uint8_t
 #define regsize uint8_t
 #endif
-
 
 #if defined(__arm__)
 
@@ -130,7 +128,6 @@
 #define regtype volatile uint32_t
 #define regsize uint32_t
 #define PROGMEM
-
 
     #define pgm_read_byte(x)        (*((char *)x))
 //  #define pgm_read_word(x)        (*((short *)(x & 0xfffffffe)))
@@ -166,8 +163,20 @@
 
 #define regtype volatile uint32_t
 #define regsize uint32_t
-	
 #endif	
+
+#if defined(__CPU_ARC__)
+#define cbi(reg, bitmask) *reg &= ~bitmask
+#define sbi(reg, bitmask) *reg |= bitmask
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+#define swap(type, i, j) {type t = i; i = j; j = t;}
+#define fontbyte(x) pgm_read_byte(&cfont.font[x])  
+#define regtype volatile uint32_t
+#define regsize uint32_t
+#endif
 
 /****************************************************/
 /* Sensor related definition 												*/

@@ -22,10 +22,10 @@
 //This demo was made for Omnivision MT9D111A/MT9D111B/MT9M112/MT9V111_CAM/
 //                                  MT9M001/MT9T112/MT9D112/OV7670/OV7675/
 //                                  OV7725/OV2640/OV5640/OV5642 sensor.
-#if !(defined ARDUCAM_SHIELD_V2 && (defined MT9D111A_CAM|| defined MT9D111B_CAM || defined MT9M112_CAM\ 
+#if !(defined ARDUCAM_SHIELD_V2 && (defined MT9D111A_CAM|| defined MT9D111B_CAM || defined MT9M112_CAM  \ 
                                  || defined MT9V111_CAM || defined MT9M001_CAM || defined MT9T112_CAM \
-                                 || defined MT9D112_CAM || defined OV7670_CAM  || defined OV7675_CAM \
-                                 || defined OV7725_CAM  || defined OV2640_CAM  || defined OV5640_CAM \
+                                 || defined MT9D112_CAM || defined OV7670_CAM  || defined OV7675_CAM  \
+                                 || defined OV7725_CAM  || defined OV2640_CAM  || defined OV5640_CAM  \
                                  || defined OV5642_CAM))
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
@@ -41,7 +41,7 @@
  const int SPI_CS =10;
 #endif
 #define BMPIMAGEOFFSET 66
-const char bmp_header[BMPIMAGEOFFSET] PROGMEM =
+const int bmp_header[BMPIMAGEOFFSET] PROGMEM =
 {
   0x42, 0x4D, 0x36, 0x58, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00, 0x28, 0x00,
   0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10, 0x00, 0x03, 0x00,
@@ -115,6 +115,25 @@ void setup()
   myGLCD.InitLCD();
 
   myCAM.InitCAM();
+  
+   #if defined (OV2640_CAM)
+  //Check if the camera module type is OV2640
+    myCAM.wrSensorReg8_8(0xff, 0x01);
+    myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
+    myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
+    if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 )))
+    Serial.println("Can't find OV2640 module!");
+    else
+    Serial.println("OV2640 detected.");
+ #elif defined (OV5642_CAM)  
+    //Check if the camera module type is OV5642
+    myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
+    myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
+    if ((vid != 0x56) || (pid != 0x42))
+      Serial.println("Can't find OV5642 module!");
+    else
+      Serial.println("OV5642 detected.");
+  #endif
 
   //Initialize SD Card
   if (!SD.begin(SD_CS))

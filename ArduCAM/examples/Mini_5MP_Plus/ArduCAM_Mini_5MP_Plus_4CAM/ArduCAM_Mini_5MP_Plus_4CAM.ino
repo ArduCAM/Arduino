@@ -152,8 +152,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  uint8_t temp,temp_last;
-  uint8_t start_capture = 0;
+  uint8_t temp=0;
   temp = Serial.read();
   switch(temp)
   {
@@ -457,7 +456,7 @@ void loop() {
 }
 uint8_t read_fifo_burst(ArduCAM myCAM)
 {
-    uint8_t temp,temp_last;
+    uint8_t temp = 0,temp_last = 0;
     uint32_t length = 0;
     length = myCAM.read_fifo_length();
     Serial.print("Length is ");
@@ -486,4 +485,5 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     is_header = false;
     //Clear the capture done flag 
     myCAM.clear_fifo_flag();
+    return 1;
 }

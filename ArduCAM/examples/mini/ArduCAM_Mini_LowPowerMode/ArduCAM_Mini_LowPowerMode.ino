@@ -97,13 +97,14 @@ void setup() {
 }
 
 void loop() {
-  uint8_t temp,temp_last;
+  uint8_t temp = 0xff,temp_last = 0;
   uint8_t start_capture = 0;
 
   temp = Serial.read();
   switch(temp)
   {
     case 0:
+    temp = 0xff;
     myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #if defined (OV2640_MINI_2MP)
         myCAM.OV2640_set_JPEG_size(OV2640_160x120);delay(1000);
@@ -115,6 +116,7 @@ void loop() {
       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 1:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #if defined (OV2640_MINI_2MP)
          myCAM.OV2640_set_JPEG_size(OV2640_176x144);delay(1000);
@@ -126,6 +128,7 @@ void loop() {
          myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 2:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #if defined (OV2640_MINI_2MP)
         myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
@@ -137,6 +140,7 @@ void loop() {
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 3:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #if defined (OV2640_MINI_2MP)
         myCAM.OV2640_set_JPEG_size(OV2640_352x288);delay(1000);
@@ -148,6 +152,7 @@ void loop() {
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 4:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       #if defined (OV2640_MINI_2MP)
         myCAM.OV2640_set_JPEG_size(OV2640_640x480);delay(1000);
@@ -159,6 +164,7 @@ void loop() {
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
        break;
       case 5:
+      temp = 0xff;
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
      #if defined (OV2640_MINI_2MP)
         myCAM.OV2640_set_JPEG_size(OV2640_800x600);delay(1000);
@@ -171,18 +177,21 @@ void loop() {
         break;
        #if defined (OV2640_MINI_2MP)
         case 6:
+        temp = 0xff;
          myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
          myCAM.OV2640_set_JPEG_size(OV2640_1024x768);delay(1000);
          Serial.println("ACK CMD switch to OV2640_1024x768");
          myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
         case 7:
+        temp = 0xff;
         myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         myCAM.OV2640_set_JPEG_size(OV2640_1280x1024);delay(1000);
         Serial.println("ACK CMD switch to OV2640_1280x1024");
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 8:
+      temp = 0xff;
        myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
        myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);delay(1000);
        Serial.println("ACK CMD switch to OV2640_1600x1200");
@@ -190,6 +199,7 @@ void loop() {
         break;
       #endif
       case 0x10:
+      temp = 0xff;
        start_capture = 1;  
       Serial.println("ACK CMD CAM1 start single shot.");
       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);//disable low power  

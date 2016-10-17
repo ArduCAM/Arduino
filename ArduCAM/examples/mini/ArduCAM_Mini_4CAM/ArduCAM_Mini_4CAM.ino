@@ -143,12 +143,12 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  uint8_t temp,temp_last;
-  uint8_t start_capture = 0;
+  uint8_t temp = 0xff;
   temp = Serial.read();
   switch(temp)
   {
     case 0:
+    temp = 0xff;
     #if defined (OV2640_MINI_2MP)
       myCAM1.OV2640_set_JPEG_size(OV2640_160x120);delay(1000);
     #else
@@ -156,6 +156,7 @@ void loop() {
     #endif  
       break;
     case 1:
+    temp = 0xff;
      #if defined (OV2640_MINI_2MP)
       myCAM1.OV2640_set_JPEG_size(OV2640_176x144);delay(1000);
      #else
@@ -163,6 +164,7 @@ void loop() {
       #endif
       break;
     case 2:
+    temp = 0xff;
     #if defined (OV2640_MINI_2MP)
       myCAM1.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
     #else
@@ -170,6 +172,7 @@ void loop() {
     #endif
       break;
     case 3:
+    temp = 0xff;
      #if defined (OV2640_MINI_2MP)
       myCAM1.OV2640_set_JPEG_size(OV2640_352x288);delay(1000);
      #else
@@ -177,6 +180,7 @@ void loop() {
       #endif
       break;
     case 4:
+    temp = 0xff;
     #if defined (OV2640_MINI_2MP)
       myCAM1.OV2640_set_JPEG_size(OV2640_640x480);delay(1000);
     #else
@@ -185,6 +189,7 @@ void loop() {
     #endif
       break;
     case 5:
+    temp = 0xff;
      #if defined (OV2640_MINI_2MP)
       myCAM1.OV2640_set_JPEG_size(OV2640_800x600);delay(1000);
      #else
@@ -194,16 +199,20 @@ void loop() {
       break;
    #if defined (OV2640_MINI_2MP)
     case 6:
+    temp = 0xff;
       myCAM1.OV2640_set_JPEG_size(OV2640_1024x768);delay(1000);
       break;
     case 7:
+    temp = 0xff;
       myCAM1.OV2640_set_JPEG_size(OV2640_1280x1024);delay(1000);
       break;
     case 8:
+    temp = 0xff;
       myCAM1.OV2640_set_JPEG_size(OV2640_1600x1200);delay(1000);
       break;
     #endif
     case 0x15:
+    temp = 0xff;
     if(cam1){
       Serial.println("CAM1 start Capture"); 
       myCAM1.flush_fifo(); 
@@ -366,7 +375,7 @@ void loop() {
 }
 uint8_t read_fifo_burst(ArduCAM myCAM)
 {
-    uint8_t temp,temp_last;
+    uint8_t temp = 0,temp_last = 0;
     uint32_t length = 0;
     length = myCAM.read_fifo_length();
     Serial.print("Length is ");
@@ -397,4 +406,5 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     is_header = false;
     //Clear the capture done flag 
     myCAM.clear_fifo_flag();
+    return 1;
 }

@@ -8,7 +8,7 @@
 #elif defined(__PIC32MX__)
 	#define PROGMEM
 	#define fontdatatype const unsigned char
-#elif defined(__arm__) || defined(ESP8266)
+#elif defined(__arm__) || defined(ESP8266)|| defined(__CPU_ARC__)
 	#define PROGMEM
 	#define fontdatatype const unsigned char
 #endif

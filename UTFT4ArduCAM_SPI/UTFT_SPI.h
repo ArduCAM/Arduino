@@ -195,6 +195,12 @@
 	#include "HW_AVR_SPI_defines.h"
 #endif
 
+#if defined(__CPU_ARC__)
+	#include "Arduino.h"
+	#include "HW_AVR_SPI_defines.h"
+
+#endif
+
 #define BMPIMAGEOFFSET 66
 	
 struct _current_font

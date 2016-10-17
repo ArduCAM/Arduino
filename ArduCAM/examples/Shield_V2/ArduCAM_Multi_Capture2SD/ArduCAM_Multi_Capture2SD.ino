@@ -16,7 +16,7 @@
 //IF the FRAMES_NUM is 0X05, take five photos
 //IF the FRAMES_NUM is 0X06, take six photos
 //IF the FRAMES_NUM is 0X07, continue shooting until the FIFO is full
-//You can see the picture in the SD card.\
+//You can see the picture in the SD card.
 // This program requires the ArduCAM V4.0.0 (or later) library and ARDUCAM_SHIELD_V2
 // and use Arduino IDE 1.5.2 compiler or above
 
@@ -118,7 +118,9 @@ void setup() {
   //Change to JPEG capture mode and initialize the OV5640 module
   myCAM.set_format(JPEG);
   myCAM.InitCAM();
+  #if !(defined (OV2640_CAM)) 
   myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
+  #endif
   myCAM.clear_fifo_flag();
   myCAM.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
 
@@ -126,8 +128,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  uint8_t temp, temp_last;
-  bool is_header = false;
   myCAM.flush_fifo();
   myCAM.clear_fifo_flag();
    #if defined (OV5640_CAM)
@@ -162,14 +162,10 @@ void loop() {
 
 uint8_t read_fifo_burst(ArduCAM myCAM)
 {
-  uint8_t temp, temp_last;
+  uint8_t temp = 0, temp_last = 0;
   uint32_t length = 0;
   static int i = 0;
   static int k = 0;
-  unsigned long position = 0;
-  uint16_t frame_cnt = 0;
-  uint8_t remnant = 0;
-  char quad_buf[4] = {};
   char str[8];
   File outFile;
   byte buf[256]; 
@@ -196,17 +192,17 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     //Read JPEG data from FIFO
     if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
     {
-        buf[i++] = temp;  //save the last  0XD9     
+       buf[i++] = temp;  //save the last  0XD9     
        //Write the remain bytes in the buffer
-        myCAM.CS_HIGH();
+       myCAM.CS_HIGH();
         outFile.write(buf, i);    
       //Close the file
-        outFile.close();
-        Serial.println("OK");
-        is_header = false;
-        myCAM.CS_LOW();
-        myCAM.set_fifo_burst();
-        i = 0;
+       outFile.close();
+       Serial.println("OK");
+       is_header = false;
+       myCAM.CS_LOW();
+       myCAM.set_fifo_burst();
+       i = 0;
     }  
     if (is_header == true)
     { 
@@ -243,8 +239,8 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
       myCAM.set_fifo_burst();   
       buf[i++] = temp_last;
       buf[i++] = temp;   
-    }
-    
+    }  
   }
    myCAM.CS_HIGH();
+   return 1;
 }
