@@ -100,6 +100,7 @@ int UTFT::bus_write(int address, int value)
   SPI.transfer(address);
   SPI.transfer(value);
   UTFT_sbi(P_CS, B_CS);
+  return 1;
 }
 
 uint8_t UTFT::bus_read(int address) 
@@ -840,7 +841,7 @@ void UTFT::printNumF(double num, byte dec, int x, int y, char divider, int lengt
 
 	if (divider != '.')
 	{
-		for (int i=0; i<sizeof(st); i++)
+		for (unsigned int i=0; i<sizeof(st); i++)
 			if (st[i]=='.')
 				st[i]=divider;
 	}
@@ -850,13 +851,13 @@ void UTFT::printNumF(double num, byte dec, int x, int y, char divider, int lengt
 		if (neg)
 		{
 			st[0]='-';
-			for (int i=1; i<sizeof(st); i++)
+			for (unsigned int i=1; i<sizeof(st); i++)
 				if ((st[i]==' ') || (st[i]=='-'))
 					st[i]=filler;
 		}
 		else
 		{
-			for (int i=0; i<sizeof(st); i++)
+			for (unsigned int i=0; i<sizeof(st); i++)
 				if (st[i]==' ')
 					st[i]=filler;
 		}

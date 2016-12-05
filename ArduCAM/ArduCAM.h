@@ -299,8 +299,11 @@
 #define ARDUCHIP_GPIO			  0x06  //GPIO Write Register
 #if !(defined (ARDUCAM_SHIELD_V2) || defined (ARDUCAM_SHIELD_REVC))
 #define GPIO_RESET_MASK			0x01  //0 = Sensor reset,							1 =  Sensor normal operation
+#if !( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )	
 #define GPIO_PWDN_MASK			0x02  //0 = Sensor normal operation, 	1 = Sensor standby
+#endif
 #define GPIO_PWREN_MASK			0x04	//0 = Sensor LDO disable, 			1 = sensor LDO enable
+
 #endif
 
 #define BURST_FIFO_READ			0x3C  //Burst FIFO read operation

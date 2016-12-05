@@ -63,8 +63,8 @@
 #if defined (__CPU_ARC__)
 #define UTFT_cbi(reg, bitmask) *reg &= ~bitmask
 #define UTFT_sbi(reg, bitmask) *reg |= bitmask
-#define pulse_high(reg, bitmask) UTFT_sbi(reg, bitmask); UTFT_cbi(reg, bitmask);
-#define pulse_low(reg, bitmask) UTFT_cbi(reg, bitmask); UTFT_sbi(reg, bitmask);
+//#define pulse_high(reg, bitmask) UTFT_sbi(reg, bitmask); UTFT_cbi(reg, bitmask);
+//#define pulse_low(reg, bitmask) UTFT_cbi(reg, bitmask); UTFT_sbi(reg, bitmask);
 
 #define cport(port, data) port &= data
 #define sport(port, data) port |= data

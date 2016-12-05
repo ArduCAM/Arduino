@@ -22,7 +22,7 @@
 //This demo was made for Omnivision MT9D111A/MT9D111B/MT9M112/MT9V111_CAM/
 //                                  MT9M001/MT9T112/MT9D112/OV7670/OV7675/
 //                                  OV7725/OV2640/OV5640/OV5642 sensor.
-#if !(defined ARDUCAM_SHIELD_V2 && (defined MT9D111A_CAM|| defined MT9D111B_CAM || defined MT9M112_CAM  \ 
+#if !(defined ARDUCAM_SHIELD_V2 && (defined MT9D111A_CAM|| defined MT9D111B_CAM || defined MT9M112_CAM  \
                                  || defined MT9V111_CAM || defined MT9M001_CAM || defined MT9T112_CAM \
                                  || defined MT9D112_CAM || defined OV7670_CAM  || defined OV7675_CAM  \
                                  || defined OV7725_CAM  || defined OV2640_CAM  || defined OV5640_CAM  \
@@ -150,7 +150,7 @@ void loop()
   char str[8];
   unsigned long previous_time = 0;
   static int k = 0;
-  uint8_t temp;
+
   myCAM.set_mode(CAM2LCD_MODE);		 	//Switch to CAM
 
   while (1)
@@ -192,7 +192,6 @@ void GrabImage(char* str)
 {
   File outFile;
   char VH, VL;
-  uint8_t temp;
   byte buf[256];
   static int k = 0;
   int i, j = 0;
@@ -279,8 +278,8 @@ void Playback()
 
 //Only support RGB565 bmp format
 void dispBitmap(File inFile)
-{
-  char VH, VL;
+{ 
+  char VH = 0, VL = 0;
   int i, j = 0;
   for (i = 0 ; i < BMPIMAGEOFFSET; i++)
     inFile.read();
@@ -298,4 +297,3 @@ void dispBitmap(File inFile)
     }
   myGLCD.clrXY();
 }
-

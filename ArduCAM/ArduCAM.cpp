@@ -483,7 +483,7 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 {
   int err = 0;
 
-  unsigned int reg_addr, reg_val;
+  unsigned int reg_addr =0, reg_val = 0;
   const struct sensor_reg *next = reglist;
 
   while ((reg_addr != 0xff) | (reg_val != 0xffff))
@@ -507,8 +507,8 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 {
   int err = 0;
 
-  unsigned int reg_addr;
-  unsigned char reg_val;
+  unsigned int reg_addr = 0;
+  unsigned char reg_val = 0;
   const struct sensor_reg *next = reglist;
 
   while ((reg_addr != 0xffff) | (reg_val != 0xff))
@@ -595,7 +595,7 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
-#if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED) || defined (OV5642_MINI_5MP_PLUS)
+#if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED) || defined (OV5642_MINI_5MP_PLUS)|| defined (OV5642_MINI_5MP)
   uint8_t reg_val;
 
   switch (size)
@@ -745,9 +745,11 @@ void ArduCAM::transferBytes(uint8_t * out, uint8_t * in, uint32_t size) {
 
 void ArduCAM::InitCAM()
 {
-  byte rtn = 0;
+#if !(defined(__CPU_ARC__))
+  byte rtn = 0; 
   byte reg_val;
   uint16_t val;
+ #endif
   switch (sensor_model)
   {
     case OV7660:
