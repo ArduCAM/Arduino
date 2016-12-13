@@ -59,6 +59,7 @@ ArduCAM myCAM(OV5642, SPI_CS);
 #endif
 
 #define AVIOFFSET 240
+  bool is_header = false;
 unsigned long movi_size = 0;
 unsigned long jpeg_size = 0;
 const char zero_buf[4] = {0x00, 0x00, 0x00, 0x00};
@@ -96,6 +97,7 @@ void Video2SD(){
   unsigned long position = 0;
   uint16_t frame_cnt = 0;
   uint8_t remnant = 0;
+  bool is_header = false;
   //Create a avi file
   k = k + 1;
   itoa(k, str, 10);
@@ -147,7 +149,14 @@ void Video2SD(){
       #endif
       temp_last = temp;
       temp = SPI.transfer(0x00); 
-      //Write image data to buffer if not full
+     if ((temp == 0xD8) & (temp_last == 0xFF))//find header
+    {
+      is_header = true;
+      buf[i++] = temp_last;
+      buf[i++] = temp;   
+    } 
+    if (is_header == true){
+           //Write image data to buffer if not full
       if (i < 256)
         buf[i++] = temp;
       else
@@ -160,8 +169,10 @@ void Video2SD(){
         myCAM.CS_LOW();
         myCAM.set_fifo_burst();
         jpeg_size += 256;
-      }
-    }
+      }   
+    } 
+  }
+  buf[i++] = temp;  //save the last  0XD9  
     //Write the remain bytes in the buffer
     if (i > 0)
     {
@@ -170,6 +181,7 @@ void Video2SD(){
       jpeg_size += i;
     }
     temp=0;temp_last=0;
+    is_header == false;
     remnant = (4 - (jpeg_size & 0x00000003)) & 0x00000003;
     jpeg_size = jpeg_size + remnant;
     movi_size = movi_size + jpeg_size;
@@ -283,7 +295,7 @@ void setup(){
     Serial.println("SD Card detected!");
 }
 void loop(){
-  
+  Video2SD();
   delay(5000);
 
 }
