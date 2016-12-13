@@ -42,7 +42,9 @@ void myCAMSaveToSDFile(){
   static int i = 0;
   static int k = 0;
   uint8_t temp = 0, temp_last = 0;
-  File file;
+  uint32_t length = 0;
+  bool is_header = false;
+  File outFile;
   //Flush the FIFO
   myCAM.flush_fifo();
   //Clear the capture done flag
@@ -53,45 +55,78 @@ void myCAMSaveToSDFile(){
  while(!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
  Serial.println("Capture Done!");  
 
+ length = myCAM.read_fifo_length();
+ Serial.print("The fifo length is :");
+ Serial.println(length, DEC);
+  if (length >= MAX_FIFO_SIZE) //8M
+  {
+    Serial.println("Over size.");
+    return 0;
+  }
+    if (length == 0 ) //0 kb
+  {
+    Serial.println("Size is 0.");
+    return 0;
+  }
  //Construct a file name
  k = k + 1;
  itoa(k, str, 10);
  strcat(str, ".jpg");
  //Open the new file
- file = SD.open(str, O_WRITE | O_CREAT | O_TRUNC);
- if(! file){
+ outFile = SD.open(str, O_WRITE | O_CREAT | O_TRUNC);
+ if(! outFile){
   Serial.println("open file faild");
   return;
  }
  i = 0;
  myCAM.CS_LOW();
  myCAM.set_fifo_burst();
- //Read JPEG data from FIFO
- while ( (temp !=0xD9) | (temp_last !=0xFF)){
-  temp_last = temp;
-  temp = SPI.transfer(0x00);
-  //Write image data to buffer if not full
-  if( i < 256)
-   buf[i++] = temp;
-   else{
-    //Write 256 bytes image data to file
-    myCAM.CS_HIGH();
-    file.write(buf ,256);
-    i = 0;
-    buf[i++] = temp;
-    myCAM.CS_LOW();
-    myCAM.set_fifo_burst();
-   }
-   delay(0);  
- }
- 
- //Write the remain bytes in the buffer
- if(i > 0){
-  myCAM.CS_HIGH();
-  file.write(buf,i);
- }
+
+while ( length-- )
+  {
+    temp_last = temp;
+    temp =  SPI.transfer(0x00);
+    //Read JPEG data from FIFO
+    if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
+    {
+        buf[i++] = temp;  //save the last  0XD9     
+       //Write the remain bytes in the buffer
+        myCAM.CS_HIGH();
+        outFile.write(buf, i);    
+      //Close the file
+        outFile.close();
+        Serial.println("OK");
+        is_header = false;
+        myCAM.CS_LOW();
+        myCAM.set_fifo_burst();
+        i = 0;
+    }  
+    if (is_header == true)
+    { 
+       //Write image data to buffer if not full
+        if (i < 256)
+        buf[i++] = temp;
+        else
+        {
+          //Write 256 bytes image data to file
+          myCAM.CS_HIGH();
+          outFile.write(buf, 256);
+          i = 0;
+          buf[i++] = temp;
+          myCAM.CS_LOW();
+          myCAM.set_fifo_burst();
+        }        
+    }
+    else if ((temp == 0xD8) & (temp_last == 0xFF))
+    {
+      is_header = true;
+      buf[i++] = temp_last;
+      buf[i++] = temp;   
+    } 
+  }
+   myCAM.CS_HIGH();
  //Close the file
- file.close();
+ outFile.close();
   Serial.println("CAM Save Done!");
 }
 

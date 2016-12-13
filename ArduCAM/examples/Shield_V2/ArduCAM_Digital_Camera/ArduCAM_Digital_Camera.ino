@@ -70,6 +70,7 @@ ArduCAM myCAM(OV5642, SPI_CS);
 #endif
 UTFT myGLCD(SPI_CS);
 boolean isShowFlag = true;
+  bool is_header = false;
 
 void setup()
 {
@@ -212,30 +213,46 @@ void loop()
     //myCAM.read_fifo();
     
     i = 0;
-    temp = myCAM.read_fifo();
-    //Write first image data to buffer
-    buf[i++] = temp;
-
-    //Read JPEG data from FIFO
-    while( (temp != 0xD9) | (temp_last != 0xFF) )
+     myCAM.CS_LOW();
+     myCAM.set_fifo_burst();
+    while ( (temp != 0xD9) | (temp_last != 0xFF))
     {
+      #if defined (ESP8266)
+      yield();
+      #endif
       temp_last = temp;
-      temp = myCAM.read_fifo();
-      //Write image data to buffer if not full
-      if(i < 256)
+      temp = SPI.transfer(0x00); 
+     if ((temp == 0xD8) & (temp_last == 0xFF))//find header
+    {
+      is_header = true;
+      buf[i++] = temp_last;
+      buf[i++] = temp;   
+    } 
+    if (is_header == true){
+           //Write image data to buffer if not full
+      if (i < 256)
         buf[i++] = temp;
       else
       {
         //Write 256 bytes image data to file
-        outFile.write(buf,256);
+        myCAM.CS_HIGH();
+        outFile.write(buf, 256);
         i = 0;
         buf[i++] = temp;
-      }
-    }
+        myCAM.CS_LOW();
+        myCAM.set_fifo_burst();
+      }   
+    } 
+  }
+  buf[i++] = temp;  //save the last  0XD9  
     //Write the remain bytes in the buffer
-    if(i > 0)
-      outFile.write(buf,i);
-
+    if (i > 0)
+    {
+      myCAM.CS_HIGH();
+      outFile.write(buf, i);
+    }
+    temp=0;temp_last=0;
+    is_header == false;
     //Close the file 
     outFile.close(); 
     total_time = millis() - total_time;
