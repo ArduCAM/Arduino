@@ -34,14 +34,13 @@
 #include "memorysaver.h"
 
 
-//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED
-//or OV5640_MINI_5MP_PLUS or ARDUCAM_SHIELD_V2 platform.
+//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
 #if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP)
   #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 
 #define SD_CS 9
-#define rate 0x05
+#define rate 0x0A
 // set the num of picture
 #define pic_num 200
 //set pin 7 as the slave select for SPI:
@@ -90,6 +89,8 @@ void Video2SD(){
   unsigned long position = 0;
   uint16_t frame_cnt = 0;
   uint8_t remnant = 0;
+  uint32_t length = 0;
+  bool is_header = false;
   //Create a avi file
   k = k + 1;
   itoa(k, str, 10);
@@ -114,7 +115,10 @@ void Video2SD(){
    Serial.println("Recording video, please wait...");
   for ( frame_cnt = 0; frame_cnt < pic_num; frame_cnt ++)
   {
-        yield(); 
+    #if defined (ESP8266)
+    yield();
+    #endif
+    temp_last = 0;temp = 0;
     //Capture a frame            
     //Flush the FIFO
     myCAM.flush_fifo();
@@ -122,45 +126,56 @@ void Video2SD(){
     myCAM.clear_fifo_flag();
     //Start capture
     myCAM.start_capture();
-    //Serial.println("Start Capture");
     while (!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
-    //Serial.println("Capture Done!");
+    length = myCAM.read_fifo_length();
     outFile.write("00dc");
     outFile.write(zero_buf, 4);
     i = 0;
     jpeg_size = 0;
     myCAM.CS_LOW();
     myCAM.set_fifo_burst();
-   temp=SPI.transfer(0x00);
+  while ( length-- )
+  {
+    #if defined (ESP8266)
+      yield();
+      #endif
+    temp_last = temp;
+    temp =  SPI.transfer(0x00);
     //Read JPEG data from FIFO
-    
-    while ( (temp != 0xD9) | (temp_last != 0xFF))
+    if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
     {
-      temp_last = temp;
-      temp = SPI.transfer(0x00); 
-      //Write image data to buffer if not full
-      if (i < 256)
-        buf[i++] = temp;
-      else
-      {
-        //Write 256 bytes image data to file
+        buf[i++] = temp;  //save the last  0XD9     
+       //Write the remain bytes in the buffer
         myCAM.CS_HIGH();
-        outFile.write(buf, 256);
+        outFile.write(buf, i);    
+        is_header = false;
+        jpeg_size += i;
         i = 0;
+    }  
+    if (is_header == true)
+    { 
+       //Write image data to buffer if not full
+        if (i < 256)
         buf[i++] = temp;
-        myCAM.CS_LOW();
-        myCAM.set_fifo_burst();
-        jpeg_size += 256;
-      }
+        else
+        {
+          //Write 256 bytes image data to file
+          myCAM.CS_HIGH();
+          outFile.write(buf, 256);
+          i = 0;
+          buf[i++] = temp;
+          myCAM.CS_LOW();
+          myCAM.set_fifo_burst();
+           jpeg_size += 256;
+        }        
     }
-    //Write the remain bytes in the buffer
-    if (i > 0)
+    else if ((temp == 0xD8) & (temp_last == 0xFF))
     {
-      myCAM.CS_HIGH();
-      outFile.write(buf, i);
-      jpeg_size += i;
-    }
-    temp=0;temp_last=0;
+      is_header = true;
+      buf[i++] = temp_last;
+      buf[i++] = temp;   
+    } 
+  }
     remnant = (4 - (jpeg_size & 0x00000003)) & 0x00000003;
     jpeg_size = jpeg_size + remnant;
     movi_size = movi_size + jpeg_size;
@@ -225,13 +240,13 @@ void setup(){
   }
   #if defined (OV2640_MINI_2MP)
      //Check if the camera module type is OV2640
-     myCAM.wrSensorReg8_8(0xff, 0x01);  
-     myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
-     myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
-     if ((vid != 0x26) || (pid != 0x42))
-      Serial.println("Can't find OV2640 module!");
-     else
-      Serial.println("OV2640 detected.");
+    myCAM.wrSensorReg8_8(0xff, 0x01);
+    myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
+   myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
+   if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 )))
+    Serial.println("Can't find OV2640 module!");
+    else
+    Serial.println("OV2640 detected.");
   #else
    //Check if the camera module type is OV5642
     myCAM.wrSensorReg16_8(0xff, 0x01);

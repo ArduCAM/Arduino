@@ -209,7 +209,7 @@ void loop() {
          Serial.println("ACK CMD switch to OV2640_1280x1024");
       #else
         myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);delay(1000);
-        Serial.println("ACK CMD switch to OV5640_2048x1536")
+        Serial.println("ACK CMD switch to OV5640_2048x1536");
       #endif
         break;
       case 8:
@@ -218,7 +218,7 @@ void loop() {
          Serial.println("ACK CMD switch to OV2640_1600x1200");
       #else
         myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);delay(1000);
-       Serial.println("ACK CMD switch to OV5640_2592x1944")
+       Serial.println("ACK CMD switch to OV5640_2592x1944");
       #endif 
         break;
       #endif

@@ -95,10 +95,8 @@ while ( length-- )
         outFile.write(buf, i);    
       //Close the file
         outFile.close();
-        Serial.println("OK");
+        Serial.println("CAM Save OK!");
         is_header = false;
-        myCAM.CS_LOW();
-        myCAM.set_fifo_burst();
         i = 0;
     }  
     if (is_header == true)
@@ -123,11 +121,7 @@ while ( length-- )
       buf[i++] = temp_last;
       buf[i++] = temp;   
     } 
-  }
-   myCAM.CS_HIGH();
- //Close the file
- outFile.close();
-  Serial.println("CAM Save Done!");
+  } 
 }
 
 void setup(){

@@ -35,7 +35,7 @@
 #include <avr/pgmspace.h>
 #include <SPI.h>
 #include "UTFT_SPI.h"
-#include "math.h"
+#include "EEPROM.h"
 #define LCD_CS 10
 extern uint8_t SmallFont[];
 extern uint8_t BigFont[];
@@ -202,7 +202,7 @@ uint16_t ArduCAM_Touch::TP_Read_AD(uint8_t CMD)
 	return(Num); 	
 }	
 
-#define READ_TIMES 15 	
+#define READ_TIMES 10 	
 #define LOST_VAL 1	  
 uint16_t ArduCAM_Touch::TP_Read_XOY(uint8_t xy)
 {
@@ -230,7 +230,7 @@ uint16_t ArduCAM_Touch::TP_Read_XOY(uint8_t xy)
 } 
 uint8_t ArduCAM_Touch::TP_Read_XY(uint16_t *x,uint16_t *y)
 {
-	uint16_t xtemp,ytemp;			 	 		  
+	uint16_t xtemp,ytemp; 	
 	xtemp=TP_Read_XOY(CMD_RDX);
 	ytemp=TP_Read_XOY(CMD_RDY);	  												   
 	*x=xtemp;
@@ -257,6 +257,12 @@ uint8_t ArduCAM_Touch::TP_Read_XY2(uint16_t *x,uint16_t *y)
 		return 0;	  
 } 
 
+void ArduCAM_Touch::TP_fillRect(int x1, int y1, int x2, int y2, int color)
+{
+	TP_TFT.setColor(color);
+	TP_TFT.fillRect(x1,y1,x2,y2);
+	
+}
 
 void ArduCAM_Touch::TP_Drow_Touch_Point(uint16_t x,uint16_t y,uint16_t color)
 {
@@ -270,9 +276,8 @@ void ArduCAM_Touch::TP_Drow_Touch_Point(uint16_t x,uint16_t y,uint16_t color)
 	TP_TFT.drawCircle(x,y,6);
 }
 
-void ArduCAM_Touch::TP_Draw_Big_Point(uint16_t x,uint16_t y,uint16_t color)
+void ArduCAM_Touch::TP_Draw_Big_Point(uint16_t x,uint16_t y)
 {	    
-	TP_TFT.setColor(color);
     TP_TFT.drawPixel(x,y); 
 	TP_TFT.drawPixel(x+1,y);
 	TP_TFT.drawPixel(x,y+1);
@@ -280,8 +285,7 @@ void ArduCAM_Touch::TP_Draw_Big_Point(uint16_t x,uint16_t y,uint16_t color)
 }	
 
 void ArduCAM_Touch::Load_Drow_Dialog(void)
-{
-	//TP_TFT.clrScr(); 
+{ 
   	TP_TFT.setFont(SmallFont);
  	TP_TFT.setColor(VGA_WHITE); 
 	TP_TFT.print("RST", RIGHT, 20);
@@ -289,23 +293,38 @@ void ArduCAM_Touch::Load_Drow_Dialog(void)
     TP_TFT.setFont(BigFont);	
 }
 
+void ArduCAM_Touch::Drow_menu(void)
+{   	
+ TP_fillRect(280, BOXSIZE*0, 320, BOXSIZE*1, VGA_RED);
+ TP_fillRect(280, BOXSIZE*1, 320, BOXSIZE*2, VGA_YELLOW);
+ TP_fillRect(280, BOXSIZE*2, 320, BOXSIZE*3, VGA_GREEN);
+ TP_fillRect(280, BOXSIZE*3, 320, BOXSIZE*4, VGA_MAROON);
+ TP_fillRect(280, BOXSIZE*4, 320, BOXSIZE*5, VGA_BLUE);
+ TP_TFT.setFont(SmallFont);
+ TP_TFT.setColor(VGA_WHITE); 
+ TP_TFT.print("RST", RIGHT, 220);
+}
 uint8_t ArduCAM_Touch::TP_Scan(uint8_t tp)
 {			   
 	if(dataAvailable())
 	{
-		if(tp){TP_Read_XY2(&x[0],&y[0]);
-		}
-         else if(TP_Read_XY2(&x[0],&y[0]))
+		delay(10);
+		if(dataAvailable())
 		{
-	 		x[0]=xfac*x[0]+xoff;
-			y[0]=yfac*y[0]+yoff;  
-	 	} 
-		if((sta&TP_PRES_DOWN)==0)
-		{		 
-			sta=TP_PRES_DOWN|TP_CATH_PRES;
-			x[4]=x[0];
-			y[4]=y[0];  	   			 
-		}			   
+			if(tp){TP_Read_XY2(&x[0],&y[0]);
+			}
+			 else if(TP_Read_XY2(&x[0],&y[0]))
+			{
+				x[0]=xfac*x[0]+xoff;
+				y[0]=yfac*y[0]+yoff;  
+			} 
+			if((sta&TP_PRES_DOWN)==0)
+			{		 
+				sta=TP_PRES_DOWN|TP_CATH_PRES;
+				x[4]=x[0];
+				y[4]=y[0];  	   			 
+			}
+	    }		
 	}else
 	{
 		if(sta&TP_PRES_DOWN)
@@ -321,7 +340,6 @@ uint8_t ArduCAM_Touch::TP_Scan(uint8_t tp)
 	}
 	return sta;
 }	
-
 int ArduCAM_Touch::myabs(int x)
 {
 	if(x<0)
@@ -347,17 +365,17 @@ void ArduCAM_Touch::TP_Adjust(void)
 	{
 		sta = TP_Scan(1);
 		if((sta&0xc0)==TP_CATH_PRES)
-		{	
-		  
+		{		  
 			outtime=0;		
 			sta&=~(1<<6);
-						   			   
+			TP_TFT.print("x=",40,40);
+			TP_TFT.printNumI(x[0],60,40);	
+            TP_TFT.print("y=",40,60);
+			TP_TFT.printNumI(y[0],60,60);			
 			pos_temp[cnt][0]=x[0];
 			pos_temp[cnt][1]=y[0];
-			Serial.print("the x is");
-			Serial.println(x[0],DEC);
-			Serial.print("the y is");
-			Serial.println(y[0],DEC);
+			
+			
 			cnt++;	  
 			switch(cnt)
 			{			   
@@ -389,8 +407,8 @@ void ArduCAM_Touch::TP_Adjust(void)
 					d2=sqrt(tem1+tem2);
 					
 					fac=(float)d1/d2;
-				
-					if(fac<0.95||fac>1.05||d1==0||d2==0)
+				    Serial.println(fac);
+					if(fac<(1-error)||fac>(1+error)||d1==0||d2==0)
 					{
 						cnt=0;
  				    	TP_Drow_Touch_Point(width-20,height-20,VGA_BLACK);	
@@ -410,8 +428,8 @@ void ArduCAM_Touch::TP_Adjust(void)
 					
 					d2=sqrt(tem1+tem2);
 		            fac=(float)d1/d2;
-				  
-					if(fac<0.95||fac>1.05)
+				    Serial.println(fac);
+					if(fac<(1-error)||fac>(1+error))
 					{
 						cnt=0;
  				    	TP_Drow_Touch_Point(width-20,height-20,VGA_BLACK);	
@@ -433,8 +451,8 @@ void ArduCAM_Touch::TP_Adjust(void)
 					d2=sqrt(tem1+tem2);
 					
 					fac=(float)d1/d2;
-					
-					if(fac<0.95||fac>1.05)
+					Serial.println(fac);
+					if(fac<(1-error)||fac>(1+error))
 					{
 						cnt=0;
  				    	TP_Drow_Touch_Point(width-20,height-20,VGA_BLACK);	
@@ -448,8 +466,11 @@ void ArduCAM_Touch::TP_Adjust(void)
 						  
 					yfac=-(float)(height-40)/(pos_temp[0][1]-pos_temp[2][1]);//yfac
 					
-					yoff=(height-yfac*(pos_temp[2][1]+pos_temp[0][1]))/2;//yoff 
-										
+					yoff=(height-yfac*(pos_temp[2][1]+pos_temp[0][1]))/2;//yoff
+					
+					TP_Save_Adjdata();
+					EEPROM.write(16, 0x0a);   
+												
 					if(myabs(xfac)>2||myabs(yfac)>2)
 					{
 						cnt=0;
@@ -459,8 +480,8 @@ void ArduCAM_Touch::TP_Adjust(void)
 						touchtype=!touchtype;
 						if(touchtype)
 						{
-							CMD_RDX=0X90;
-							CMD_RDY=0XD0;	 
+						  CMD_RDX=0X90;
+						  CMD_RDY=0XD0;	 
 						}else				   
 						{
 							CMD_RDX=0XD0;
@@ -468,8 +489,9 @@ void ArduCAM_Touch::TP_Adjust(void)
 						}			    
 						continue;
 					}		
+					TP_TFT.setColor(VGA_BLACK);
+					TP_TFT.print("Please adjust!", 60, 120);
 					TP_TFT.setColor(VGA_YELLOW);
-					TP_TFT.clrScr(); 
 					TP_TFT.print("Adjust OK!", 60, 120);
  					TP_TFT.clrScr();
 					return;				 
@@ -479,10 +501,48 @@ void ArduCAM_Touch::TP_Adjust(void)
 		outtime++;
 		if(outtime>1000)
 		{
-		   outtime = 0;
+		  TP_Get_Adjdata();
+		  TP_TFT.setColor(VGA_BLACK);
+		  TP_TFT.print("Please adjust!", 60, 120);
+		  TP_TFT.setColor(VGA_YELLOW);
+		  TP_TFT.print("Adjust OK!", 60, 120);
+		  TP_TFT.clrScr();
+		  break;
 	 	} 
  	}
 }
-	
+
+void ArduCAM_Touch::TP_Save_Adjdata(void){
+	uint8_t i = 0;
+	col_xfac.val = xfac;
+	for(i=0;i<4;i++)
+    EEPROM.write(i, col_xfac.buf[i]);   
+	col_yfac.val = yfac;
+	for(i=0;i<4;i++)
+    EEPROM.write(i+4, col_yfac.buf[i]);  
+	col_xoff.val = xoff;
+	for(i=0;i<4;i++)
+    EEPROM.write(i+8, col_xoff.buf[i]); 
+    col_yoff.val = yoff;
+    for(i=0;i<4;i++)
+    EEPROM.write(i+12, col_yoff.buf[i]);	
+}
+uint8_t ArduCAM_Touch::TP_Get_Adjdata(void)
+{
+	uint8_t i = 0;
+	for(i=0;i<4;i++)
+    col_xfac.buf[i] = EEPROM.read(i);
+    xfac = col_xfac.val;
+	for(i=0;i<4;i++)
+    col_yfac.buf[i] = EEPROM.read(i+4);
+    yfac = col_yfac.val;
+	for(i=0;i<4;i++)
+    col_xoff.buf[i] = EEPROM.read(i+8);
+    xoff = col_xoff.val; 
+    for(i=0;i<4;i++)
+    col_yoff.buf[i] = EEPROM.read(i+12);
+    yoff = col_yoff.val;
+	return 1;
+}
 
 

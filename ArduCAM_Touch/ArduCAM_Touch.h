@@ -36,10 +36,19 @@
 #define PREC_EXTREME	4
 
 
-#define TP_PRES_DOWN 0x80  		//触屏被按下	  
-#define TP_CATH_PRES 0x40  		//有按键按下了 
-#define CT_MAX_TOUCH  5    		//电容屏支持的点数，固定位5点
 
+#define TP_PRES_DOWN 0x80  			  
+#define TP_CATH_PRES 0x40  		
+#define CT_MAX_TOUCH  5  
+
+#define error 0.05
+
+#define BOXSIZE 40
+union data
+		{
+		   float val;
+		   byte buf[4];
+		};
 
 class ArduCAM_Touch
 {
@@ -55,10 +64,16 @@ class ArduCAM_Touch
 		int		getY();
 		void	setPrecision(byte precision);
 		
+		data col_xfac;   
+		data col_yfac;
+		data col_xoff;   
+		data col_yoff;
+		
+		
+		
+		
 		uint8_t CMD_RDX=0X90;
         uint8_t CMD_RDY=0XD0;
-		
-		
 		
 		uint16_t width  = 320;
 		uint16_t height = 240;
@@ -71,25 +86,25 @@ class ArduCAM_Touch
 		short yoff;	   
 		uint8_t touchtype =0;
 		
-	    void TP_Write_Byte(uint8_t num);	//向控制芯片写入一个数据
-		uint16_t TP_Read_AD(uint8_t CMD);	//读取AD转换值
-		uint16_t TP_Read_XOY(uint8_t xy);   //带滤波的坐标读取（X/Y）
-		uint8_t TP_Read_XY(uint16_t *x,uint16_t *y);	//双方向读取（X+Y）
-		uint8_t TP_Read_XY2(uint16_t *x,uint16_t *y);	//带加强滤波的双方向坐标读取
-		void TP_Drow_Touch_Point(uint16_t x,uint16_t y,uint16_t color);//画一个坐标校准点
-		void TP_Draw_Big_Point(uint16_t x,uint16_t y,uint16_t color);	//画一个大点
+	    void TP_Write_Byte(uint8_t num);	
+		uint16_t TP_Read_AD(uint8_t CMD);	
+		uint16_t TP_Read_XOY(uint8_t xy);   
+		uint8_t TP_Read_XY(uint16_t *x,uint16_t *y);	
+		uint8_t TP_Read_XY2(uint16_t *x,uint16_t *y);	
+		void TP_Drow_Touch_Point(uint16_t x,uint16_t y,uint16_t color);
+		void TP_Draw_Big_Point(uint16_t x,uint16_t y);	
 		void Load_Drow_Dialog(void);
-		void TP_Save_Adjdata(void);		//保存校准参数
-		uint8_t TP_Get_Adjdata(void);	//读取校准参数
+	    void TP_fillRect(int x1, int y1, int x2, int y2, int color);
+		void TP_clrSrc(void);
+		void Drow_menu(void);
+		void TP_Save_Adjdata(void);		
+		uint8_t TP_Get_Adjdata(void);	
 		int myabs(int x);
-		void TP_Adjust(void);			//触摸屏校准
+		void TP_Adjust(void);			 
 		void TP_Adj_Info_Show(uint16_t x0,uint16_t y0,uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint16_t x3,uint16_t y3,uint16_t fac);//ÏÔÊ¾Ð£×¼ÐÅÏ¢
-		//显示校准信息
-		uint8_t TP_Scan(uint8_t tp);		//按键扫描
-		uint8_t TP_Init(void);			    //初始化
+		uint8_t TP_Scan(uint8_t tp);		
+		uint8_t TP_Init(void);			 
 		
-		
-    
     private:
 		byte	T_CS, T_IRQ;
 		byte	orient;

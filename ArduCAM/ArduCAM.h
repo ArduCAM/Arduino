@@ -7,14 +7,15 @@
   http://www.ArduCAM.com
 
   Now supported controllers:
-		-	OV7670
-		-	MT9D111
-		-	OV7675
-		-	OV2640
-		-	OV3640
-		-	OV5642
-		-	OV7660
-		-	OV7725
+		- OV7670
+		- MT9D111
+		- OV7675
+		- OV2640
+		- OV3640
+		- OV5642
+		- OV5640
+		- OV7660
+		- OV7725
 		- MT9M112		
 		- MT9V111
 		- OV5640		
@@ -87,16 +88,18 @@
 	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
 	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings		
 	2016/10/05	V4.0.0	by Lee	Add support for second generation of ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).				
-	2016/10/17	V4.0.1	by Lee	Add support for Arduino Genuino 101 board	
+  2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi
 --------------------------------------*/
-
 
 #ifndef ArduCAM_H
 #define ArduCAM_H
-
-#include "Arduino.h"
-#include <pins_arduino.h>
 #include "memorysaver.h"
+#if defined ( RASPBERRY_PI ) 
+#else
+	#include "Arduino.h"
+	#include <pins_arduino.h>
+	#include "memorysaver.h"
+#endif
 
 #if defined (__AVR__)
 #define cbi(reg, bitmask) *reg &= ~bitmask
@@ -111,10 +114,11 @@
 #define regsize uint8_t
 #endif
 
-#if defined(__arm__)
+#if defined(__SAM3X8E__)
 
 #define cbi(reg, bitmask) *reg &= ~bitmask
 #define sbi(reg, bitmask) *reg |= bitmask
+
 #define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
 #define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
 
@@ -122,61 +126,77 @@
 #define sport(port, data) port |= data
 
 #define swap(type, i, j) {type t = i; i = j; j = t;}
-
 #define fontbyte(x) cfont.font[x]  
 
 #define regtype volatile uint32_t
 #define regsize uint32_t
+
 #define PROGMEM
 
-    #define pgm_read_byte(x)        (*((char *)x))
-//  #define pgm_read_word(x)        (*((short *)(x & 0xfffffffe)))
-    #define pgm_read_word(x)        ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
-    #define pgm_read_byte_near(x)   (*((char *)x))
-    #define pgm_read_byte_far(x)    (*((char *)x))
-//  #define pgm_read_word_near(x)   (*((short *)(x & 0xfffffffe))
-//  #define pgm_read_word_far(x)    (*((short *)(x & 0xfffffffe)))
-    #define pgm_read_word_near(x)   ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
-    #define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
-    #define PSTR(x)  x
-  #if defined F
-    #undef F
-  #endif
-  #define F(X) (X)
-
-	
+#define pgm_read_byte(x)        (*((char *)x))
+#define pgm_read_word(x)        ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
+#define pgm_read_byte_near(x)   (*((char *)x))
+#define pgm_read_byte_far(x)    (*((char *)x))
+#define pgm_read_word_near(x)   ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
+#define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
+#define PSTR(x)  x
+#if defined F
+	#undef F
+#endif
+#define F(X) (X)	
 #endif	
 
 #if defined(ESP8266)
-
-#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
-#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
-#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-
-#define cport(port, data) port &= data
-#define sport(port, data) port |= data
-
-#define swap(type, i, j) {type t = i; i = j; j = t;}
-
-#define fontbyte(x) cfont.font[x]  
-
-#define regtype volatile uint32_t
-#define regsize uint32_t
+	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+	#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+	#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+	#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+	
+	#define cport(port, data) port &= data
+	#define sport(port, data) port |= data
+	
+	#define swap(type, i, j) {type t = i; i = j; j = t;}
+	
+	#define fontbyte(x) cfont.font[x]  
+	
+	#define regtype volatile uint32_t
+	#define regsize uint32_t
 #endif	
 
 #if defined(__CPU_ARC__)
-#define cbi(reg, bitmask) *reg &= ~bitmask
-#define sbi(reg, bitmask) *reg |= bitmask
-#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
-#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
-#define cport(port, data) port &= data
-#define sport(port, data) port |= data
-#define swap(type, i, j) {type t = i; i = j; j = t;}
-#define fontbyte(x) pgm_read_byte(&cfont.font[x])  
-#define regtype volatile uint32_t
-#define regsize uint32_t
+	#define cbi(reg, bitmask) *reg &= ~bitmask
+	#define sbi(reg, bitmask) *reg |= bitmask
+	#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+	#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+	#define cport(port, data) port &= data
+	#define sport(port, data) port |= data
+	#define swap(type, i, j) {type t = i; i = j; j = t;}
+	#define fontbyte(x) pgm_read_byte(&cfont.font[x])  
+	#define regtype volatile uint32_t
+	#define regsize uint32_t
 #endif
+
+#if defined (RASPBERRY_PI)
+	#define regtype volatile uint32_t
+	#define regsize uint32_t 
+	#define byte uint8_t
+	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+  #define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+  #define PROGMEM
+	//#define pgm_read_byte(x)        (*((char *)x))
+	//#define pgm_read_word(x)        ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
+	//#define pgm_read_byte_near(x)   (*((char *)x))
+	//#define pgm_read_byte_far(x)    (*((char *)x))
+	//#define pgm_read_word_near(x)   ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
+	//#define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
+	
+	#define PSTR(x)  x
+	#if defined F
+	#undef F
+	#endif
+	#define F(X) (X)
+#endif
+
 
 /****************************************************/
 /* Sensor related definition 												*/
@@ -266,8 +286,7 @@
 #define ARDUCHIP_TEST1       	0x00  //TEST register
 
 #if !(defined OV2640_MINI_2MP)
-	#define ARDUCHIP_FRAMES			  0x01  //FRAME control register, Bit[2:0] = Number of frames to be captured
-																		//On 5MP_Plus platforms bit[2:0] = 7 means continuous capture until frame buffer is full
+	#define ARDUCHIP_FRAMES			  0x01  //FRAME control register, Bit[2:0] = Number of frames to be captured																		//On 5MP_Plus platforms bit[2:0] = 7 means continuous capture until frame buffer is full
 #endif
 
 #define ARDUCHIP_MODE      		0x02  //Mode register
@@ -299,11 +318,8 @@
 #define ARDUCHIP_GPIO			  0x06  //GPIO Write Register
 #if !(defined (ARDUCAM_SHIELD_V2) || defined (ARDUCAM_SHIELD_REVC))
 #define GPIO_RESET_MASK			0x01  //0 = Sensor reset,							1 =  Sensor normal operation
-#if !( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )	
 #define GPIO_PWDN_MASK			0x02  //0 = Sensor normal operation, 	1 = Sensor standby
-#endif
 #define GPIO_PWREN_MASK			0x04	//0 = Sensor LDO disable, 			1 = sensor LDO enable
-
 #endif
 
 #define BURST_FIFO_READ			0x3C  //Burst FIFO read operation
@@ -334,66 +350,89 @@ struct sensor_reg {
 	uint16_t val;
 };
 
-class ArduCAM
+
+
+/****************************************************************/
+/* define a structure for sensor register initialization values */
+/****************************************************************/
+
+class ArduCAM 
 {
 	public:
-		ArduCAM();
-		ArduCAM(byte model,int CS);
-		void InitCAM();
-		
-		void CS_HIGH(void);
-		void CS_LOW(void);
-		
-		void flush_fifo(void);
-		void start_capture(void);
-		void clear_fifo_flag(void);
-		uint8_t read_fifo(void);
-		
-		uint8_t read_reg(uint8_t addr);
-		void write_reg(uint8_t addr, uint8_t data);
+	ArduCAM( void );
+	ArduCAM(byte model ,int CS);
+	void InitCAM( void );
+	
+	void CS_HIGH(void);
+	void CS_LOW(void);
+	
+	void flush_fifo(void);
+	void start_capture(void);
+	void clear_fifo_flag(void);
+	uint8_t read_fifo(void);
+	
+	uint8_t read_reg(uint8_t addr);
+	void write_reg(uint8_t addr, uint8_t data);	
+	
+	uint32_t read_fifo_length(void);
+	void set_fifo_burst(void);
+	
+	void set_bit(uint8_t addr, uint8_t bit);
+	void clear_bit(uint8_t addr, uint8_t bit);
+	uint8_t get_bit(uint8_t addr, uint8_t bit);
+	void set_mode(uint8_t mode);
+ 
+  uint8_t bus_write(int address, int value);
+	uint8_t bus_read(int address);	
+ 
+	// Write 8 bit values to 8 bit register address
+	int wrSensorRegs8_8(const struct sensor_reg*);
+	
+	// Write 16 bit values to 8 bit register address
+	int wrSensorRegs8_16(const struct sensor_reg*);
+	
+	// Write 8 bit values to 16 bit register address
+	int wrSensorRegs16_8(const struct sensor_reg*);
+	
+  // Write 16 bit values to 16 bit register address
+	int wrSensorRegs16_16(const struct sensor_reg*);
+	
+	// Read/write 8 bit value to/from 8 bit register address	
+	byte wrSensorReg8_8(int regID, int regDat);
+	byte rdSensorReg8_8(uint8_t regID, uint8_t* regDat);
+	
+	// Read/write 16 bit value to/from 8 bit register address
+	byte wrSensorReg8_16(int regID, int regDat);
+	byte rdSensorReg8_16(uint8_t regID, uint16_t* regDat);
+	
+	// Read/write 8 bit value to/from 16 bit register address
+	byte wrSensorReg16_8(int regID, int regDat);
+	byte rdSensorReg16_8(uint16_t regID, uint8_t* regDat);
+	
+	// Read/write 16 bit value to/from 16 bit register address
+	byte wrSensorReg16_16(int regID, int regDat);
+	byte rdSensorReg16_16(uint16_t regID, uint16_t* regDat);
 
-		uint32_t read_fifo_length(void);
-		void set_fifo_burst(void);
-		void set_bit(uint8_t addr, uint8_t bit);
-		void clear_bit(uint8_t addr, uint8_t bit);
-		uint8_t get_bit(uint8_t addr, uint8_t bit);
-		void set_mode(uint8_t mode);
-		
-		int wrSensorRegs(const struct sensor_reg*);
-		int wrSensorRegs8_8(const struct sensor_reg*);
-		int wrSensorRegs8_16(const struct sensor_reg*);
-		int wrSensorRegs16_8(const struct sensor_reg*);
-		int wrSensorRegs16_16(const struct sensor_reg*);
-		
-		byte wrSensorReg(int regID, int regDat);
-		byte wrSensorReg8_8(int regID, int regDat);
-		byte wrSensorReg8_16(int regID, int regDat);
-		byte wrSensorReg16_8(int regID, int regDat);
-		byte wrSensorReg16_16(int regID, int regDat);
-		
-		byte rdSensorReg8_8(uint8_t regID, uint8_t* regDat);
-		byte rdSensorReg16_8(uint16_t regID, uint8_t* regDat);
-		byte rdSensorReg8_16(uint8_t regID, uint16_t* regDat);
-		byte rdSensorReg16_16(uint16_t regID, uint16_t* regDat);
-		
-		void OV2640_set_JPEG_size(uint8_t size);
-		void OV5642_set_JPEG_size(uint8_t size);
-		void OV5640_set_JPEG_size(uint8_t size);
-		void set_format(byte fmt);
-		
-		void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
-    void transferBytes(uint8_t * out, uint8_t * in, uint32_t size);
-    inline void setDataBits(uint16_t bits);
-    
-		int bus_write(int address, int value);
-		uint8_t bus_read(int address);	
-	protected:
-		regtype *P_CS;
-		regsize B_CS;
-  		byte m_fmt;
-		byte sensor_model;
-		byte sensor_addr; 
-   
+	void OV2640_set_JPEG_size(uint8_t size);
+	void OV5642_set_JPEG_size(uint8_t size);
+	void OV5640_set_JPEG_size(uint8_t size);
+	void set_format(byte fmt);
+	
+	#if defined (RASPBERRY_PI)
+    uint8_t transfer(uint8_t data);
+	void transfers(uint8_t *buf, uint32_t size);
+    #endif
+
+	void transferBytes_(uint8_t * out, uint8_t * in, uint8_t size);
+	void transferBytes(uint8_t * out, uint8_t * in, uint32_t size);
+	inline void setDataBits(uint16_t bits);
+	
+  protected:
+	regtype *P_CS;
+	regsize B_CS;
+	byte m_fmt;
+	byte sensor_model;
+	byte sensor_addr;
 };
 
 #if defined OV7660_CAM	
@@ -451,5 +490,7 @@ class ArduCAM
 #if defined MT9D112_CAM	
 	#include "mt9d112_regs.h"
 #endif
+
+
 
 #endif

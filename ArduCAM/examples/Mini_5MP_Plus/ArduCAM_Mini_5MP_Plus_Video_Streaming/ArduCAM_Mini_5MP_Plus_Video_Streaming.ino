@@ -106,8 +106,7 @@ void loop() {
     temp = Serial.read();
     switch (temp)
     {
-      case 0:
-      temp = 0xff;
+       case 0:
       #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
       Serial.println("ACK CMD switch to OV5640_320x240");
@@ -115,9 +114,9 @@ void loop() {
         myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
         Serial.println("ACK CMD switch to OV5642_320x240");
        #endif
+       temp=0xff;
         break;
       case 1:
-       temp = 0xff;
        #if defined (OV5640_MINI_5MP_PLUS)
        myCAM.OV5640_set_JPEG_size(OV5640_352x288);delay(1000);
        Serial.println("ACK CMD switch to OV5640_352x288");
@@ -125,64 +124,70 @@ void loop() {
        myCAM.OV5642_set_JPEG_size(OV5642_640x480);delay(1000);
        Serial.println("ACK CMD switch to OV5642_640x480");
       #endif
+      temp=0xff;
         break;
       case 2:
-       temp = 0xff;
        #if defined (OV5640_MINI_5MP_PLUS)
        myCAM.OV5640_set_JPEG_size(OV5640_640x480);delay(1000);
        Serial.println("ACK CMD switch to OV5640_640x480");
        #else
-        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_1280x960");
+        myCAM.OV5642_set_JPEG_size(OV5642_1024x768);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_1024x768");
        #endif
+       temp=0xff;
         break;
       case 3:
-       temp = 0xff;
       #if defined (OV5640_MINI_5MP_PLUS)
        myCAM.OV5640_set_JPEG_size(OV5640_800x480);delay(1000);
        Serial.println("ACK CMD switch to OV5640_800x480");
        #else
-        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_1600x1200");
+        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_1280x960");
        #endif
+       temp=0xff;
         break;
       case 4:
-       temp = 0xff;
       #if defined (OV5640_MINI_5MP_PLUS)
        myCAM.OV5640_set_JPEG_size(OV5640_1024x768);delay(1000);
        Serial.println("ACK CMD switch to OV5640_1024x768");
       #else
-        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_2048x1536");
+        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_1600x1200");
       #endif
+      temp=0xff;
        break;
       case 5:
-       temp = 0xff;
       #if defined (OV5640_MINI_5MP_PLUS)
        myCAM.OV5640_set_JPEG_size(OV5640_1280x960);delay(1000);
        Serial.println("ACK CMD switch to OV5640_1280x960");
       #else
+        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_2048x1536");
+        #endif
+        temp=0xff;
+        break;
+        case 6:
+         #if defined (OV5640_MINI_5MP_PLUS)
+        myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);delay(1000);
+        Serial.println("ACK CMD switch to OV5640_1600x1200");
+        #else
         myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);
         Serial.println("ACK CMD switch to OV5642_2592x1944");
         #endif
+        temp=0xff;
         break;
-       #if defined (OV5640_MINI_5MP_PLUS)
-        case 6:
-         temp = 0xff;
-        myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);delay(1000);
-        Serial.println("ACK CMD switch to OV5640_1600x1200");
-        break;
+     #if defined (OV5640_MINI_5MP_PLUS)
       case 7:
-       temp = 0xff;
         myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);delay(1000);
         Serial.println("ACK CMD switch to OV5640_2048x1536");
+        temp=0xff;
         break;
       case 8:
-       temp = 0xff;
         myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);delay(1000);
           Serial.println("ACK CMD switch to OV5640_2592x1944");
+          temp=0xff;
         break;
-      #endif
+     #endif
       case 0x10:
         mode = 1;
         start_capture = 1;
@@ -264,6 +269,7 @@ void loop() {
           else if ((temp == 0xD8) & (temp_last == 0xFF))
           {
             is_header = true;
+			Serial.println("ACK IMG");
             Serial.write(temp_last);
             Serial.write(temp);
           }
@@ -310,7 +316,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     else if ((temp == 0xD8) & (temp_last == 0xFF))
     {
       is_header = true;
-       Serial.println("ACK IMG");
+      Serial.println("ACK IMG");
       Serial.write(temp_last);
       Serial.write(temp);
     }

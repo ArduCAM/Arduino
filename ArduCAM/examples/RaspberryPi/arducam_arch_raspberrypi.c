@@ -64,11 +64,12 @@ void arducam_spi_transfers(uint8_t *buf, uint32_t size)
 	 wiringPiSPIDataRW (SPI_ARDUCAM, buf, size) ;
 }
 
-void arducam_spi_transfer(uint8_t data)
+uint8_t arducam_spi_transfer(uint8_t data)
 {
 	uint8_t spiData [1] ;
 	 spiData [0] = data ;
 	 wiringPiSPIDataRW (SPI_ARDUCAM, spiData, 1) ;
+	 return spiData [0];
 }
 
 uint8_t arducam_i2c_write(uint8_t regID, uint8_t regDat)
@@ -152,8 +153,10 @@ int arducam_i2c_write_regs(const struct sensor_reg reglist[])
 
 	while ((reg_addr != 0xff) | (reg_val != 0xff))
 	{
-		reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
+		//reg_addr = pgm_read_word(&next->reg);
+		//reg_val = pgm_read_word(&next->val);
+		reg_addr = next->reg;
+		reg_val = next->val;
 		if (!arducam_i2c_write(reg_addr, reg_val)) {
 			return 0;
 		}
@@ -171,8 +174,10 @@ int arducam_i2c_write_regs16(const struct sensor_reg reglist[])
 
 	while ((reg_addr != 0xff) | (reg_val != 0xffff))
 	{
-		reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
+		//reg_addr = pgm_read_word(&next->reg);
+		//reg_val = pgm_read_word(&next->val);
+		reg_addr = next->reg;
+		reg_val = next->val;
 		if (!arducam_i2c_write16(reg_addr, reg_val)) {
 			return 0;
 		}
@@ -189,8 +194,10 @@ int arducam_i2c_write_word_regs(const struct sensor_reg reglist[])
 
 	while ((reg_addr != 0xffff) | (reg_val != 0xff))
 	{
-		reg_addr = pgm_read_word(&next->reg);
-		reg_val =  pgm_read_word(&next->val);
+		//reg_addr = pgm_read_word(&next->reg);
+		//reg_val =  pgm_read_word(&next->val);
+		reg_addr = next->reg;
+		reg_val = next->val;
 		//if (!arducam_i2c_write16(reg_addr, reg_val)) 
 		
 		 //My changed

@@ -22,6 +22,7 @@
 #endif
 // set pin 7 as the slave select for the digital pot:
 const int CS = 7;
+static uint8_t resolution = 0;
 #if defined (OV5640_MINI_5MP_PLUS)
 ArduCAM myCAM(OV5640, CS);
 #else
@@ -79,7 +80,8 @@ void setup() {
   
   myCAM.clear_fifo_flag();
   myCAM.write_reg(ARDUCHIP_FRAMES,0x00);
-  myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);//enable low power
+  myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+   delay(800);
 }
 
 void loop() {
@@ -91,89 +93,111 @@ void loop() {
   {
     case 0:
     temp = 0xff;
-     myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+     myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
      #if defined (OV5640_MINI_5MP_PLUS)
-      myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
+      myCAM.OV5640_set_JPEG_size(OV5640_320x240);  
+	  Serial.println("ACK CMD switch to OV5640_320x240");delay(1000);
       #else
        myCAM.OV5642_set_JPEG_size(OV5642_320x240);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+	    Serial.println("ACK CMD switch to OV5642_320x240");delay(1000);
        #endif
+       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 1:
       temp = 0xff;
-       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-       #if defined (OV5640_MINI_5MP_PLUS)
-       myCAM.OV5640_set_JPEG_size(OV5640_352x288);delay(1000);
-      #else
-       myCAM.OV5642_set_JPEG_size(OV5642_640x480);      
-      #endif
-      myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+     #if defined (OV5640_MINI_5MP_PLUS)  
+     myCAM.OV5640_set_JPEG_size(OV5640_352x288);
+	   Serial.println("ACK CMD switch to OV5640_352x288");delay(1000);
+    #else
+     myCAM.OV5642_set_JPEG_size(OV5642_640x480);
+     Serial.println("ACK CMD switch to OV5642_640x480");delay(1000);	   
+   #endif
+       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 2:
       temp = 0xff;
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-       #if defined (OV5640_MINI_5MP_PLUS)        
-       myCAM.OV5640_set_JPEG_size(OV5640_640x480);delay(1000);
+      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+       #if defined (OV5640_MINI_5MP_PLUS)             
+       myCAM.OV5640_set_JPEG_size(OV5640_640x480);   
+	   Serial.println("ACK CMD switch to OV5640_640x480");delay(1000);	
        #else
-        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);      
+       myCAM.OV5642_set_JPEG_size(OV5642_1024x768);
+       Serial.println("ACK CMD switch to OV5642_1024x768");delay(1000);		
        #endif
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+      myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
-      case 3:
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
+      case 3: 
       temp = 0xff;
-      #if defined (OV5640_MINI_5MP_PLUS)    
-       myCAM.OV5640_set_JPEG_size(OV5640_800x480);delay(1000);
+      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+      #if defined (OV5640_MINI_5MP_PLUS)        
+       myCAM.OV5640_set_JPEG_size(OV5640_800x480);
+	    Serial.println("ACK CMD switch to OV5640_800x480");delay(1000);	
        #else
-        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);      
+       myCAM.OV5642_set_JPEG_size(OV5642_1280x960);
+       Serial.println("ACK CMD switch to OV5642_1280x960");delay(1000);		
        #endif
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+      myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
       case 4:
+     myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK); 
       temp = 0xff;
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
       #if defined (OV5640_MINI_5MP_PLUS)      
-       myCAM.OV5640_set_JPEG_size(OV5640_1024x768);delay(1000);
+      myCAM.OV5640_set_JPEG_size(OV5640_1024x768);
+	   Serial.println("ACK CMD switch to OV5640_1024x768");delay(1000);	
       #else
-        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);        
+       myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);
+      Serial.println("ACK CMD switch to OV5642_1600x1200");delay(1000);	 
       #endif
       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
        break;
       case 5:
-      temp = 0xff;
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-      #if defined (OV5640_MINI_5MP_PLUS)   
-       myCAM.OV5640_set_JPEG_size(OV5640_1280x960);delay(1000);
+      temp = 0xff; 
+      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK); 
+      #if defined (OV5640_MINI_5MP_PLUS)  
+       myCAM.OV5640_set_JPEG_size(OV5640_1280x960);   
+	   Serial.println("ACK CMD switch to OV5640_1280x960");delay(1000);	 
       #else
-        myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);    
+        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);
+       Serial.println("ACK CMD switch to OV5642_2048x1536");delay(1000);		
         #endif
-         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
-       #if defined (OV5640_MINI_5MP_PLUS)
-        case 6:
-        temp = 0xff;
-        myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);delay(1000);
+      case 6:
+       myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+       temp = 0xff;
+         #if defined (OV5640_MINI_5MP_PLUS)
+         
+        myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);
+        
+		Serial.println("ACK CMD switch to OV5640_1600x1200");delay(1000);
+        #else
+        myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);
+        Serial.println("ACK CMD switch to OV5642_2592x1944");delay(1000);
+        #endif
         myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
         break;
+     #if defined (OV5640_MINI_5MP_PLUS)
       case 7:
-      temp = 0xff;
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);delay(1000);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+        myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+       temp = 0xff;
+       myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);
+       myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+       Serial.println("ACK CMD switch to OV5640_2048x1536");delay(1000);
         break;
       case 8:
       temp = 0xff;
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
-        myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);delay(1000);
-        myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+     myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
+     myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);
+     Serial.println("ACK CMD switch to OV5640_2592x1944");
+     myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);delay(1000);
         break;
-      #endif
+     #endif
     case 0x10:
     temp = 0xff;
       start_capture = 1;  
       Serial.println("ACK CMD CAM start single shot.");
-      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);//disable low power  
+      myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
       delay(800);
       break;
     default:
@@ -185,20 +209,20 @@ void loop() {
     myCAM.clear_fifo_flag();   
     //Start capture
     myCAM.start_capture();
+  
     start_capture = 0;
   }
   if(myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
   {
-    myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);
     Serial.println("ACK CMD CAM Capture Done!");
     temp = 0;
-      Serial.println("ACK IMG");
+     Serial.println("ACK IMG");
     while( (temp != 0xD9) | (temp_last != 0xFF) )
     {
       temp_last = temp;
       temp = myCAM.read_fifo();
       Serial.write(temp);
-      delayMicroseconds(10);
+      delayMicroseconds(15);
     }
     //Clear the capture done flag 
     myCAM.clear_fifo_flag(); 

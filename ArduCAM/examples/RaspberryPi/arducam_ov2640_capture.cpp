@@ -15,16 +15,18 @@
 #include "arducam_arch_raspberrypi.h"
 #define OV2640_CHIPID_HIGH 	0x0A
 #define OV2640_CHIPID_LOW 	0x0B
-#define BUF_SIZE (384*1024)
-#define BUF_LEN 4096
+#define OV2640_MAX_FIFO_SIZE		0x5FFFF			//384KByte
+#define BUF_SIZE 4096
 #define CAM1_CS 5
-uint8_t buffer[BUF_SIZE] = {0xFF};
-
+uint8_t buf[BUF_SIZE];
+bool is_header = false;
 ArduCAM myCAM(OV2640,CAM1_CS);
 void setup()
 {
     uint8_t vid,pid;
     uint8_t temp;
+    wiring_init();
+    pinMode(CAM1_CS, OUTPUT);
     // Check if the ArduCAM SPI bus is OK
     myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
     temp = myCAM.read_reg(ARDUCHIP_TEST1);
@@ -48,6 +50,7 @@ void setup()
 }
 int main(int argc, char *argv[])
 {
+	 uint8_t temp = 0, temp_last = 0;
     if (argc == 1)
     {
         printf("Usage: %s [-s <resolution>] | [-c <filename]", argv[0]);
@@ -86,7 +89,7 @@ int main(int argc, char *argv[])
       sleep(1); // Let auto exposure do it's thing after changing image settings
       printf("Changed resolution1 to %s\n", argv[3]);     
       // Flush the FIFO
-     myCAM.flush_fifo();    
+      myCAM.flush_fifo();    
       // Clear the capture done flag
       myCAM.clear_fifo_flag();
       // Start capture
@@ -100,38 +103,64 @@ int main(int argc, char *argv[])
       if (!fp1) {
           printf("Error: could not open %s\n", argv[2]);
           exit(EXIT_FAILURE);
-      }
-       
-      printf("Reading FIFO and saving IMG\n");    
-      size_t len = myCAM.read_fifo_length();
-      if (len >= MAX_FIFO_SIZE){
+      }  
+      printf("Reading FIFO and saving IMG\r\n");    
+      size_t length = myCAM.read_fifo_length();
+      printf("The length is %d\r\n", length);
+      if (length >= OV2640_MAX_FIFO_SIZE){
 		   printf("Over size.");
 		    exit(EXIT_FAILURE);
-		  }else if (len == 0 ){
+		  }else if (length == 0 ){
 		    printf("Size is 0.");
 		    exit(EXIT_FAILURE);
 		  } 
-	  myCAM.CS_LOW();  //Set CS low       
+		   
+	 int32_t i = 0;
+	    myCAM.CS_LOW();  //Set CS low       
       myCAM.set_fifo_burst();
-      myCAM.transfers(buffer,1);//dummy read  
-      int32_t i=0;
-      while(len>BUF_LEN)
-      {	 
-      	myCAM.transfers(&buffer[i],BUF_LEN);
-      	len -= BUF_LEN;
-      	i += BUF_LEN;
-      }
-      myCAM.transfers(&buffer[i],len); 
-      myCAM.CS_HIGH();//Set CS HIGH
-      fwrite(buffer, len+i, 1, fp1);
-       //Close the file
-      delay(100);
-      fclose(fp1);  
-      // Clear the capture done flag
-      myCAM.clear_fifo_flag();
-	  printf("IMG save OK !\n");
-
-  } else {
+     
+      while ( length-- )
+		  {
+		    temp_last = temp;
+		    temp =  myCAM.transfer(0x00);
+		    //Read JPEG data from FIFO
+		    if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
+		    {
+		        buf[i++] = temp;  //save the last  0XD9     
+		       //Write the remain bytes in the buffer
+		        myCAM.CS_HIGH();
+		        fwrite(buf, i, 1, fp1);    
+		       //Close the file
+		        fclose(fp1); 
+		        printf("IMG save OK !\n"); 
+		        is_header = false;
+		        i = 0;
+		    }  
+		    if (is_header == true)
+		    { 
+		       //Write image data to buffer if not full
+		        if (i < BUF_SIZE)
+		        buf[i++] = temp;
+		        else
+		        {
+		          //Write BUF_SIZE bytes image data to file
+		          myCAM.CS_HIGH();
+		          fwrite(buf, BUF_SIZE, 1, fp1);
+		          i = 0;
+		          buf[i++] = temp;
+		          myCAM.CS_LOW();
+		          myCAM.set_fifo_burst();
+		        }        
+		    }
+		    else if ((temp == 0xD8) & (temp_last == 0xFF))
+		    {
+		      is_header = true;
+		      buf[i++] = temp_last;
+		      buf[i++] = temp;   
+		    } 
+		  }
+  } 
+  else {
       printf("Error: unknown or missing argument.\n");
       exit(EXIT_FAILURE);
   }

@@ -95,6 +95,7 @@ void Video2SD(){
   static int k = 0;
   uint8_t temp = 0, temp_last = 0;
   unsigned long position = 0;
+  uint32_t length = 0;
   uint16_t frame_cnt = 0;
   uint8_t remnant = 0;
   bool is_header = false;
@@ -111,7 +112,6 @@ void Video2SD(){
     return;
   }
   //Write AVI Header
-
   for ( i = 0; i < AVIOFFSET; i++)
   {
     char ch = pgm_read_byte(&avi_header[i]);
@@ -125,6 +125,7 @@ void Video2SD(){
     #if defined (ESP8266)
     yield();
     #endif
+    temp_last = 0;temp = 0;
     //Capture a frame            
     //Flush the FIFO
     myCAM.flush_fifo();
@@ -132,56 +133,56 @@ void Video2SD(){
     myCAM.clear_fifo_flag();
     //Start capture
     myCAM.start_capture();
-    //Serial.println("Start Capture");
     while (!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
-    //Serial.println("Capture Done!");
+    length = myCAM.read_fifo_length();
     outFile.write("00dc");
     outFile.write(zero_buf, 4);
     i = 0;
     jpeg_size = 0;
     myCAM.CS_LOW();
     myCAM.set_fifo_burst();
-    //Read JPEG data from FIFO   
-    while ( (temp != 0xD9) | (temp_last != 0xFF))
-    {
-      #if defined (ESP8266)
+  while ( length-- )
+  {
+    #if defined (ESP8266)
       yield();
       #endif
-      temp_last = temp;
-      temp = SPI.transfer(0x00); 
-     if ((temp == 0xD8) & (temp_last == 0xFF))//find header
+    temp_last = temp;
+    temp =  SPI.transfer(0x00);
+    //Read JPEG data from FIFO
+    if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
+    {
+        buf[i++] = temp;  //save the last  0XD9     
+       //Write the remain bytes in the buffer
+        myCAM.CS_HIGH();
+        outFile.write(buf, i);    
+        is_header = false;
+        jpeg_size += i;
+        i = 0;
+    }  
+    if (is_header == true)
+    { 
+       //Write image data to buffer if not full
+        if (i < 256)
+        buf[i++] = temp;
+        else
+        {
+          //Write 256 bytes image data to file
+          myCAM.CS_HIGH();
+          outFile.write(buf, 256);
+          i = 0;
+          buf[i++] = temp;
+          myCAM.CS_LOW();
+          myCAM.set_fifo_burst();
+           jpeg_size += 256;
+        }        
+    }
+    else if ((temp == 0xD8) & (temp_last == 0xFF))
     {
       is_header = true;
       buf[i++] = temp_last;
       buf[i++] = temp;   
     } 
-    if (is_header == true){
-           //Write image data to buffer if not full
-      if (i < 256)
-        buf[i++] = temp;
-      else
-      {
-        //Write 256 bytes image data to file
-        myCAM.CS_HIGH();
-        outFile.write(buf, 256);
-        i = 0;
-        buf[i++] = temp;
-        myCAM.CS_LOW();
-        myCAM.set_fifo_burst();
-        jpeg_size += 256;
-      }   
-    } 
   }
-  buf[i++] = temp;  //save the last  0XD9  
-    //Write the remain bytes in the buffer
-    if (i > 0)
-    {
-      myCAM.CS_HIGH();
-      outFile.write(buf, i);
-      jpeg_size += i;
-    }
-    temp=0;temp_last=0;
-    is_header == false;
     remnant = (4 - (jpeg_size & 0x00000003)) & 0x00000003;
     jpeg_size = jpeg_size + remnant;
     movi_size = movi_size + jpeg_size;

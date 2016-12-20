@@ -21,8 +21,7 @@
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
-//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED
-//or OV5640_MINI_5MP_PLUS or ARDUCAM_SHIELD_V2 platform.
+//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
 #if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP)
   #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
@@ -71,14 +70,14 @@ void setup() {
   }
 
  #if defined (OV2640_MINI_2MP)
-     //Check if the camera module type is OV2640
-     myCAM.wrSensorReg8_8(0xff, 0x01);  
-     myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
-     myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
-     if ((vid != 0x26) || (pid != 0x42))
-      Serial.println("ACK CMD Can't find OV2640 module!");
-     else
-      Serial.println("ACK CMD OV2640 detected.");
+   //Check if the camera module type is OV2640
+   myCAM.wrSensorReg8_8(0xff, 0x01);
+   myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
+   myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
+   if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 )))
+    Serial.println("Can't find OV2640 module!");
+    else
+    Serial.println("OV2640 detected.");
   #else
    //Check if the camera module type is OV5642
     myCAM.wrSensorReg16_8(0xff, 0x01);
@@ -117,7 +116,6 @@ void loop() {
     switch (temp)
     {
       case 0:
-      temp = 0xff;
       #if defined (OV2640_MINI_2MP)
       myCAM.OV2640_set_JPEG_size(OV2640_160x120);delay(1000);
       Serial.println("ACK CMD switch to OV2640_160x120");
@@ -125,9 +123,10 @@ void loop() {
         myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
         Serial.println("ACK CMD switch to OV5642_320x240");
        #endif
+        temp = 0xff;
         break;
       case 1:
-      temp = 0xff;
+     
        #if defined (OV2640_MINI_2MP)
        myCAM.OV2640_set_JPEG_size(OV2640_176x144);delay(1000);
          Serial.println("ACK CMD switch to OV2640_176x144");
@@ -135,16 +134,18 @@ void loop() {
        myCAM.OV5642_set_JPEG_size(OV5642_640x480);delay(1000);
        Serial.println("ACK CMD switch to OV5642_640x480");
       #endif
+       temp = 0xff;
         break;
       case 2:
-      temp = 0xff;
+  
       #if defined (OV2640_MINI_2MP)
         myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
         Serial.println("ACK CMD switch to OV2640_320x240");
        #else
-        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_1280x960");
+        myCAM.OV5642_set_JPEG_size(OV5642_1024x768);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_1024x768");
        #endif
+        temp = 0xff;
         break;
       case 3:
       temp = 0xff;
@@ -152,8 +153,8 @@ void loop() {
        myCAM.OV2640_set_JPEG_size(OV2640_352x288);delay(1000);
        Serial.println("ACK CMD switch to OV2640_352x288");
        #else
-        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_1600x1200");
+        myCAM.OV5642_set_JPEG_size(OV5642_1280x960);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_1280x960");
        #endif
         break;
       case 4:
@@ -162,8 +163,8 @@ void loop() {
        myCAM.OV2640_set_JPEG_size(OV2640_640x480);delay(1000);
         Serial.println("ACK CMD switch to OV2640_640x480");
       #else
-        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_2048x1536");
+        myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_1600x1200");
       #endif
        break;
       case 5:
@@ -172,16 +173,21 @@ void loop() {
        myCAM.OV2640_set_JPEG_size(OV2640_800x600);delay(1000);
         Serial.println("ACK CMD switch to OV2640_800x600");
       #else
-        myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);
-        Serial.println("ACK CMD switch to OV5642_2592x1944");
+        myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
+        Serial.println("ACK CMD switch to OV5642_2048x1536");
         #endif
         break;
-       #if defined (OV2640_MINI_2MP)
         case 6:
         temp = 0xff;
+       #if defined (OV2640_MINI_2MP)
          myCAM.OV2640_set_JPEG_size(OV2640_1024x768);delay(1000);
          Serial.println("ACK CMD switch to OV2640_1024x768");
+       #else
+       myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);
+       Serial.println("ACK CMD switch to OV5642_2592x1944");
+      #endif
         break;
+      #if defined (OV2640_MINI_2MP)
         case 7:
         temp = 0xff;
        myCAM.OV2640_set_JPEG_size(OV2640_1280x1024);delay(1000);
@@ -192,15 +198,13 @@ void loop() {
        myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);delay(1000);
          Serial.println("ACK CMD switch to OV2640_1600x1200");
         break;
-      #endif
+     #endif
       case 0x10:
-      temp = 0xff;
         mode = 1;
         start_capture = 1;
         Serial.println("ACK CMD CAM start single shoot.");
         break;
       case 0x20:
-      temp = 0xff;
         mode = 2;
         start_capture = 2;
         Serial.println("ACK CMD CAM start video streaming.");
@@ -209,7 +213,6 @@ void loop() {
         break;
     }
   }
-
   if (mode == 1)
   {
     if (start_capture == 1)
@@ -235,7 +238,6 @@ void loop() {
       temp = Serial.read();
       if (temp == 0x21)
       {
-          temp = 0xff;
         start_capture = 0;
         mode = 0;
         Serial.println("ACK CMD CAM stop video streaming!");
@@ -274,6 +276,7 @@ void loop() {
           else if ((temp == 0xD8) & (temp_last == 0xFF))
           {
             is_header = true;
+			     Serial.println("ACK IMG");
             Serial.write(temp_last);
             Serial.write(temp);
           }
@@ -322,6 +325,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     else if ((temp == 0xD8) & (temp_last == 0xFF))
     {
       is_header = true;
+	  Serial.println("ACK IMG");
       Serial.write(temp_last);
       Serial.write(temp);
     }

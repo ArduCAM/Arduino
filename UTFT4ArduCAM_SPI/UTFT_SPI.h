@@ -57,8 +57,8 @@
 #define RIGHT 9999
 #define CENTER 9998
 
-#define PORTRAIT 0
-#define LANDSCAPE 1
+#define PORTRAIT 1
+#define LANDSCAPE 0
 
 #define HX8347A			0
 #define ILI9327			1

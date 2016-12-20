@@ -10,11 +10,12 @@
 // 5.close the file
 //You can change the FRAMES_NUM count to change the number of the picture.
 //IF the FRAMES_NUM is 0X00, take one photos
-//IF the FRAMES_NUM is 0X02, take two photos
-//IF the FRAMES_NUM is 0X03, take three photos
-//IF the FRAMES_NUM is 0X04, take four photos
-//IF the FRAMES_NUM is 0X05, take five photos
-//IF the FRAMES_NUM is 0X06, take six photos
+//IF the FRAMES_NUM is 0X01, take two photos
+//IF the FRAMES_NUM is 0X02, take three photos
+//IF the FRAMES_NUM is 0X03, take four photos
+//IF the FRAMES_NUM is 0X04, take five photos
+//IF the FRAMES_NUM is 0X05, take six photos
+//IF the FRAMES_NUM is 0X06, take seven photos
 //IF the FRAMES_NUM is 0X07, continue shooting until the FIFO is full
 //You can see the picture in the SD card.
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM_Mini_5MP_Plus

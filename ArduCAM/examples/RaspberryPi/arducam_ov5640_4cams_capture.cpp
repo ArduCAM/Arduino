@@ -4,34 +4,32 @@
 //2016/06/13 	V1.1	by Lee	add support for burst mode
 
 --------------------------------------*/
-
-
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <wiringPiSPI.h>
+#include <wiringPiI2C.h>
 #include <wiringPi.h>
 #include "arducam_arch_raspberrypi.h"
-#define OV2640_CHIPID_HIGH 	0x0A
-#define OV2640_CHIPID_LOW 	0x0B
-#define OV2640_MAX_FIFO_SIZE		0x5FFFF			//384KByte
+#define OV5640_CHIPID_HIGH 0x300a
+#define OV5640_CHIPID_LOW 0x300b
+#define OV5640_MAX_FIFO_SIZE		0x7FFFFF		//8MByte
 #define BUF_SIZE 4096
 #define CAM1_CS 0
 #define CAM2_CS 4
 #define CAM3_CS 3
 #define CAM4_CS 5
+
+#define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
 uint8_t buf[BUF_SIZE];
 bool is_header = false;
 
-ArduCAM myCAM1(OV2640,CAM1_CS);
-ArduCAM myCAM2(OV2640,CAM2_CS);
-ArduCAM myCAM3(OV2640,CAM3_CS);
-ArduCAM myCAM4(OV2640,CAM4_CS);
-
+ArduCAM myCAM1(OV5640,CAM1_CS);
+ArduCAM myCAM2(OV5640,CAM2_CS);
+ArduCAM myCAM3(OV5640,CAM3_CS);
+ArduCAM myCAM4(OV5640,CAM4_CS);
 void setup()
 {
     uint8_t vid,pid;
@@ -41,7 +39,7 @@ void setup()
     pinMode(CAM2_CS, OUTPUT);
     pinMode(CAM3_CS, OUTPUT);
     pinMode(CAM4_CS, OUTPUT);
-     // Check if the ArduCAM SPI1 bus is OK
+      // Check if the ArduCAM SPI1 bus is OK
     myCAM1.write_reg(ARDUCHIP_TEST1, 0x55);
     temp = myCAM1.read_reg(ARDUCHIP_TEST1);
     //printf("temp=%x\n",temp);
@@ -73,63 +71,64 @@ void setup()
         printf("SPI4 interface error!\n");
         exit(EXIT_FAILURE);
     }
-    
     // Change MCU mode
     myCAM1.write_reg(ARDUCHIP_MODE, 0x00); 
     myCAM2.write_reg(ARDUCHIP_MODE, 0x00); 
     myCAM3.write_reg(ARDUCHIP_MODE, 0x00); 
     myCAM4.write_reg(ARDUCHIP_MODE, 0x00); 
-    // Check if the camera module type is OV2640
-    myCAM1.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
-    myCAM1.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
-    if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 ))){
-        printf("Can't find OV2640 module!\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("OV2640 detected\n");
-    }
+    myCAM1.wrSensorReg16_8(0xff, 0x01);
+    myCAM1.rdSensorReg16_8(OV5640_CHIPID_HIGH, &vid);
+    myCAM1.rdSensorReg16_8(OV5640_CHIPID_LOW, &pid);
+    if((vid != 0x56) || (pid != 0x40))
+    printf("Can't find OV5640 module!");
+     else
+     printf("OV5640 detected.\n");
 }
-
 int main(int argc, char *argv[])
-{   
-	uint8_t temp = 0, temp_last = 0;
-    if (argc == 1) {
+{
+	 uint8_t temp = 0, temp_last = 0;
+    if (argc == 1)
+    {
         printf("Usage: %s [-s <resolution>] | [-c <filename]", argv[0]);
         printf(" -s <resolution> Set resolution, valid resolutions are:\n");
-        printf("                   160x120\n");
-        printf("                   176x144\n");
         printf("                   320x240\n");
-        printf("                   352x288\n");
+		printf("                   352x288\n");
         printf("                   640x480\n");
-        printf("                   800x600\n");
-        printf("                   1024x768\n");
+	    printf("                   800x480\n");
+		printf("                   1024x768\n");
         printf("                   1280x960\n");
         printf("                   1600x1200\n");
+        printf("                   2048x1536\n");
+        printf("                   2592x1944\n");
         printf(" -c <filename>   Capture image\n");
         exit(EXIT_SUCCESS);
     }
-    
-    if (strcmp(argv[1], "-c") == 0 && argc == 7) {
-        setup();
-        myCAM1.set_format(JPEG);
-        myCAM1.InitCAM();  
-        // Change to JPEG capture mode and initialize the OV2640 module   
-	      if (strcmp(argv[6], "160x120") == 0) myCAM1.OV2640_set_JPEG_size(OV2640_160x120);
-	      else if (strcmp(argv[6], "176x144")  == 0) myCAM1.OV2640_set_JPEG_size(OV2640_176x144);
-	      else if (strcmp(argv[6], "320x240")  == 0) myCAM1.OV2640_set_JPEG_size(OV2640_320x240);
-	      else if (strcmp(argv[6], "352x288")  == 0) myCAM1.OV2640_set_JPEG_size(OV2640_352x288);
-	      else if (strcmp(argv[6], "640x480")  == 0) myCAM1.OV2640_set_JPEG_size(OV2640_640x480);
-	      else if (strcmp(argv[6], "800x600")  == 0) myCAM1.OV2640_set_JPEG_size(OV2640_800x600);
-	      else if (strcmp(argv[6], "1024x768") == 0) myCAM1.OV2640_set_JPEG_size(OV2640_1024x768);
-	      else if (strcmp(argv[6], "1280x960") == 0) myCAM1.OV2640_set_JPEG_size(OV2640_1280x1024);
-	      else if (strcmp(argv[6], "1600x1200")== 0) myCAM1.OV2640_set_JPEG_size(OV2640_1600x1200);
-	      else {
-	      printf("Unknown resolution %s\n", argv[3]);
-	      exit(EXIT_FAILURE);
-	      }
-        sleep(1); // Let auto exposure do it's thing after changing image settings
-        printf("Changed resolution1 to %s\n", argv[6]);
-        // Flush the FIFO
+  	if (strcmp(argv[1], "-c") == 0 && argc == 7) 
+  	{
+      setup(); 
+      myCAM1.set_format(JPEG);
+      myCAM1.InitCAM();
+      // Change to JPEG capture mode and initialize the OV5640 module   
+      if (strcmp(argv[6], "320x240")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_320x240);
+      else if (strcmp(argv[6], "352x288")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_352x288);
+	    else if (strcmp(argv[6], "640x480")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_640x480);
+      else if (strcmp(argv[6], "800x480")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_800x480);
+      else if (strcmp(argv[6], "1024x768")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_1024x768);
+      else if (strcmp(argv[6], "1280x960")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_1280x960);
+      else if (strcmp(argv[6], "1600x1200") == 0) myCAM1.OV5640_set_JPEG_size(OV5640_1600x1200);
+	    else if (strcmp(argv[6], "2048x1536")  == 0) myCAM1.OV5640_set_JPEG_size(OV5640_2048x1536);
+      else if (strcmp(argv[6], "2592x1944") == 0) myCAM1.OV5640_set_JPEG_size(OV5640_2592x1944);
+      else {
+      printf("Unknown resolution %s\n", argv[6]);
+      exit(EXIT_FAILURE);
+      }
+      sleep(1); // Let auto exposure do it's thing after changing image settings
+      printf("Changed resolution1 to %s\n", argv[6]); 
+      myCAM1.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH  
+      myCAM2.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH 
+	  myCAM3.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH 
+      myCAM4.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);		//VSYNC is active HIGH    	  
+     // Flush the FIFO
         myCAM1.flush_fifo();    
         // Clear the capture done flag
         myCAM1.clear_fifo_flag();
@@ -202,7 +201,7 @@ int main(int argc, char *argv[])
 		printf("The len2 is %d\r\n",len2);
 		printf("The len3 is %d\r\n",len3);
 		printf("The len4 is %d\r\n",len4);
-      if ((len1>=OV2640_MAX_FIFO_SIZE)||(len2>=OV2640_MAX_FIFO_SIZE)||(len3>=OV2640_MAX_FIFO_SIZE)||(len4>=OV2640_MAX_FIFO_SIZE)){
+      if ((len1>=OV5640_MAX_FIFO_SIZE)||(len2>=OV5640_MAX_FIFO_SIZE)||(len3>=OV5640_MAX_FIFO_SIZE)||(len4>=OV5640_MAX_FIFO_SIZE)){
 		   printf("Over size.");
 		    exit(EXIT_FAILURE);
 		  }
@@ -392,3 +391,4 @@ int main(int argc, char *argv[])
     }
     exit(EXIT_SUCCESS);
 }
+

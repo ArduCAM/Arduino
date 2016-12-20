@@ -19,7 +19,7 @@ extern bool arducam_i2c_init(uint8_t sensor_addr);
 extern void arducam_spi_write(uint8_t address, uint8_t value);
 extern uint8_t arducam_spi_read(uint8_t address);
 
-extern void arducam_spi_transfer(uint8_t data);
+extern uint8_t arducam_spi_transfer(uint8_t data);
 extern void arducam_spi_transfers(uint8_t *buf, uint32_t size);
 
 
