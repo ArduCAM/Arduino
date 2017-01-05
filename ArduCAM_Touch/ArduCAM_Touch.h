@@ -41,7 +41,7 @@
 #define TP_CATH_PRES 0x40  		
 #define CT_MAX_TOUCH  5  
 
-#define error 0.05
+#define ERROR 0.05
 
 #define BOXSIZE 40
 union data

@@ -182,6 +182,7 @@ int arducam_i2c_write_regs16(const struct sensor_reg reglist[])
 			return 0;
 		}
 	   	next++;
+	   	arducam_delay_ms(1);
 	}
 
 	return 1;
@@ -194,11 +195,11 @@ int arducam_i2c_write_word_regs(const struct sensor_reg reglist[])
 
 	while ((reg_addr != 0xffff) | (reg_val != 0xff))
 	{
-		//reg_addr = pgm_read_word(&next->reg);
-		//reg_val =  pgm_read_word(&next->val);
-		reg_addr = next->reg;
-		reg_val = next->val;
-		//if (!arducam_i2c_write16(reg_addr, reg_val)) 
+		 //reg_addr = pgm_read_word(&next->reg);
+		 //reg_val =  pgm_read_word(&next->val);
+		 reg_addr = next->reg;
+		 reg_val = next->val;
+		 //if (!arducam_i2c_write16(reg_addr, reg_val)) 
 		
 		 //My changed
 		if (!arducam_i2c_word_write(reg_addr, reg_val))
@@ -206,6 +207,7 @@ int arducam_i2c_write_word_regs(const struct sensor_reg reglist[])
 			return 0;
 		}
 	   	next++;
+	   arducam_delay_ms(1);
 	}
 
 	return 1;

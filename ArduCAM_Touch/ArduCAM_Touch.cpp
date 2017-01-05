@@ -408,7 +408,7 @@ void ArduCAM_Touch::TP_Adjust(void)
 					
 					fac=(float)d1/d2;
 				    Serial.println(fac);
-					if(fac<(1-error)||fac>(1+error)||d1==0||d2==0)
+					if(fac<(1-ERROR)||fac>(1+ERROR)||d1==0||d2==0)
 					{
 						cnt=0;
  				    	TP_Drow_Touch_Point(width-20,height-20,VGA_BLACK);	
@@ -429,7 +429,7 @@ void ArduCAM_Touch::TP_Adjust(void)
 					d2=sqrt(tem1+tem2);
 		            fac=(float)d1/d2;
 				    Serial.println(fac);
-					if(fac<(1-error)||fac>(1+error))
+					if(fac<(1-ERROR)||fac>(1+ERROR))
 					{
 						cnt=0;
  				    	TP_Drow_Touch_Point(width-20,height-20,VGA_BLACK);	
@@ -452,7 +452,7 @@ void ArduCAM_Touch::TP_Adjust(void)
 					
 					fac=(float)d1/d2;
 					Serial.println(fac);
-					if(fac<(1-error)||fac>(1+error))
+					if(fac<(1-ERROR)||fac>(1+ERROR))
 					{
 						cnt=0;
  				    	TP_Drow_Touch_Point(width-20,height-20,VGA_BLACK);	
