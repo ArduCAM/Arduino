@@ -51,7 +51,7 @@ void myCAMSaveToSDFile(){
   myCAM.clear_fifo_flag();
   //Start capture
   myCAM.start_capture();
-  Serial.println("star Capture");
+  Serial.println("Start Capture");
  while(!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
  Serial.println("Capture Done!");  
 
@@ -75,7 +75,7 @@ void myCAMSaveToSDFile(){
  //Open the new file
  outFile = SD.open(str, O_WRITE | O_CREAT | O_TRUNC);
  if(! outFile){
-  Serial.println("open file faild");
+  Serial.println("File open failed");
   return;
  }
  i = 0;
@@ -95,7 +95,7 @@ while ( length-- )
         outFile.write(buf, i);    
       //Close the file
         outFile.close();
-        Serial.println("CAM Save OK!");
+        Serial.println("Image save OK!");
         is_header = false;
         i = 0;
     }  
