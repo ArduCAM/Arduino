@@ -2,7 +2,7 @@
 // Web: http://www.ArduCAM.com
 // This program is a demo of how to use most of the functions
 // of the library with ArduCAM Mini camera, and can run on any Arduino platform.
-// This demo was made for ArduCAM Mini Camera.
+// This demo was made for ARDUCAM_SHIELD_REVC
 //This demo timed 5 seconds to record video.
 // It can shoot video and store it into the SD card
 // The demo sketch will do the following tasks
@@ -23,25 +23,32 @@
 //1C-1F :The size of the avih
 //20-23 :Maintain time per frame picture
 
-// This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM Mini camera
+// This program requires the ArduCAM V4.0.0 (or later) library and ARDUCAM_SHIELD_REVC
 // and use Arduino IDE 1.6.8 compiler or above
-
 #include <SD.h>
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
 
-//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
-#if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP)
-  #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
+//This demo can only work on ARDUCAM_SHIELD_REVC  platform.
+#if !(defined (ARDUCAM_SHIELD_REVC)&&(defined (OV5642_CAM)||defined (OV2640_CAM)||defined (OV5640_CAM)))
+#error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
+
 #define SD_CS 9
+const int SPI_CS = 10;
 #define rate 0x05
 // set the num of picture
 #define pic_num 200
-//set pin 7 as the slave select for SPI:
-const int SPI_CS = 7;
+
+#if defined (OV2640_CAM)
+  ArduCAM myCAM( OV2640, SPI_CS );
+#elif defined (OV5640_CAM)
+  ArduCAM myCAM( OV5640, SPI_CS );
+#elif defined (OV5642_CAM)
+  ArduCAM myCAM( OV5642, SPI_CS );
+#endif
 #define AVIOFFSET 240
 unsigned long movi_size = 0;
 unsigned long jpeg_size = 0;
@@ -63,11 +70,6 @@ const int avi_header[AVIOFFSET] PROGMEM ={
   0x10, 0x00, 0x00, 0x00, 0x6F, 0x64, 0x6D, 0x6C, 0x64, 0x6D, 0x6C, 0x68, 0x04, 0x00, 0x00, 0x00,
   0x64, 0x00, 0x00, 0x00, 0x4C, 0x49, 0x53, 0x54, 0x00, 0x01, 0x0E, 0x00, 0x6D, 0x6F, 0x76, 0x69,
 };
-#if defined (OV2640_MINI_2MP)
-  ArduCAM myCAM( OV2640, SPI_CS );
-#else
-  ArduCAM myCAM( OV5642, SPI_CS );
-#endif
 void print_quartet(unsigned long i,File fd){
   fd.write(i % 0x100);  i = i >> 8;   //i /= 0x100;
   fd.write(i % 0x100);  i = i >> 8;   //i /= 0x100;
@@ -99,7 +101,6 @@ if (! outFile)
   return;
 }
 //Write AVI Header
-
 for ( i = 0; i < AVIOFFSET; i++)
 {
   char ch = pgm_read_byte(&avi_header[i]);
@@ -132,7 +133,7 @@ for ( frame_cnt = 0; frame_cnt < pic_num; frame_cnt ++)
   while ( length-- )
   {
     #if defined (ESP8266)
-    yield();
+      yield();
     #endif
     temp_last = temp;
     temp =  SPI.transfer(0x00);
@@ -151,7 +152,7 @@ for ( frame_cnt = 0; frame_cnt < pic_num; frame_cnt ++)
     { 
       //Write image data to buffer if not full
       if (i < 256)
-      buf[i++] = temp;
+        buf[i++] = temp;
       else
       {
         //Write 256 bytes image data to file
@@ -175,7 +176,7 @@ for ( frame_cnt = 0; frame_cnt < pic_num; frame_cnt ++)
   jpeg_size = jpeg_size + remnant;
   movi_size = movi_size + jpeg_size;
   if (remnant > 0)
-  outFile.write(zero_buf, remnant); 
+  outFile.write(zero_buf, remnant);
   position = outFile.position();
   outFile.seek(position - 4 - jpeg_size);
   print_quartet(jpeg_size, outFile);
@@ -187,7 +188,7 @@ for ( frame_cnt = 0; frame_cnt < pic_num; frame_cnt ++)
 }
 //Modify the MJPEG header from the beginning of the file
 outFile.seek(4);
-print_quartet(movi_size +12*frame_cnt+4, outFile);//riff file size
+print_quartet(movi_size + 0xd8, outFile);//riff file size
 //overwrite hdrl
 unsigned long us_per_frame = 1000000 / rate; //(per_usec); //hdrl.avih.us_per_frame
 outFile.seek(0x20);
@@ -195,18 +196,18 @@ print_quartet(us_per_frame, outFile);
 unsigned long max_bytes_per_sec = movi_size * rate/ frame_cnt; //hdrl.avih.max_bytes_per_sec
 outFile.seek(0x24);
 print_quartet(max_bytes_per_sec, outFile);
-unsigned long tot_frames = frame_cnt;    //hdrl.avih.tot_frames
+//unsigned long tot_frames = framecnt;    //hdrl.avih.tot_frames
 outFile.seek(0x30);
-print_quartet(tot_frames, outFile);
-unsigned long frames =frame_cnt;// (TOTALFRAMES); //hdrl.strl.list_odml.frames
+print_quartet(max_bytes_per_sec, outFile);
+//unsigned long frames =framecnt;// (TOTALFRAMES); //hdrl.strl.list_odml.frames
 outFile.seek(0xe0);
-print_quartet(frames, outFile);
+print_quartet(max_bytes_per_sec, outFile);
 outFile.seek(0xe8);
 print_quartet(movi_size, outFile);// size again
 myCAM.CS_HIGH();
 //Close the file
 outFile.close();
-Serial.println(F("Record video OK."));
+Serial.println(F("Record video OK"));
 }
 void setup(){
 uint8_t vid, pid;
@@ -223,8 +224,7 @@ while(1){
   //Check if the ArduCAM SPI bus is OK
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM.read_reg(ARDUCHIP_TEST1);
-  if (temp != 0x55)
-  {
+  if (temp != 0x55){
     Serial.println(F("SPI interface Error!"));
     delay(1000);continue;
   }else{
@@ -236,7 +236,7 @@ while(!SD.begin(SD_CS)){
   Serial.println(F("SD Card Error!"));delay(1000);
 }
 Serial.println(F("SD Card detected."));
-#if defined (OV2640_MINI_2MP)
+#if defined (OV2640_CAM)
 while(1){
   //Check if the camera module type is OV2640
   myCAM.wrSensorReg8_8(0xff, 0x01);
@@ -245,39 +245,53 @@ while(1){
   if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 ))){
     Serial.println(F("Can't find OV2640 module!"));
     delay(1000);continue;
+  }else{
+    Serial.println(F("OV2640 detected."));break;
   }
-  else{
-   Serial.println(F("OV2640 detected."));break;
-  } 
-}
-#else
-while(1){
-  //Check if the camera module type is OV5642
-  myCAM.wrSensorReg16_8(0xff, 0x01);
-  myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
-  myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
-  if((vid != 0x56) || (pid != 0x42)){
-    Serial.println(F("Can't find OV5642 module!"));
-    delay(1000);continue;
+} 
+#elif defined (OV5640_CAM)
+  while(1){
+    //Check if the camera module type is OV5642
+    myCAM.wrSensorReg16_8(0xff, 0x01);
+    myCAM.rdSensorReg16_8(OV5640_CHIPID_HIGH, &vid);
+    myCAM.rdSensorReg16_8(OV5640_CHIPID_LOW, &pid);
+    if((vid != 0x56) || (pid != 0x40)){
+      Serial.println(F("Can't find OV5640 module!");
+      delay(1000);continue;
+    }else{
+      Serial.println(F("OV5640 detected."));break;
+    } 
   }
-  else{
-    Serial.println(F("OV5642 detected."));break;
-  } 
-}
+#elif defined (OV5642_CAM)
+  while(1){
+    //Check if the camera module type is OV5642
+    myCAM.wrSensorReg16_8(0xff, 0x01);
+    myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
+    myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
+    if((vid != 0x56) || (pid != 0x42)){
+      Serial.println(F("Can't find OV5642 module!"));
+      delay(1000);continue;
+    } else{
+     Serial.println(F("OV5642 detected.")); break;
+    }
+  }
 #endif
 myCAM.set_format(JPEG);
 myCAM.InitCAM();
-#if defined (OV2640_MINI_2MP)
-  myCAM.OV2640_set_JPEG_size(OV2640_320x240);
-#else
-  myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
-  myCAM.OV5642_set_JPEG_size(OV5642_320x240);
+#if defined (OV2640_CAM)
+myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
+#elif defined (OV5640_CAM)
+myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
+myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
+#elif defined (OV5642_CAM)
+myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
+myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
 #endif
 delay(1000);
 }
 void loop(){
-Video2SD(); 
-delay(5000);
+  Video2SD();
+  delay(5000);
 }
 
 

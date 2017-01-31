@@ -1,14 +1,14 @@
-// ArduCAM Mini demo (C)2016 Lee
-// web: http://www.ArduCAM.com
+// ArduCAM Mini demo (C)2017 Lee
+// Web: http://www.ArduCAM.com
 // This program is a demo of how to use most of the functions
 // of the library with ArduCAM Mini camera, and can run on any Arduino platform.
 //
 // This demo was made for ArduCAM Mini Camera.
 // It needs to be used in combination with PC software.It can take 4 photos at the same and save them to the SD card
 // The demo sketch will do the following tasks:
-// 1. Set the 4 cameras to JEPG output mode.
+// 1. Set the 4 cameras to JPEG output mode.
 // 2. Read data from Serial port and deal with it
-// 3.Save them to SD card.
+// 3. Save the images to SD card.
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM Mini camera
 // and use Arduino IDE 1.5.2 compiler or above
 
@@ -17,97 +17,127 @@
 #include <SPI.h>
 #include <SD.h>
 #include "memorysaver.h"
-//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
+//This demo can only work on OV2640_MINI_2MP and  OV5642_MINI_5MP and OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
 #if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP)
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 
 #define SD_CS 9
 
-// set pin 4,5,6,7 as the slave select for SPI:
+// Set pin 4,5,6,7 as the slave select for SPI:
 const int CS1 = 4;
 const int CS2 = 5;
 const int CS3 = 6;
 const int CS4 = 7;
 
+bool CAM1_EXIST = false; 
+bool CAM2_EXIST = false;
+bool CAM3_EXIST = false;
+bool CAM4_EXIST = false;
+
+
 #if defined (OV2640_MINI_2MP)
-  ArduCAM myCAM1(OV2640,CS1);
-  ArduCAM myCAM2(OV2640,CS2);
-  ArduCAM myCAM3(OV2640,CS3);
-  ArduCAM myCAM4(OV2640,CS4);
+ArduCAM myCAM1(OV2640, CS1);
+ArduCAM myCAM2(OV2640, CS2);
+ArduCAM myCAM3(OV2640, CS3);
+ArduCAM myCAM4(OV2640, CS4);
 #else
-  ArduCAM myCAM1(OV5642,CS1);
-  ArduCAM myCAM2(OV5642,CS2);
-  ArduCAM myCAM3(OV5642,CS3);
-  ArduCAM myCAM4(OV5642,CS4);
+ArduCAM myCAM1(OV5642, CS1);
+ArduCAM myCAM2(OV5642, CS2);
+ArduCAM myCAM3(OV5642, CS3);
+ArduCAM myCAM4(OV5642, CS4);
 #endif
 
 void setup() {
   // put your setup code here, to run once:
-  uint8_t vid,pid;
+  uint8_t vid, pid;
   uint8_t temp;
   Wire.begin(); 
  Serial.begin(115200);
- Serial.println("ArduCAM Start!"); 
-  // set the CS output:
-  pinMode(CS1, OUTPUT);
-  pinMode(CS2, OUTPUT);
-  pinMode(CS3, OUTPUT);
-  pinMode(CS4, OUTPUT);
-  pinMode(SD_CS, OUTPUT);
-  // initialize SPI:
-  SPI.begin(); 
-
-   //Initialize SD Card
-  if(!SD.begin(SD_CS)){
-    Serial.println("SD Card Error");
-  }
-  else
-  Serial.println("SD Card detected!");
-  
+ Serial.println(F("ArduCAM Start!")); 
+// set the CS output:
+pinMode(CS1, OUTPUT);
+pinMode(CS2, OUTPUT);
+pinMode(CS3, OUTPUT);
+pinMode(CS4, OUTPUT);
+pinMode(SD_CS, OUTPUT);
+// initialize SPI:
+SPI.begin(); 
   //Check if the 4 ArduCAM Mini 2MP Cameras' SPI bus is OK
+  while(1){
   myCAM1.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM1.read_reg(ARDUCHIP_TEST1);
   if(temp != 0x55)
   {
-    Serial.println("SPI1 interface Error!");
-  }
+    Serial.println(F("SPI1 interface Error!"));
+  }else{
+      CAM1_EXIST = true;
+      Serial.println(F("SPI1 interface OK."));
+    }
   myCAM2.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM2.read_reg(ARDUCHIP_TEST1);
   if(temp != 0x55)
   {
     Serial.println("SPI2 interface Error!");
-  }
+  }else{
+      CAM2_EXIST = true;
+      Serial.println(F("SPI2 interface OK."));
+    }
   myCAM3.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM3.read_reg(ARDUCHIP_TEST1);
   if(temp != 0x55)
   {
-    Serial.println("SPI3 interface Error!");
-  }
+    Serial.println(F("SPI3 interface Error!"));
+  }else{
+      CAM3_EXIST = true;
+      Serial.println(F("SPI3 interface OK."));
+    }
   myCAM4.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM4.read_reg(ARDUCHIP_TEST1);
   if(temp != 0x55)
   {
-    Serial.println("SPI4 interface Error!");
+    Serial.println(F("SPI4 interface Error!"));
+  }else{
+      CAM4_EXIST = true;
+      Serial.println(F("SPI4 interface OK."));
+    }
+    if(!(CAM1_EXIST||CAM2_EXIST||CAM3_EXIST||CAM4_EXIST)){
+    delay(1000);continue;
+    }else
+    break;
   }
- #if defined (OV2640_MINI_2MP)
-   //Check if the camera module type is OV2640
-   myCAM1.wrSensorReg8_8(0xff, 0x01);
-   myCAM1.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
-   myCAM1.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
-   if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 )))
-    Serial.println("Can't find OV2640 module!");
-    else
-    Serial.println("OV2640 detected.");
+  //Initialize SD Card
+  while(!SD.begin(SD_CS)){
+    Serial.println(F("SD Card Error"));delay(1000);
+  }
+  Serial.println(F("SD Card detected."));
+    
+  #if defined (OV2640_MINI_2MP)
+  while(1){
+      //Check if the camera module type is OV2640
+     myCAM1.wrSensorReg8_8(0xff, 0x01);
+     myCAM1.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
+     myCAM1.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
+     if ((vid != 0x26 ) && (( pid != 0x41 ) || ( pid != 0x42 ))){
+      Serial.println(F("Can't find OV2640 module!"));
+      delay(1000);continue;
+      }else{
+         Serial.println(F("OV2640 detected."));break;
+        }
+    } 
   #else
+  while(1){
    //Check if the camera module type is OV5642
     myCAM1.wrSensorReg16_8(0xff, 0x01);
     myCAM1.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
     myCAM1.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
-     if((vid != 0x56) || (pid != 0x42))
-     Serial.println("Can't find OV5642 module!");
-     else
-     Serial.println("OV5642 detected.");
+     if((vid != 0x56) || (pid != 0x42)){
+       Serial.println(F("Can't find OV5642 module!"));
+       delay(1000);continue;
+      }else{
+        Serial.println(F("OV5642 detected."));break;
+     }   
+  }
    #endif
     myCAM1.set_format(JPEG);
     myCAM1.InitCAM();
@@ -127,9 +157,13 @@ void setup() {
   myCAM4.clear_fifo_flag();
 }
 void loop() {
+  if(CAM1_EXIST)
     myCAMSaveToSDFile(myCAM1);
+    if(CAM2_EXIST)
     myCAMSaveToSDFile(myCAM2);
+    if(CAM3_EXIST)
     myCAMSaveToSDFile(myCAM3);
+    if(CAM4_EXIST)
     myCAMSaveToSDFile(myCAM4);
     delay(5000);
   }
@@ -148,21 +182,21 @@ void myCAMSaveToSDFile(ArduCAM myCAM){
   myCAM.clear_fifo_flag();
   //Start capture
   myCAM.start_capture();
-  Serial.println("star Capture");
+  Serial.println("start Capture");
  while(!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
- Serial.println("Capture Done!");  
+ Serial.println(F("Capture Done."));  
  length = myCAM.read_fifo_length();
- Serial.print("The fifo length is :");
+ Serial.print(F("The fifo length is :"));
  Serial.println(length, DEC);
   if (length >= MAX_FIFO_SIZE) //384K
   {
-    Serial.println("Over size.");
-    return 0;
+    Serial.println(F("Over size."));
+    return ;
   }
     if (length == 0 ) //0 kb
   {
-    Serial.println("Size is 0.");
-    return 0;
+    Serial.println(F("Size is 0."));
+    return ;
   }
  //Construct a file name
  k = k + 1;
@@ -171,7 +205,7 @@ void myCAMSaveToSDFile(ArduCAM myCAM){
  //Open the new file
  outFile = SD.open(str, O_WRITE | O_CREAT | O_TRUNC);
  if(!outFile){
-  Serial.println("open file faild");
+  Serial.println(F("File open faild"));
   return;
  }
 myCAM.CS_LOW();
@@ -189,7 +223,7 @@ while ( length-- )
         outFile.write(buf, i);    
       //Close the file
         outFile.close();
-        Serial.println("CAM Save OK!");
+        Serial.println(F("Image save OK."));
         is_header = false;
         i = 0;
     }  
