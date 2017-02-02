@@ -44,7 +44,7 @@ int mode = 0;
 uint8_t start_capture = 0;
 #if defined (OV2640_CAM)
   ArduCAM myCAM(OV2640, SPI_CS);
-#if defined (OV3640_CAM)
+#elif defined (OV3640_CAM)
   ArduCAM myCAM(OV3640, SPI_CS);
 #elif defined (OV5640_CAM)
   ArduCAM myCAM(OV5640, SPI_CS);
