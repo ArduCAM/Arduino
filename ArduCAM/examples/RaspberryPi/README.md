@@ -1,4 +1,4 @@
-#ArduCAM Library and examples porting for Raspberry Pi 
+# ArduCAM Library and examples porting for Raspberry Pi 
 
 ## 1. Edit config.txt 
 sudo nano /boot/config.txt<br> 
