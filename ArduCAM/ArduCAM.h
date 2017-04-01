@@ -88,7 +88,8 @@
 	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
 	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings		
 	2016/10/05	V4.0.0	by Lee	Add support for second generation of ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).				
-  2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi
+    2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi.
+	2017/01/22  V4.0.2  by Lee	Add support for OV3640 camera.
 --------------------------------------*/
 
 #ifndef ArduCAM_H
@@ -176,6 +177,11 @@
 	#define regsize uint32_t
 #endif
 
+
+
+
+#if defined(__arm__)
+
 #if defined (RASPBERRY_PI)
 	#define regtype volatile uint32_t
 	#define regsize uint32_t 
@@ -183,19 +189,48 @@
 	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
   #define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
   #define PROGMEM
-	//#define pgm_read_byte(x)        (*((char *)x))
-	//#define pgm_read_word(x)        ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
-	//#define pgm_read_byte_near(x)   (*((char *)x))
-	//#define pgm_read_byte_far(x)    (*((char *)x))
-	//#define pgm_read_word_near(x)   ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
-	//#define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
-	
 	#define PSTR(x)  x
 	#if defined F
 	#undef F
 	#endif
 	#define F(X) (X)
-#endif
+#else
+
+#define cbi(reg, bitmask) *reg &= ~bitmask
+#define sbi(reg, bitmask) *reg |= bitmask
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+
+#define swap(type, i, j) {type t = i; i = j; j = t;}
+
+#define fontbyte(x) cfont.font[x]  
+
+#define regtype volatile uint32_t
+#define regsize uint32_t
+#define PROGMEM
+
+    #define pgm_read_byte(x)        (*((char *)x))
+//  #define pgm_read_word(x)        (*((short *)(x & 0xfffffffe)))
+    #define pgm_read_word(x)        ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
+    #define pgm_read_byte_near(x)   (*((char *)x))
+    #define pgm_read_byte_far(x)    (*((char *)x))
+//  #define pgm_read_word_near(x)   (*((short *)(x & 0xfffffffe))
+//  #define pgm_read_word_far(x)    (*((short *)(x & 0xfffffffe)))
+    #define pgm_read_word_near(x)   ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x)))
+    #define pgm_read_word_far(x)    ( ((*((unsigned char *)x + 1)) << 8) + (*((unsigned char *)x))))
+    #define PSTR(x)  x
+  #if defined F
+    #undef F
+  #endif
+  #define F(X) (X)
+ #endif 
+#endif	
+
+
+
 
 
 /****************************************************/
@@ -203,6 +238,7 @@
 /****************************************************/
 #define BMP 	0
 #define JPEG	1
+#define RAW 	2
 
 #define OV7670		0	
 #define MT9D111_A	1
@@ -232,6 +268,17 @@
 #define OV2640_1280x1024	7	//1280x1024
 #define OV2640_1600x1200	8	//1600x1200
 
+
+#define OV3640_176x144 		0	//176x144
+#define OV3640_320x240 		1	//320x240
+#define OV3640_352x288 		2	//352x288
+#define OV3640_640x480		3	//640x480
+#define OV3640_800x600 		4	//800x600
+#define OV3640_1024x768		5	//1024x768
+#define OV3640_1280x960	    6	//1280x1024
+#define OV3640_1600x1200	7	//1600x1200
+#define OV3640_2048x1536	8	//2048x1536
+
 #define OV5642_320x240 		0	//320x240
 #define OV5642_640x480		1	//640x480
 #define OV5642_1024x768		2	//1024x768
@@ -239,17 +286,64 @@
 #define OV5642_1600x1200	4	//1600x1200
 #define OV5642_2048x1536	5	//2048x1536
 #define OV5642_2592x1944	6	//2592x1944
-
+#define OV5642_1920x1080	7 //1920x1080
 
 #define OV5640_320x240 		0	//320x240 
 #define OV5640_352x288		1	//352x288
-#define OV5640_640x480 	  2	//640x480
-#define OV5640_800x480	  3	//800x480
-#define OV5640_1024x768	  4	//1024x768
-#define OV5640_1280x960	  5	//1280x960	
+#define OV5640_640x480 	    2	//640x480
+#define OV5640_800x480	    3	//800x480
+#define OV5640_1024x768	    4	//1024x768
+#define OV5640_1280x960	    5	//1280x960	
 #define OV5640_1600x1200	6	 //1600x1200
 #define OV5640_2048x1536	7  //2048x1536
 #define OV5640_2592x1944	8	 //2592x1944
+
+
+
+//Light Mode
+
+#define Auto                 0
+#define Sunny                1
+#define Cloudy               2
+#define Office               3
+#define Home                 4
+
+//Color Saturation 
+
+#define Saturation4          0
+#define Saturation3          1
+#define Saturation2          2
+#define Saturation1          3
+#define Saturation0          4
+
+//Brightness
+
+#define Brightbess4          0
+#define Brightbess3          1
+#define Brightbess2          2
+#define Brightbess1          3
+#define Brightbess0          4
+
+//Contrast
+
+#define Contrast4            0
+#define Contrast3            1
+#define Contrast2            2
+#define Contrast1            3
+#define Contrast0            4
+
+//Special effects
+
+#define Antique              0
+#define Bluish               1
+#define Greenish             2
+#define Reddish              3
+#define BW                   4
+#define Negative             5
+#define BWnegative           6
+#define Normal               7
+
+
 
 /****************************************************/
 /* I2C Control Definition 													*/
@@ -272,7 +366,7 @@
 //Define maximum frame buffer size
 #if (defined OV2640_MINI_2MP)
 #define MAX_FIFO_SIZE		0x5FFFF			//384KByte
-#elif (defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined ARDUCAM_SHIELD_REVC)
+#elif (defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined ARDUCAM_SHIELD_REVC )//||defined OV3640_MINI_3MP)
 #define MAX_FIFO_SIZE		0x7FFFF			//512KByte
 #else
 #define MAX_FIFO_SIZE		0x7FFFFF		//8MByte
@@ -414,9 +508,21 @@ class ArduCAM
 	byte rdSensorReg16_16(uint16_t regID, uint16_t* regDat);
 
 	void OV2640_set_JPEG_size(uint8_t size);
+	void OV3640_set_JPEG_size(uint8_t size);
 	void OV5642_set_JPEG_size(uint8_t size);
 	void OV5640_set_JPEG_size(uint8_t size);
+	void OV5642_set_RAW_size (uint8_t size);
+	
+	void set_Light_Mode(uint8_t Light_Mode);
+	void set_Color_Saturation(uint8_t Color_Saturation);
+	void set_Brightness(uint8_t Brightness);
+	void set_Contrast(uint8_t Contrast);
+	void set_Special_effects(uint8_t Special_effect);
+	
 	void set_format(byte fmt);
+	
+	
+	
 	
 	#if defined (RASPBERRY_PI)
     uint8_t transfer(uint8_t data);
@@ -455,7 +561,7 @@ class ArduCAM
 	#include "ov5642_regs.h"
 #endif
 
-#if defined OV3640_CAM	
+#if (defined(OV3640_CAM) || defined(OV3640_MINI_3MP))
 	#include "ov3640_regs.h"
 #endif
 
@@ -463,7 +569,7 @@ class ArduCAM
 	#include "ov2640_regs.h"
 #endif
 
-#if defined MT9D111_CAM	
+#if (defined (MT9D111A_CAM) || defined (MT9D111B_CAM))	
 	#include "mt9d111_regs.h"
 #endif
 

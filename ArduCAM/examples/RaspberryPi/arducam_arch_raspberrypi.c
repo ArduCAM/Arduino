@@ -123,6 +123,7 @@ uint8_t arducam_i2c_word_write(uint16_t regID, uint8_t regDat)
 	if(FD != -1)
 	{
 		i2c_smbus_write_word_data(FD, reg_H, value);
+		arducam_delay_ms(1);
 		return(1);
 	}
 	return 0;
