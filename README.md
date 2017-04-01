@@ -54,8 +54,8 @@ Open one of the examples, wiring SPI and I2C interface especially CS pins to Ard
 Hardware and software shuld be consistent to run the examples correctly.
 
 ## 3. Upload the examples
-In the example folder there are six sub directories for different ArduCAM models and the host application. 
-Directories structure lists as Figure 4 shown. The ESP8266 folder is for ArduCAM-ESP8266-UNO board examples. 
+In the example folder there are seven sub directories for different ArduCAM models and the host application. 
+The `ESP8266` folder is for ArduCAM-ESP8266-UNO board examples. 
 The `Mini` folder is for ArduCAM-Mini-2MP and ArduCAM-Mini-5MP modules.  <br>
 The `Mini_5MP_Plus` folder is for ArduCAM-Mini-5MP-Plus (OV5640/OV5642) modules.  <br>
 The `RevC` folder is for ArduCAM-Shield-RevC or ArduCAM-Shield-RevC+ shields.  <br>
