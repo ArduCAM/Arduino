@@ -1,10 +1,10 @@
-# ArduCAM library Introduction
+# ArduCAM Library Introduction
 This is a opensource library for taking high resolution still images and short video clip on Arduino based platforms using ArduCAM's camera moduels. <br>
 The camera breakout boards should work with ArduCAM shield before connecting to the Arduino boards. <br>
 ArduCAM mini series camera modules like Mini-2MP, Mini-5MP(Plus) can be connected to Arduino boards directly. <br>
 In addition to Arduino, the library can be ported to any hardware platforms as long as they have I2C and SPI interface based on this ArduCAM library. <br>
 
-## Now supported cameras
+## Now Supported Cameras
 -	OV7660		0.3MP
 -	OV7670		0.3MP
 -	OV7675		0.3MP
@@ -19,7 +19,7 @@ In addition to Arduino, the library can be ported to any hardware platforms as l
 -	OV5642		5MP	JPEG
 -	OV5640		5MP JPEG
 
-## Supported MCU platform
+## Supported MCU Platform
 -	Theoretically support all Arduino families
 -	Arduino UNO R3			(Tested)
 -	Arduino MEGA2560 R3		(Tested)
