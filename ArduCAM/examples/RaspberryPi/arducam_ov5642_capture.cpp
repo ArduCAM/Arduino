@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
       myCAM.InitCAM();
       // Change to JPEG capture mode and initialize the OV2640 module   
       if (strcmp(argv[3], "320x240")  == 0) myCAM.OV5642_set_JPEG_size(OV5642_320x240);
-      else if (strcmp(argv[3], "320x240")  == 0) myCAM.OV5642_set_JPEG_size(OV5642_640x480);
+      else if (strcmp(argv[3], "640x480")  == 0) myCAM.OV5642_set_JPEG_size(OV5642_640x480);
       else if (strcmp(argv[3], "1280x960")  == 0) myCAM.OV5642_set_JPEG_size(OV5642_1280x960);
       else if (strcmp(argv[3], "1600x1200")  == 0) myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);
       else if (strcmp(argv[3], "2048x1536")  == 0) myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);

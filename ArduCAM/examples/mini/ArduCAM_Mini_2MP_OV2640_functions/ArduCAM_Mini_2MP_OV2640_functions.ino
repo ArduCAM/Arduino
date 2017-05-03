@@ -4,25 +4,15 @@
 // of the library with ArduCAM Mini camera, and can run on any Arduino platform.
 // This demo was made for ArduCAM_Mini_5MP_Plus.
 // It needs to be used in combination with PC software.
-// It can take photo continuously as video streaming.
-//
-// The demo sketch will do the following tasks:
-// 1. Set the camera to JPEG output mode.
-// 2. Read data from Serial port and deal with it
-// 3. If receive 0x00-0x08,the resolution will be changed.
-// 4. If receive 0x10,camera will capture a JPEG photo and buffer the image to FIFO.Then write datas to Serial port.
-// 5. If receive 0x20,camera will capture JPEG photo and write datas continuously.Stop when receive 0x21.
-// 6. If receive 0x30,camera will capture a BMP  photo and buffer the image to FIFO.Then write datas to Serial port.
-// 7. If receive 0x11 ,set camera to JPEG output mode.
-// 8. If receive 0x31 ,set camera to BMP  output mode.
+// It can test OV2640 functions
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM_Mini_5MP_Plus
 // and use Arduino IDE 1.6.8 compiler or above
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
-//This demo can only work on OV2640_MINI_2MP or OV5642_MINI_5MP or OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
-#if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP || defined OV3640_MINI_3MP)
+//This demo can only work on OV2640_MINI_2MP platform.
+#if !(defined OV2640_MINI_2MP)
   #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 #define BMPIMAGEOFFSET 66
@@ -41,8 +31,6 @@ int mode = 0;
 uint8_t start_capture = 0;
 #if defined (OV2640_MINI_2MP)
   ArduCAM myCAM( OV2640, CS );
-#elif defined (OV3640_MINI_3MP)
-ArduCAM myCAM( OV3640, CS );
 #else
   ArduCAM myCAM( OV5642, CS );
 #endif
@@ -89,19 +77,6 @@ while(1){
       Serial.println(F("ACK CMD OV2640 detected."));break;
     } 
   }
-#elif defined (OV3640_MINI_3MP)
-  while(1){
-    //Check if the camera module type is OV3640
-    myCAM.rdSensorReg16_8(OV3640_CHIPID_HIGH, &vid);
-    myCAM.rdSensorReg16_8(OV3640_CHIPID_LOW, &pid);
-    if ((vid != 0x36) || (pid != 0x4C)){
-      Serial.println(F("Can't find OV3640 module!"));
-      delay(1000);continue; 
-    }else{
-      Serial.println(F("OV3640 detected."));break;    
-    }
- } 
-  
 #else
   while(1){
     //Check if the camera module type is OV5642
@@ -122,8 +97,6 @@ myCAM.set_format(JPEG);
 myCAM.InitCAM();
 #if defined (OV2640_MINI_2MP)
   myCAM.OV2640_set_JPEG_size(OV2640_320x240);
-#elif defined (OV3640_MINI_3MP)
-  myCAM.OV3640_set_JPEG_size(OV3640_320x240);
 #else
   myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
   myCAM.OV5642_set_JPEG_size(OV5642_320x240);
@@ -144,115 +117,49 @@ if (Serial.available())
   switch (temp)
   {
     case 0:
-    #if defined (OV2640_MINI_2MP)
       myCAM.OV2640_set_JPEG_size(OV2640_160x120);delay(1000);
       Serial.println(F("ACK CMD switch to OV2640_160x120"));
-    #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_176x144);delay(1000);
-      Serial.println(F("ACK CMD switch to OV2640_160x120"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_320x240"));
-    #endif
-    temp = 0xff;
+     temp = 0xff;
     break;
     case 1:
-    #if defined (OV2640_MINI_2MP)
       myCAM.OV2640_set_JPEG_size(OV2640_176x144);delay(1000);
       Serial.println(F("ACK CMD switch to OV2640_176x144"));
-    #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_320x240);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_320x240"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_640x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_640x480"));
-    #endif
     temp = 0xff;
     break;
     case 2: 
-    #if defined (OV2640_MINI_2MP)
       myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
       Serial.println(F("ACK CMD switch to OV2640_320x240"));
-     #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_352x288);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_352x288"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_1024x768);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_1024x768"));
-    #endif
     temp = 0xff;
     break;
     case 3:
-    temp = 0xff;
-    #if defined (OV2640_MINI_2MP)
-      myCAM.OV2640_set_JPEG_size(OV2640_352x288);delay(1000);
-      Serial.println(F("ACK CMD switch to OV2640_352x288"));
-    #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_640x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_640x480"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_1280x960);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_1280x960"));
-    #endif
+    myCAM.OV2640_set_JPEG_size(OV2640_352x288);delay(1000);
+    Serial.println(F("ACK CMD switch to OV2640_352x288"));
+   temp = 0xff;
     break;
     case 4:
-    temp = 0xff;
-    #if defined (OV2640_MINI_2MP)
       myCAM.OV2640_set_JPEG_size(OV2640_640x480);delay(1000);
       Serial.println(F("ACK CMD switch to OV2640_640x480"));
-   #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_800x600);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_800x600"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_1600x1200"));
-    #endif
+    temp = 0xff;
     break;
     case 5:
+    myCAM.OV2640_set_JPEG_size(OV2640_800x600);delay(1000);
+    Serial.println(F("ACK CMD switch to OV2640_800x600"));
     temp = 0xff;
-    #if defined (OV2640_MINI_2MP)
-      myCAM.OV2640_set_JPEG_size(OV2640_800x600);delay(1000);
-      Serial.println(F("ACK CMD switch to OV2640_800x600"));
-    #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_1024x768);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_1024x768"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_2048x1536"));
-    #endif
     break;
     case 6:
+     myCAM.OV2640_set_JPEG_size(OV2640_1024x768);delay(1000);
+     Serial.println(F("ACK CMD switch to OV2640_1024x768"));
     temp = 0xff;
-    #if defined (OV2640_MINI_2MP)
-      myCAM.OV2640_set_JPEG_size(OV2640_1024x768);delay(1000);
-      Serial.println(F("ACK CMD switch to OV2640_1024x768"));
-   #elif defined (OV3640_MINI_3MP)
-      myCAM.OV3640_set_JPEG_size(OV3640_1280x960);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_1280x960"));
-    #else
-      myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_2592x1944"));
-    #endif
     break;
     case 7:
-    temp = 0xff;
-   #if defined (OV2640_MINI_2MP)
     myCAM.OV2640_set_JPEG_size(OV2640_1280x1024);delay(1000);
     Serial.println(F("ACK CMD switch to OV2640_1280x1024"));
-   #else
-      myCAM.OV3640_set_JPEG_size(OV3640_1600x1200);delay(1000);
-      Serial.println(F("ACK CMD switch to OV3640_1600x1200"));
-   #endif
+    temp = 0xff;
     break;
     case 8:
-    temp = 0xff;
-   #if defined (OV2640_MINI_2MP)
-     myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);delay(1000);
-     Serial.println(F("ACK CMD switch to OV2640_1600x1200"));
-   #else
-     myCAM.OV3640_set_JPEG_size(OV3640_2048x1536);delay(1000);
-     Serial.println(F("ACK CMD switch to OV3640_2048x1536"));
-   #endif
+    myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);delay(1000);
+    Serial.println(F("ACK CMD switch to OV2640_1600x1200"));
+     temp = 0xff;
     break;
     case 0x10:
     mode = 1;
@@ -290,8 +197,90 @@ if (Serial.available())
     myCAM.wrSensorReg16_8(0x3818, 0x81);
     myCAM.wrSensorReg16_8(0x3621, 0xA7);
     break;
-    default:
-    break;
+    case 0x40:
+    myCAM.OV2640_set_Light_Mode(Auto);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Auto"));break;
+     case 0x41:
+    myCAM.OV2640_set_Light_Mode(Sunny);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Sunny"));break;
+     case 0x42:
+    myCAM.OV2640_set_Light_Mode(Cloudy);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Cloudy"));break;
+     case 0x43:
+    myCAM.OV2640_set_Light_Mode(Office);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Office"));break;
+   case 0x44:
+    myCAM.OV2640_set_Light_Mode(Home);   temp = 0xff;
+   Serial.println(F("ACK CMD Set to Home"));break;
+   case 0x50:
+    myCAM.OV2640_set_Color_Saturation(Saturation2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation+2"));break;
+   case 0x51:
+     myCAM.OV2640_set_Color_Saturation(Saturation1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation+1"));break;
+   case 0x52:
+    myCAM.OV2640_set_Color_Saturation(Saturation0); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation+0"));break;
+    case 0x53:
+    myCAM. OV2640_set_Color_Saturation(Saturation_1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation-1"));break;
+    case 0x54:
+     myCAM.OV2640_set_Color_Saturation(Saturation_2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation-2"));break; 
+   case 0x60:
+    myCAM.OV2640_set_Brightness(Brightness2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness+2"));break;
+   case 0x61:
+     myCAM.OV2640_set_Brightness(Brightness1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness+1"));break;
+   case 0x62:
+    myCAM.OV2640_set_Brightness(Brightness0); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness+0"));break;
+    case 0x63:
+    myCAM. OV2640_set_Brightness(Brightness_1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness-1"));break;
+    case 0x64:
+     myCAM.OV2640_set_Brightness(Brightness_2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness-2"));break; 
+    case 0x70:
+      myCAM.OV2640_set_Contrast(Contrast2);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast+2"));break; 
+    case 0x71:
+      myCAM.OV2640_set_Contrast(Contrast1);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast+1"));break;
+     case 0x72:
+      myCAM.OV2640_set_Contrast(Contrast0);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast+0"));break;
+    case 0x73:
+      myCAM.OV2640_set_Contrast(Contrast_1);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast-1"));break;
+   case 0x74:
+      myCAM.OV2640_set_Contrast(Contrast_2);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast-2"));break;
+   case 0x80:
+    myCAM.OV2640_set_Special_effects(Antique);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Antique"));break;
+   case 0x81:
+    myCAM.OV2640_set_Special_effects(Bluish);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Bluish"));break;
+   case 0x82:
+    myCAM.OV2640_set_Special_effects(Greenish);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Greenish"));break;  
+   case 0x83:
+    myCAM.OV2640_set_Special_effects(Reddish);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Reddish"));break;  
+   case 0x84:
+    myCAM.OV2640_set_Special_effects(BW);temp = 0xff;
+    Serial.println(F("ACK CMD Set to BW"));break; 
+  case 0x85:
+    myCAM.OV2640_set_Special_effects(Negative);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Negative"));break; 
+  case 0x86:
+    myCAM.OV2640_set_Special_effects(BWnegative);temp = 0xff;
+    Serial.println(F("ACK CMD Set to BWnegative"));break;   
+   case 0x87:
+    myCAM.OV2640_set_Special_effects(Normal);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Normal"));break;     
   }
 }
 if (mode == 1)
@@ -324,6 +313,93 @@ else if (mode == 2)
       Serial.println(F("ACK CMD CAM stop video streaming."));
       break;
     }
+    switch (temp)
+    {
+       case 0x40:
+    myCAM.OV2640_set_Light_Mode(Auto);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Auto"));break;
+     case 0x41:
+    myCAM.OV2640_set_Light_Mode(Sunny);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Sunny"));break;
+     case 0x42:
+    myCAM.OV2640_set_Light_Mode(Cloudy);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Cloudy"));break;
+     case 0x43:
+    myCAM.OV2640_set_Light_Mode(Office);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Office"));break;
+   case 0x44:
+    myCAM.OV2640_set_Light_Mode(Home);   temp = 0xff;
+   Serial.println(F("ACK CMD Set to Home"));break;
+   case 0x50:
+    myCAM.OV2640_set_Color_Saturation(Saturation2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation+2"));break;
+   case 0x51:
+     myCAM.OV2640_set_Color_Saturation(Saturation1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation+1"));break;
+   case 0x52:
+    myCAM.OV2640_set_Color_Saturation(Saturation0); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation+0"));break;
+    case 0x53:
+    myCAM. OV2640_set_Color_Saturation(Saturation_1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation-1"));break;
+    case 0x54:
+     myCAM.OV2640_set_Color_Saturation(Saturation_2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Saturation-2"));break; 
+   case 0x60:
+    myCAM.OV2640_set_Brightness(Brightness2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness+2"));break;
+   case 0x61:
+     myCAM.OV2640_set_Brightness(Brightness1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness+1"));break;
+   case 0x62:
+    myCAM.OV2640_set_Brightness(Brightness0); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness+0"));break;
+    case 0x63:
+    myCAM. OV2640_set_Brightness(Brightness_1); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness-1"));break;
+    case 0x64:
+     myCAM.OV2640_set_Brightness(Brightness_2); temp = 0xff;
+     Serial.println(F("ACK CMD Set to Brightness-2"));break; 
+    case 0x70:
+      myCAM.OV2640_set_Contrast(Contrast2);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast+2"));break; 
+    case 0x71:
+      myCAM.OV2640_set_Contrast(Contrast1);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast+1"));break;
+     case 0x72:
+      myCAM.OV2640_set_Contrast(Contrast0);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast+0"));break;
+    case 0x73:
+      myCAM.OV2640_set_Contrast(Contrast_1);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast-1"));break;
+   case 0x74:
+      myCAM.OV2640_set_Contrast(Contrast_2);temp = 0xff;
+     Serial.println(F("ACK CMD Set to Contrast-2"));break;
+   case 0x80:
+    myCAM.OV2640_set_Special_effects(Antique);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Antique"));break;
+   case 0x81:
+    myCAM.OV2640_set_Special_effects(Bluish);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Bluish"));break;
+   case 0x82:
+    myCAM.OV2640_set_Special_effects(Greenish);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Greenish"));break;  
+   case 0x83:
+    myCAM.OV2640_set_Special_effects(Reddish);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Reddish"));break;  
+   case 0x84:
+    myCAM.OV2640_set_Special_effects(BW);temp = 0xff;
+    Serial.println(F("ACK CMD Set to BW"));break; 
+  case 0x85:
+    myCAM.OV2640_set_Special_effects(Negative);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Negative"));break; 
+  case 0x86:
+    myCAM.OV2640_set_Special_effects(BWnegative);temp = 0xff;
+    Serial.println(F("ACK CMD Set to BWnegative"));break;   
+   case 0x87:
+    myCAM.OV2640_set_Special_effects(Normal);temp = 0xff;
+    Serial.println(F("ACK CMD Set to Normal"));break;     
+  }
     if (start_capture == 2)
     {
       myCAM.flush_fifo();

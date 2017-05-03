@@ -88,8 +88,9 @@
 	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
 	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings		
 	2016/10/05	V4.0.0	by Lee	Add support for second generation of ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).				
-    2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi.
-	2017/01/22  V4.0.2  by Lee	Add support for OV3640 camera.
+  2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi.
+  2017/01/22  V4.0.2  by Lee	Add support for OV3640 Mini 3MP camera.
+  2017/04/27  V4.1.0  by Lee	Add support for OV2640/OV5640/OV5642 functions.
 --------------------------------------*/
 
 #ifndef ArduCAM_H
@@ -269,34 +270,34 @@
 #define OV2640_1600x1200	8	//1600x1200
 
 
-#define OV3640_176x144 		0	//176x144
-#define OV3640_320x240 		1	//320x240
-#define OV3640_352x288 		2	//352x288
-#define OV3640_640x480		3	//640x480
-#define OV3640_800x600 		4	//800x600
-#define OV3640_1024x768		5	//1024x768
+#define OV3640_176x144 		  0	//176x144
+#define OV3640_320x240 		  1	//320x240
+#define OV3640_352x288 		  2	//352x288
+#define OV3640_640x480		  3	//640x480
+#define OV3640_800x600 		  4	//800x600
+#define OV3640_1024x768		  5	//1024x768
 #define OV3640_1280x960	    6	//1280x1024
-#define OV3640_1600x1200	7	//1600x1200
-#define OV3640_2048x1536	8	//2048x1536
+#define OV3640_1600x1200	  7	//1600x1200
+#define OV3640_2048x1536	  8	//2048x1536
 
-#define OV5642_320x240 		0	//320x240
-#define OV5642_640x480		1	//640x480
-#define OV5642_1024x768		2	//1024x768
-#define OV5642_1280x960 	3	//1280x960
-#define OV5642_1600x1200	4	//1600x1200
-#define OV5642_2048x1536	5	//2048x1536
-#define OV5642_2592x1944	6	//2592x1944
-#define OV5642_1920x1080	7 //1920x1080
+#define OV5642_320x240 		  0	//320x240
+#define OV5642_640x480		  1	//640x480
+#define OV5642_1024x768		  2	//1024x768
+#define OV5642_1280x960 	  3	//1280x960
+#define OV5642_1600x1200	  4	//1600x1200
+#define OV5642_2048x1536	  5	//2048x1536
+#define OV5642_2592x1944	  6	//2592x1944
+#define OV5642_1920x1080	  7 //1920x1080
 
-#define OV5640_320x240 		0	//320x240 
-#define OV5640_352x288		1	//352x288
+#define OV5640_320x240 		  0	//320x240 
+#define OV5640_352x288		  1	//352x288
 #define OV5640_640x480 	    2	//640x480
 #define OV5640_800x480	    3	//800x480
 #define OV5640_1024x768	    4	//1024x768
 #define OV5640_1280x960	    5	//1280x960	
-#define OV5640_1600x1200	6	 //1600x1200
-#define OV5640_2048x1536	7  //2048x1536
-#define OV5640_2592x1944	8	 //2592x1944
+#define OV5640_1600x1200	  6	 //1600x1200
+#define OV5640_2048x1536	  7  //2048x1536
+#define OV5640_2592x1944	  8	 //2592x1944
 
 
 
@@ -308,6 +309,15 @@
 #define Office               3
 #define Home                 4
 
+#define Advanced_AWB         0
+#define Simple_AWB           1
+#define Manual_day           2
+#define Manual_A             3
+#define Manual_cwf           4
+#define Manual_cloudy        5
+
+
+
 //Color Saturation 
 
 #define Saturation4          0
@@ -315,14 +325,23 @@
 #define Saturation2          2
 #define Saturation1          3
 #define Saturation0          4
+#define Saturation_1         5
+#define Saturation_2         6
+#define Saturation_3         7
+#define Saturation_4         8
 
 //Brightness
 
-#define Brightbess4          0
-#define Brightbess3          1
-#define Brightbess2          2
-#define Brightbess1          3
-#define Brightbess0          4
+#define Brightness4          0
+#define Brightness3          1
+#define Brightness2          2
+#define Brightness1          3
+#define Brightness0          4
+#define Brightness_1         5
+#define Brightness_2         6
+#define Brightness_3         7
+#define Brightness_4         8
+
 
 //Contrast
 
@@ -331,17 +350,116 @@
 #define Contrast2            2
 #define Contrast1            3
 #define Contrast0            4
+#define Contrast_1           5
+#define Contrast_2           6
+#define Contrast_3           7
+#define Contrast_4           8
+
+
+
+#define degree_180            0
+#define degree_150            1
+#define degree_120            2
+#define degree_90             3
+#define degree_60             4
+#define degree_30             5
+#define degree_0              6
+#define degree30              7
+#define degree60              8
+#define degree90              9
+#define degree120             10
+#define degree150             11
+
+
 
 //Special effects
 
-#define Antique              0
-#define Bluish               1
-#define Greenish             2
-#define Reddish              3
-#define BW                   4
-#define Negative             5
-#define BWnegative           6
-#define Normal               7
+#define Antique                      0
+#define Bluish                       1
+#define Greenish                     2
+#define Reddish                      3
+#define BW                           4
+#define Negative                     5
+#define BWnegative                   6
+#define Normal                       7
+#define Sepia                        8
+#define Overexposure                 9
+#define Solarize                     10
+#define  Blueish                     11
+#define Yellowish                    12
+
+#define Exposure_17_EV                    0
+#define Exposure_13_EV                    1
+#define Exposure_10_EV                    2
+#define Exposure_07_EV                    3
+#define Exposure_03_EV                    4
+#define Exposure_default                  5
+#define Exposure07_EV                     6
+#define Exposure10_EV                     7
+#define Exposure13_EV                     8
+#define Exposure17_EV                     9
+#define Exposure03_EV                     10
+
+
+#define Auto_Sharpness_default              0
+#define Auto_Sharpness1                     1
+#define Auto_Sharpness2                     2
+#define Manual_Sharpnessoff                 3
+#define Manual_Sharpness1                   4
+#define Manual_Sharpness2                   5
+#define Manual_Sharpness3                   6
+#define Manual_Sharpness4                   7
+#define Manual_Sharpness5                   8
+
+
+
+#define Sharpness1                         0
+#define Sharpness2                         1
+#define Sharpness3                         2
+#define Sharpness4                         3
+#define Sharpness5                         4
+#define Sharpness6                         5
+#define Sharpness7                         6
+#define Sharpness8                         7
+#define Sharpness_auto                       8
+
+
+
+
+#define EV3                                 0
+#define EV2                                 1
+#define EV1                                 2
+#define EV0                                 3
+#define EV_1                                4
+#define EV_2                                5
+#define EV_3                                6
+
+#define MIRROR                              0
+#define FLIP                                1
+#define MIRROR_FLIP                         2
+
+
+
+
+#define high_quality                         0
+#define default_quality                      1
+#define low_quality                          2
+
+#define Color_bar                      0
+#define Color_square                   1
+#define BW_square                      2
+#define DLI                            3
+
+
+#define Night_Mode_On                  0
+#define Night_Mode_Off                 1
+
+#define Off                            0
+#define Manual_50HZ                    1
+#define Manual_60HZ                    2
+#define Auto_Detection                 3
+
+
 
 
 
@@ -511,13 +629,59 @@ class ArduCAM
 	void OV3640_set_JPEG_size(uint8_t size);
 	void OV5642_set_JPEG_size(uint8_t size);
 	void OV5640_set_JPEG_size(uint8_t size);
+	
 	void OV5642_set_RAW_size (uint8_t size);
 	
-	void set_Light_Mode(uint8_t Light_Mode);
-	void set_Color_Saturation(uint8_t Color_Saturation);
-	void set_Brightness(uint8_t Brightness);
-	void set_Contrast(uint8_t Contrast);
-	void set_Special_effects(uint8_t Special_effect);
+	
+	void OV2640_set_Light_Mode(uint8_t Light_Mode);
+  void OV3640_set_Light_Mode(uint8_t Light_Mode);
+	void OV5642_set_Light_Mode(uint8_t Light_Mode);
+	void OV5640_set_Light_Mode(uint8_t Light_Mode);
+	
+	void OV2640_set_Color_Saturation(uint8_t Color_Saturation);
+	void OV3640_set_Color_Saturation(uint8_t Color_Saturation);
+	void OV5642_set_Color_Saturation(uint8_t Color_Saturation);
+	void OV5640_set_Color_Saturation(uint8_t Color_Saturation);
+	
+	
+	void OV2640_set_Brightness(uint8_t Brightness);
+	void OV3640_set_Brightness(uint8_t Brightness);
+  void OV5642_set_Brightness(uint8_t Brightness);
+  void OV5640_set_Brightness(uint8_t Brightness);
+	
+	void OV2640_set_Contrast(uint8_t Contrast);
+	void OV3640_set_Contrast(uint8_t Contrast);
+	void OV5642_set_Contrast(uint8_t Contrast);
+	void OV5640_set_Contrast(uint8_t Contrast);
+	
+	void OV2640_set_Special_effects(uint8_t Special_effect);
+	void OV3640_set_Special_effects(uint8_t Special_effect);
+	void OV5642_set_Special_effects(uint8_t Special_effect);
+	void OV5640_set_Special_effects(uint8_t Special_effect);
+	
+	
+	void OV3640_set_Exposure_level(uint8_t level);
+	void OV3640_set_Sharpness(uint8_t Sharpness);
+	void OV3640_set_Mirror_Flip(uint8_t Mirror_Flip);
+	
+	
+	void OV5642_set_hue(uint8_t degree);
+	void OV5642_set_Exposure_level(uint8_t level);
+	void OV5642_set_Sharpness(uint8_t Sharpness);
+  void OV5642_set_Mirror_Flip(uint8_t Mirror_Flip);
+  void OV5642_set_Compress_quality(uint8_t quality);
+  void OV5642_Test_Pattern(uint8_t Pattern);
+   
+  
+  void OV5640_set_EV(uint8_t EV);
+  void OV5640_set_Night_Mode(uint8_t Night_mode);
+  void OV5640_set_Banding_Filter(uint8_t Banding_Filter);
+  
+  
+  
+  
+	
+	
 	
 	void set_format(byte fmt);
 	

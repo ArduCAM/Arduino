@@ -1,5 +1,6 @@
 ArduCAM	KEYWORD1	
 OV2640_MINI_2MP	KEYWORD1
+OV3640_MINI_3MP	KEYWORD1
 OV5642_MINI_5MP	KEYWORD1
 OV5642_MINI_5MP_BIT_ROTATION_FIXED	KEYWORD1
 OV5642_MINI_5MP_PLUS	KEYWORD1
@@ -25,8 +26,10 @@ read_fifo	KEYWORD2
 read_reg	KEYWORD2
 write_reg	KEYWORD2
 OV2640_set_JPEG_size	KEYWORD2
+OV3640_set_JPEG_size	KEYWORD2
 OV5640_set_JPEG_size	KEYWORD2
 OV5642_set_JPEG_size	KEYWORD2
+OV5642_set_RAW_size	KEYWORD2
 read_fifo_burst	KEYWORD2
 set_format	KEYWORD2 
 wrSensorReg8_8	KEYWORD2 
@@ -41,6 +44,53 @@ CS_HIGH	KEYWORD2
 CS_LOW	KEYWORD2 
 read_fifo_length	KEYWORD2
 set_fifo_burst	KEYWORD2
+
+OV2640_set_Light_Mode	KEYWORD2
+OV3640_set_Light_Mode	KEYWORD2
+OV5642_set_Light_Mode	KEYWORD2
+OV5640_set_Light_Mode	KEYWORD2 
+
+
+OV2640_set_Brightness	KEYWORD2
+OV3640_set_Brightness	KEYWORD2
+OV5642_set_Brightness	KEYWORD2
+OV5640_set_Brightness	KEYWORD2
+
+OV2640_set_Color_Saturation	KEYWORD2
+OV3640_set_Color_Saturation	KEYWORD2
+OV5642_set_Color_Saturation	KEYWORD2
+OV5640_set_Color_Saturation	KEYWORD2 
+
+
+OV2640_set_Contrast	KEYWORD2
+OV3640_set_Contrast	KEYWORD2
+OV5642_set_Contrast	KEYWORD2
+OV5640_set_Contrast	KEYWORD2
+
+
+OV2640_set_Special_effects	KEYWORD2
+OV3640_set_Special_effects	KEYWORD2
+OV5642_set_Special_effects	KEYWORD2
+OV5640_set_Special_effects	KEYWORD2
+
+OV3640_set_Exposure_level	KEYWORD2
+OV3640_set_Sharpness	KEYWORD2
+OV3640_set_Mirror_Flip	KEYWORD2
+OV3640_set_EV	KEYWORD2
+
+OV5642_set_hue	KEYWORD2
+OV5642_set_Exposure_level	KEYWORD2
+OV5642_set_Sharpness	KEYWORD2
+OV5642_set_Mirror_Flip	KEYWORD2
+OV5642_set_Compress_quality	KEYWORD2
+OV5642_Test_Pattern	KEYWORD2
+OV5640_set_EV	KEYWORD2
+OV5640_set_Night_Mode	KEYWORD2
+OV5640_set_Banding_Filter	KEYWORD2
+
+
+
+
 
 OV7670	LITERAL1
 MT9D111_A	LITERAL1
@@ -61,6 +111,7 @@ MT9T112	LITERAL1
 OV9655	LITERAL1
 JPEG	LITERAL1
 BMP	LITERAL1
+RAW	LITERAL1
 FIFO_SIZE1	LITERAL1
 FIFO_SIZE2	LITERAL1
 FIFO_SIZE3	LITERAL1
@@ -73,7 +124,17 @@ OV2640_640x480	LITERAL1
 OV2640_800x600	LITERAL1
 OV2640_1024x768	LITERAL1
 OV2640_1280x1024	LITERAL1
-OV2640_1600x1200	LITERAL1  
+OV2640_1600x1200	LITERAL1 
+
+OV3640_176x144	LITERAL1
+OV3640_320x240	LITERAL1
+OV3640_352x288	LITERAL1
+OV3640_640x480	LITERAL1
+OV3640_800x600	LITERAL1
+OV3640_1024x768	LITERAL1
+OV3640_1280x960	LITERAL1
+OV3640_1600x1200	LITERAL1
+OV3640_2048x1536	LITERAL1 
 
 OV5640_320x240	LITERAL1
 OV5640_352x288	LITERAL1
@@ -92,6 +153,7 @@ OV5642_1280x960	LITERAL1
 OV5642_1600x1200	LITERAL1
 OV5642_2048x1536	LITERAL1
 OV5642_2592x1944	LITERAL1
+OV5642_1920x1080	LITERAL1
                      
 ARDUCHIP_TEST1	LITERAL1
 ARDUCHIP_TEST2	LITERAL1                       
@@ -117,6 +179,149 @@ GPIO_RESET_MASK	LITERAL1
 GPIO_POWER_MASK	LITERAL1
 BURST_FIFO_READ	LITERAL1         
 ARDUCHIP_REV	LITERAL1
+
+Auto	LITERAL1          
+Sunny	LITERAL1         
+Cloudy	LITERAL1        
+Office	LITERAL1        
+Home	LITERAL1          
+Advanced_AWB	LITERAL1  
+Simple_AWB	LITERAL1    
+Manual_day	LITERAL1    
+Manual_A	LITERAL1      
+Manual_cwf	LITERAL1    
+Manual_cloudy	LITERAL1
+
+Saturation4	LITERAL1  
+Saturation3	LITERAL1  
+Saturation2	LITERAL1  
+Saturation1	LITERAL1  
+Saturation0	LITERAL1  
+Saturation_1	LITERAL1 
+Saturation_2	LITERAL1 
+Saturation_3	LITERAL1 
+Saturation_4	LITERAL1 
+
+Brightness4	LITERAL1 
+Brightness3	LITERAL1 
+Brightness2	LITERAL1 
+Brightness1	LITERAL1 
+Brightness0	LITERAL1 
+Brightness_1	LITERAL1
+Brightness_2	LITERAL1
+Brightness_3	LITERAL1
+Brightness_4	LITERAL1
+
+
+Contrast4	LITERAL1 
+Contrast3	LITERAL1 
+Contrast2	LITERAL1 
+Contrast1	LITERAL1 
+Contrast0	LITERAL1 
+Contrast_1	LITERAL1
+Contrast_2	LITERAL1
+Contrast_3	LITERAL1
+Contrast_4	LITERAL1
+          
+          
+          
+degree_180	LITERAL1
+degree_150	LITERAL1
+degree_120	LITERAL1
+degree_90	LITERAL1 
+degree_60	LITERAL1 
+degree_30	LITERAL1 
+degree_0	LITERAL1  
+degree30	LITERAL1  
+degree60	LITERAL1  
+degree90	LITERAL1  
+degree120	LITERAL1 
+degree150	LITERAL1 
+
+
+Antique	LITERAL1                   
+Bluish	LITERAL1                    
+Greenish	LITERAL1                  
+Reddish	LITERAL1                   
+BW	LITERAL1                        
+Negative	LITERAL1                  
+BWnegative	LITERAL1                
+Normal	LITERAL1                    
+Sepia	LITERAL1                     
+Overexposure	LITERAL1              
+Solarize	LITERAL1                  
+Blueish	LITERAL1  
+Yellowish	LITERAL1                
+                          
+Exposure_17_EV	LITERAL1            
+Exposure_13_EV	LITERAL1            
+Exposure_10_EV	LITERAL1            
+Exposure_07_EV	LITERAL1            
+Exposure_03_EV	LITERAL1            
+Exposure_default	LITERAL1          
+Exposure07_EV	LITERAL1             
+Exposure10_EV	LITERAL1             
+Exposure13_EV	LITERAL1             
+Exposure17_EV	LITERAL1             
+                          
+                          
+Auto_Sharpness_default	LITERAL1    
+Auto_Sharpness1	LITERAL1           
+Auto_Sharpness2	LITERAL1           
+Manual_Sharpnessoff	LITERAL1       
+Manual_Sharpness1	LITERAL1         
+Manual_Sharpness2	LITERAL1         
+Manual_Sharpness3	LITERAL1         
+Manual_Sharpness4	LITERAL1         
+Manual_Sharpness5	LITERAL1 
+
+Sharpness1	LITERAL1    
+Sharpness2	LITERAL1    
+Sharpness3	LITERAL1    
+Sharpness4	LITERAL1    
+Sharpness5	LITERAL1    
+Sharpness6	LITERAL1    
+Sharpness7	LITERAL1    
+Sharpness8	LITERAL1    
+Sharpness_auto	LITERAL1
+        
+                          
+                          
+EV3	LITERAL1                       
+EV2	LITERAL1                       
+EV1	LITERAL1                       
+EV0	LITERAL1                       
+EV_1	LITERAL1                      
+EV_2	LITERAL1                      
+EV_3	LITERAL1                      
+                          
+MIRROR	LITERAL1                    
+FLIP	LITERAL1                      
+MIRROR_FLIP	LITERAL1  
+
+
+
+high_quality	LITERAL1    
+default_quality	LITERAL1 
+low_quality	LITERAL1     
+                
+Color_bar	LITERAL1       
+Color_square	LITERAL1    
+BW_square	LITERAL1       
+DLI	LITERAL1             
+                
+                
+Night_Mode_On	LITERAL1   
+Night_Mode_Off	LITERAL1  
+                
+Off	LITERAL1             
+Manual_50HZ	LITERAL1     
+Manual_60HZ	LITERAL1     
+Auto_Detection	LITERAL1  
+
+
+             
+
 VER_LOW_MASK	LITERAL1
 VER_HIGH_MASK	LITERAL1                   	  
 ARDUCHIP_TRIG	LITERAL1
@@ -125,6 +330,8 @@ SHUTTER_MASK	LITERAL1
 CAP_DONE_MASK	LITERAL1
 OV2640_CHIPID_HIGH	LITERAL1
 OV2640_CHIPID_LOW	LITERAL1
+OV3640_CHIPID_HIGH	LITERAL1
+OV3640_CHIPID_LOW	LITERAL1
 OV5640_CHIPID_HIGH	LITERAL1
 OV5640_CHIPID_LOW	LITERAL1
 OV5642_CHIPID_HIGH	LITERAL1

@@ -10,7 +10,7 @@
 // 2. Read data from Serial port and deal with it
 // 3. Save the images to SD card.
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM Mini camera
-// and use Arduino IDE 1.5.2 compiler or above
+// and use Arduino IDE 1.6.8 compiler or above
 
 #include <Wire.h>
 #include <ArduCAM.h>
@@ -18,7 +18,7 @@
 #include <SD.h>
 #include "memorysaver.h"
 //This demo can only work on OV2640_MINI_2MP and  OV5642_MINI_5MP and OV5642_MINI_5MP_BIT_ROTATION_FIXED platform.
-#if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP)
+#if !(defined OV5642_MINI_5MP || defined OV5642_MINI_5MP_BIT_ROTATION_FIXED || defined OV2640_MINI_2MP || defined OV3640_MINI_3MP)
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 
@@ -41,6 +41,11 @@ ArduCAM myCAM1(OV2640, CS1);
 ArduCAM myCAM2(OV2640, CS2);
 ArduCAM myCAM3(OV2640, CS3);
 ArduCAM myCAM4(OV2640, CS4);
+#elif defined (OV3640_MINI_3MP)
+ArduCAM myCAM1(OV3640, CS1);
+ArduCAM myCAM2(OV3640, CS2);
+ArduCAM myCAM3(OV3640, CS3);
+ArduCAM myCAM4(OV3640, CS4);
 #else
 ArduCAM myCAM1(OV5642, CS1);
 ArduCAM myCAM2(OV5642, CS2);
@@ -125,6 +130,18 @@ SPI.begin();
          Serial.println(F("OV2640 detected."));break;
         }
     } 
+#elif defined (OV3640_MINI_3MP)
+  while(1){
+      //Check if the camera module type is OV2640
+     myCAM1.rdSensorReg8_8(OV3640_CHIPID_HIGH, &vid);
+     myCAM1.rdSensorReg8_8(OV3640_CHIPID_LOW, &pid);
+     if ((vid != 0x36 ) && ( pid != 0x4C)){
+      Serial.println(F("Can't find OV3640 module!"));
+      delay(1000);continue;
+      }else{
+         Serial.println(F("OV3640 detected."));break;
+        }
+    } 
   #else
   while(1){
    //Check if the camera module type is OV5642
@@ -142,7 +159,9 @@ SPI.begin();
     myCAM1.set_format(JPEG);
     myCAM1.InitCAM();
   #if defined (OV2640_MINI_2MP)
-    myCAM1.OV2640_set_JPEG_size(OV2640_320x240);
+    myCAM1.OV2640_set_JPEG_size(OV2640_640x480);
+  #elif defined (OV3640_MINI_3MP)
+    myCAM1.OV3640_set_JPEG_size(OV3640_640x480);
   #else
     myCAM1.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
     myCAM2.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH

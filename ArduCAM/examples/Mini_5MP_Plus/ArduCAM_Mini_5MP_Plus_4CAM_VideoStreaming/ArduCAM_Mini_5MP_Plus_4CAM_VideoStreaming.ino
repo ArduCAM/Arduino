@@ -32,7 +32,6 @@ const int CS4 = 7;
 
 //the falgs of camera modules
 bool cam1=true, cam2=true, cam3=true, cam4=true;
-bool cam1done = false, cam2done = false, cam3done = false, cam4done = false;
 //the flag of JEPG data header
 bool is_header;
 //the falg data of 4 cameras' data
@@ -233,119 +232,96 @@ if (Serial.available())
     temp=0xff;
     break;
     #endif
-    case 0x15: 
-    if(cam1){
-      Serial.println(F("ACK CMD CAM1 start Capture")); 
-      myCAM1.flush_fifo(); 
-      myCAM1.clear_fifo_flag();   
-      myCAM1.start_capture(); 
-    }
-    if(cam2){
-      Serial.println(F("ACK CMD CAM2 start Capture")); 
-      myCAM2.flush_fifo(); 
-      myCAM2.clear_fifo_flag();   
-      myCAM2.start_capture();  
-    }
-    if(cam3){
-      Serial.println(F("ACK CMD CAM3 start Capture")); 
-      myCAM3.flush_fifo();
-      myCAM3.clear_fifo_flag();   
-      myCAM3.start_capture();   
-    } 
-    if(cam4){
-      Serial.println(F("ACK CMD CAM4 start Capture")); 
-      myCAM4.flush_fifo();  
-      myCAM4.clear_fifo_flag();   
-      myCAM4.start_capture(); 
-    }  
-    break;
-  }
-}
-
-if(myCAM1.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK) && cam1 && (!cam1done))
-{
-  cam1done = true;
-  myCAM1.clear_fifo_flag();
-  count ++;
-}
-if(myCAM2.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK) && cam2 && (!cam2done))
-{
-  cam2done = true;
-  myCAM2.clear_fifo_flag();
-  count ++;
-}
-if(myCAM3.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK) && cam3 && (!cam3done))
-{
-  cam3done = true;
-  myCAM3.clear_fifo_flag();
-  count ++;
-}
-if(myCAM4.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK) && cam4 && (!cam4done))
-{
-  cam4done = true;
-  myCAM4.clear_fifo_flag();
-  count ++;
-}
-if(count >= 1)
-{
-  if(cam1done==true)
-  {
-    count--;
-    Serial.println(F("ACK CMD CAM1 Capture Done."));
+    case 0x10: 
+  if(cam1){
     flag[2]=0x01;//flag of cam1
     for(int m=0;m<5;m++)
     {
       Serial.write(flag[m]);
     }
     read_fifo_burst(myCAM1);
-    cam1done = false;
+  }
+  if(cam2){
+     flag[2]=0x02;//flag of cam1
+    for(int m=0;m<5;m++)
+    {
+      Serial.write(flag[m]);
+    }
+    read_fifo_burst(myCAM2); 
+  }
+  if(cam3){
+     flag[2]=0x03;//flag of cam1
+    for(int m=0;m<5;m++)
+    {
+      Serial.write(flag[m]);
+    }
+    read_fifo_burst(myCAM3); 
   } 
-  if(cam2done == true)
-  {
-    count--;
-    Serial.println(F("ACK CMD CAM2 Capture Done."));
-    flag[2]=0x02;//flag of cam2
-    for(int m=0;m<5;m++)
-    {
-      Serial.write(flag[m]);
-    }
-    read_fifo_burst(myCAM2);
-    cam2done = false;
-  }
-  if(cam3done == true)
-  {
-    count--;
-    Serial.println(F("ACK CMD CAM3 Capture Done."));
-    flag[2]=0x03;//flag of cam3
-    for(int m=0;m<5;m++)
-    {
-      Serial.write(flag[m]);
-    }
-    read_fifo_burst(myCAM3);
-    cam3done = false;
-  }
-  if(cam4done == true)
-  {
-    count--;
-    Serial.println(F("ACK CMD CAM4 Capture Done."));    
-    flag[2]=0x04;//flag of cam4
+  if(cam4){
+    flag[2]=0x04;//flag of cam1
     for(int m=0;m<5;m++)
     {
       Serial.write(flag[m]);
     }
     read_fifo_burst(myCAM4);
-    cam4done = false;
+  }  
+  break;
+  case 0x20: 
+  while(1){
+    if (Serial.available()){
+      temp = Serial.read();
+      if (temp == 0x21)break;
+}
+   if(cam1){
+    flag[2]=0x01;//flag of cam1
+    for(int m=0;m<5;m++)
+    {
+      Serial.write(flag[m]);
+    }
+    read_fifo_burst(myCAM1);
+  }
+  if(cam2){
+     flag[2]=0x02;//flag of cam1
+    for(int m=0;m<5;m++)
+    {
+      Serial.write(flag[m]);
+    }
+    read_fifo_burst(myCAM2); 
+  }
+  if(cam3){
+     flag[2]=0x03;//flag of cam1
+    for(int m=0;m<5;m++)
+    {
+      Serial.write(flag[m]);
+    }
+    read_fifo_burst(myCAM3); 
   } 
+  if(cam4){
+    
+    flag[2]=0x04;//flag of cam1
+    for(int m=0;m<5;m++)
+    {
+      Serial.write(flag[m]);
+    }
+    read_fifo_burst(myCAM4);
+  }  
+    }
+    break;
+    
+  }
 }
 }
 uint8_t read_fifo_burst(ArduCAM myCAM)
 {
 uint8_t temp,temp_last;
 uint32_t length = 0;
+myCAM.flush_fifo(); 
+myCAM.clear_fifo_flag();   
+myCAM.start_capture(); 
+while(!myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK));
 length = myCAM.read_fifo_length();
 myCAM.CS_LOW();
 myCAM.set_fifo_burst();
-Serial.println(F("ACK IMG"));
 length--;
 while( length-- )
 {
@@ -357,6 +333,7 @@ while( length-- )
   }
   else if((temp == 0xD8) & (temp_last == 0xFF))
   {
+    Serial.println(F("ACK IMG"));
     is_header = true;
     Serial.write(temp_last);
     Serial.write(temp);
