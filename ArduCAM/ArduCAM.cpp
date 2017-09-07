@@ -257,9 +257,8 @@ void ArduCAM::InitCAM()
         break;
       }
     case MT9D111_A:
-    case MT9D111_B:
-      {
-#if defined MT9D111_CAM
+    	    {
+//#if defined MT9D111_CAM
         wrSensorRegs8_16(MT9D111_QVGA_30fps);
         delay(1000);
         wrSensorReg8_16(0x97, 0x0020);
@@ -267,7 +266,21 @@ void ArduCAM::InitCAM()
         wrSensorReg8_16(0x21, 0x8403); //Mirror Column
         wrSensorReg8_16(0xC6, 0xA103);//SEQ_CMD
         wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
-#endif
+//#endif
+        break;
+
+      }
+    case MT9D111_B:
+      {
+//#if defined MT9D111_CAM
+        wrSensorRegs8_16(MT9D111_QVGA_30fps);
+        delay(1000);
+        wrSensorReg8_16(0x97, 0x0020);
+        wrSensorReg8_16(0xf0, 0x00);
+        wrSensorReg8_16(0x21, 0x8403); //Mirror Column
+        wrSensorReg8_16(0xC6, 0xA103);//SEQ_CMD
+        wrSensorReg8_16(0xC8, 0x0005); //SEQ_CMD
+//#endif
         break;
 
       }

@@ -691,7 +691,7 @@ class ArduCAM
 	#include "ov2640_regs.h"
 #endif
 
-#if defined MT9D111_CAM	
+#if defined MT9D111A_CAM  || defined MT9D111B_CAM 	
 	#include "mt9d111_regs.h"
 #endif
 
