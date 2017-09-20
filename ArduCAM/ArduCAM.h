@@ -217,6 +217,7 @@
 /****************************************************/
 #define BMP 	0
 #define JPEG	1
+#define RAW	  2
 
 #define OV7670		0	
 #define MT9D111_A	1
@@ -255,6 +256,7 @@
 #define OV5642_1600x1200	4	//1600x1200
 #define OV5642_2048x1536	5	//2048x1536
 #define OV5642_2592x1944	6	//2592x1944
+#define OV5642_1920x1080  7
 
 
 #define OV5640_320x240 		0	//320x240 

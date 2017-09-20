@@ -288,7 +288,12 @@ void ArduCAM::InitCAM()
       {
 #if ( defined(OV5642_CAM) || defined(OV5642_MINI_5MP) || defined(OV5642_MINI_5MP_BIT_ROTATION_FIXED) || defined(OV5642_MINI_5MP_PLUS) )
         wrSensorReg16_8(0x3008, 0x80);
-        wrSensorRegs16_8(OV5642_QVGA_Preview);
+       if (m_fmt == RAW){
+       	//Init and set 640x480;
+         wrSensorRegs16_8(OV5642_1280x960_RAW);	
+		     wrSensorRegs16_8(OV5642_640x480_RAW);	
+      }else{	
+      	wrSensorRegs16_8(OV5642_QVGA_Preview);
         #if defined (RASPBERRY_PI) 
 			  arducam_delay_ms(100);
 				#else
@@ -319,6 +324,7 @@ void ArduCAM::InitCAM()
         }
         else
         {
+        	
         	byte reg_val;
           wrSensorReg16_8(0x4740, 0x21);
           wrSensorReg16_8(0x501e, 0x2a);
@@ -329,6 +335,7 @@ void ArduCAM::InitCAM()
           wrSensorReg16_8(0x3818, (reg_val | 0x60) & 0xff);
           rdSensorReg16_8(0x3621, &reg_val);
           wrSensorReg16_8(0x3621, reg_val & 0xdf);
+        }
         }
 
 #endif
@@ -865,6 +872,29 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 	}
 #endif
 }
+
+void ArduCAM::OV5642_set_RAW_size(uint8_t size)
+	{
+		#if defined(OV5642_CAM) || defined(OV5642_CAM_BIT_ROTATION_FIXED)|| defined(OV5642_MINI_5MP) || defined (OV5642_MINI_5MP_PLUS)		
+			switch (size)
+		  {
+				case OV5642_640x480:
+				  wrSensorRegs16_8(OV5642_1280x960_RAW);	
+				  wrSensorRegs16_8(OV5642_640x480_RAW);	
+				break;
+				case OV5642_1280x960:
+					wrSensorRegs16_8(OV5642_1280x960_RAW);	
+				break;
+				case OV5642_1920x1080:
+					wrSensorRegs16_8(ov5642_RAW);
+	        wrSensorRegs16_8(OV5642_1920x1080_RAW);
+	      break;
+	      case OV5642_2592x1944:
+					wrSensorRegs16_8(ov5642_RAW);
+	      break;
+	     } 
+    #endif			
+	}
 
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
