@@ -3,6 +3,7 @@
 ## 1. Edit config.txt 
 sudo nano /boot/config.txt<br> 
 uncomment dtparam=spi=on line<br>
+uncomment dtparam=i2c_arm=on<br>
 sudo reboot<br>
 
 ## 2. Install related libraries and tools
