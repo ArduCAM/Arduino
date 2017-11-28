@@ -35,6 +35,7 @@
   		- Arduino Yun				(Tested)  		
   		-	Raspberry Pi			(Tested)
   		- ESP8266-12				(Tested)  		
+		* Feather M0                (Tested with OV5642)
 
   If you make any modifications or improvements to the code, I would appreciate
   that you share the code with me so that I might include it in the next release.
@@ -88,10 +89,11 @@
 	2016/06/14  V3.5.1  by Lee	Add support for ArduCAM-Mini-5MP-Plus OV5640_CAM.	
 	2016/09/29	V3.5.2	by Lee	Optimize the OV5642 register settings		
 	2016/10/05	V4.0.0	by Lee	Add support for second generation of ArduCAM shield V2, ArduCAM-Mini-5MP-Plus(OV5642/OV5640).				
-  2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi
-  2017/04/27  V4.1.0  by Lee	Add support for OV2640/OV5640/OV5642 functions.
- 2017/07/07  V4.1.0  by Lee	Add support for ArduCAM_ESP32 paltform
-  2017/07/25  V4.1.1  by Lee	Add support for MT9V034
+	2016/10/28  V4.0.1  by Lee	Add support for Raspberry Pi
+	2017/04/27  V4.1.0  by Lee	Add support for OV2640/OV5640/OV5642 functions.
+	2017/07/07  V4.1.0  by Lee	Add support for ArduCAM_ESP32 paltform
+	2017/07/25  V4.1.1  by Lee	Add support for MT9V034
+	2017/11/27  V4.1.2  by Max  Add support for Feather M0
 --------------------------------------*/
 
 #ifndef ArduCAM_H
@@ -165,6 +167,25 @@
 	#define regtype volatile uint32_t
 	#define regsize uint32_t
 #endif	
+
+#if defined(ARDUINO_SAMD_ZERO)
+	#define Serial SERIAL_PORT_USBVIRTUAL
+
+	#define cbi(reg, bitmask) *reg &= ~bitmask
+	#define sbi(reg, bitmask) *reg |= bitmask
+
+	#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+	#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+
+	#define cport(port, data) port &= data
+	#define sport(port, data) port |= data
+
+	#define swap(type, i, j) {type t = i; i = j; j = t;}
+	#define fontbyte(x) cfont.font[x]  
+
+	#define regtype volatile uint32_t
+	#define regsize uint32_t
+#endif
 
 #if defined(ESP32)
 	#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
