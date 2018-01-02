@@ -175,6 +175,9 @@ ArduCAM::ArduCAM(byte model ,int CS)
     case MT9V034:
       sensor_addr = 0x90;
     break;
+    case MT9M034:
+      sensor_addr = 0x20;// 7 bits
+    break;
     case OV3640:
     case OV5640:
     case OV5642:
@@ -375,7 +378,7 @@ void ArduCAM::InitCAM()
     case OV3640:
       {
 #if defined OV3640_CAM
-        rtn = wrSensorRegs16_8(OV3640_QVGA);
+    wrSensorRegs16_8(OV3640_QVGA);
 #endif
         break;
       }
@@ -415,6 +418,15 @@ void ArduCAM::InitCAM()
 #endif
         break;
       }
+      
+          case MT9M034:
+      {
+#if defined MT9M034_CAM
+        wrSensorRegs16_16(MT9M034_RAW);
+#endif
+        break;
+      }
+      
     case MT9V111:
       {
 #if defined MT9V111_CAM
@@ -832,7 +844,44 @@ uint8_t ArduCAM:: bus_read(int address)
 #endif
 }
 
-
+void ArduCAM:: OV3640_set_JPEG_size(uint8_t size)
+{
+#if (defined (OV3640_CAM)||defined (OV3640_MINI_2MP))
+	switch(size)
+	{
+		case OV3640_176x144:
+			wrSensorRegs8_8(OV3640_176x144_JPEG);
+			break;
+		case OV3640_320x240:
+			wrSensorRegs16_8(OV3640_320x240_JPEG);
+			break;
+		case OV3640_352x288:
+	  	wrSensorRegs16_8(OV3640_352x288_JPEG);
+			break;
+		case OV3640_640x480:
+			wrSensorRegs16_8(OV3640_640x480_JPEG);
+			break;
+		case OV3640_800x600:
+			wrSensorRegs16_8(OV3640_800x600_JPEG);
+			break;
+		case OV3640_1024x768:
+			wrSensorRegs16_8(OV3640_1024x768_JPEG);
+			break;
+		case OV3640_1280x960:
+			wrSensorRegs16_8(OV3640_1280x960_JPEG);
+			break;
+		case OV3640_1600x1200:
+			wrSensorRegs16_8(OV3640_1600x1200_JPEG);
+			break;
+		case OV3640_2048x1536:
+			wrSensorRegs16_8(OV3640_2048x1536_JPEG);
+			break;
+		default:
+			wrSensorRegs16_8(OV3640_320x240_JPEG);
+			break;
+	}
+#endif
+}
 
 void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 {

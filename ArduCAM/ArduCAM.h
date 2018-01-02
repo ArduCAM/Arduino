@@ -258,6 +258,7 @@
 #define MT9T112		15
 #define MT9D112		16
 #define MT9V034 	17
+#define MT9M034   18
 
 #define OV2640_160x120 		0	//160x120
 #define OV2640_176x144 		1	//176x144
@@ -268,6 +269,18 @@
 #define OV2640_1024x768		6	//1024x768
 #define OV2640_1280x1024	7	//1280x1024
 #define OV2640_1600x1200	8	//1600x1200
+
+
+
+#define OV3640_176x144 		0	//176x144
+#define OV3640_320x240 		1	//320x240
+#define OV3640_352x288 		2	//352x288
+#define OV3640_640x480		3	//640x480
+#define OV3640_800x600 		4	//800x600
+#define OV3640_1024x768		5 //1024x768
+#define OV3640_1280x960	  6	//1280x960
+#define OV3640_1600x1200	7	//1600x1200
+#define OV3640_2048x1536	8	//2048x1536
 
 
 #define OV5642_320x240 		0	//320x240
@@ -706,7 +719,7 @@ class ArduCAM
 	#include "ov5642_regs.h"
 #endif
 
-#if defined OV3640_CAM	
+#if (defined(OV3640_CAM) || defined(OV3640_MINI_3MP))	
 	#include "ov3640_regs.h"
 #endif
 
@@ -740,6 +753,10 @@ class ArduCAM
 
 #if defined MT9D112_CAM	
 	#include "mt9d112_regs.h"
+#endif
+
+#if defined MT9M034_CAM	
+	#include "mt9m034_regs.h"
 #endif
 
 
