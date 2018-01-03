@@ -67,6 +67,6 @@ Selecting correct COM port and Arduino boards then upload the sketches.  <br>
 # Arducam MINI Camera Demo Tutorial for Arduino
 [![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_MINI_Camera.jpeg)](https://youtu.be/FlfrkJ08pnQ  "Arducam MINI Camera Demo Tutorial for Arduino")
 
-# Arducam MINI Camera Demo Tutorial for Arduino
+# Arducam Camera Shield V2 Demo Tutorial for Arduino
 [![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_Shield_V2_Camera.jpeg)](https://youtu.be/XMik38TNqGk  "Arducam MINI Camera Demo Tutorial for Arduino")
 
