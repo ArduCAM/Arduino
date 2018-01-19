@@ -65,7 +65,7 @@ The `RaspberryPi` folder is examples used for Raspberry Pi platform, see [more i
 The `ESP8266` folder is for ArduCAM-ESP8266-UNO board examples for library compatibility. Please try repository [ESP8266](https://github.com/ArduCAM/ArduCAM_ESP8266_UNO) using josn board manager script instead.<br>
 Selecting correct COM port and Arduino boards then upload the sketches.  <br>
 # Arducam MINI Camera Demo Tutorial for Arduino
-[![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_MINI_Camera.jpeg)](https://youtu.be/FlfrkJ08pnQ  "Arducam MINI Camera Demo Tutorial for Arduino")
+[![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_MINI_Camera.jpeg)](https://youtu.be/hybQpjwJ4aA  "Arducam MINI Camera Demo Tutorial for Arduino")
 
 # Arducam Camera Shield V2 Demo Tutorial for Arduino
 [![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_Shield_V2_Camera.jpeg)](https://youtu.be/XMik38TNqGk  "Arducam MINI Camera Demo Tutorial for Arduino")
