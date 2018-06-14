@@ -32,7 +32,7 @@
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 
-#define   FRAMES_NUM    0x07
+
 #define   rate     0x0a
 #define SD_CS 9
 #define KEY 2
@@ -40,6 +40,8 @@
 // set pin 7 as the slave select for the digital pot:
 const int CS = 7;
 bool is_header = false;
+uint8_t FRAMES_NUM  = 0x07;
+uint8_t cameraVersion = 0;
 uint32_t total_time = 0;
 unsigned long movi_size = 0;
 unsigned long jpeg_size = 0;
@@ -147,6 +149,15 @@ myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
   myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
 #endif
 myCAM.clear_fifo_flag();
+cameraVersion = myCAM.read_reg(0x40);
+Serial.print("The camera version is :");
+Serial.println(cameraVersion, HEX);
+if(cameraVersion &&0x70){
+  FRAMES_NUM = 0xFF;
+  }else{
+    FRAMES_NUM = 0x07;
+    }
+
 myCAM.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
 }
 boolean isCaptureFlag = false;
