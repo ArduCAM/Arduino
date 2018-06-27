@@ -93,7 +93,7 @@ void setup() {
   Serial.println("ACK CMD Downloading firmware...");
   myCAM.wrSensorRegs16_8(OV5640_Auto_Focus);
   myCAM.wrSensorReg16_8(0x3022, 0x03);
-   while (1)
+  while (1)
   {
     // check status
     myCAM.rdSensorReg16_8(0x3029, &regX);
@@ -107,7 +107,7 @@ void setup() {
   myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
   myCAM.clear_fifo_flag();
   myCAM.write_reg(ARDUCHIP_FRAMES, 0x00);
- 
+
 }
 
 void loop() {
@@ -246,6 +246,13 @@ void loop() {
         Serial.println(F("ACK CMD CAM stop video streaming."));
         break;
       }
+
+      if (temp == 0x40) {
+        temp = 0;
+        myCAM.wrSensorReg16_8(0x3022, 0x03);
+      }
+
+
       if (start_capture == 2)
       {
         myCAM.flush_fifo();
