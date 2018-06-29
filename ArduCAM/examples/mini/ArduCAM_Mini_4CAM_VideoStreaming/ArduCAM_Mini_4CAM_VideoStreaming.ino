@@ -386,7 +386,7 @@ while( length-- )
   }
   else if((temp == 0xD8) & (temp_last == 0xFF))
   {
-    Serial.println(F("ACK IMG"));
+    Serial.println(F("ACK IMG END"));
     is_header = true;
     Serial.write(temp_last);
     Serial.write(temp);
