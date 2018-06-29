@@ -320,6 +320,7 @@ else if (mode == 3)
   if (myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
   {
     Serial.println(F("ACK CMD CAM Capture Done. END"));
+    delay(50);
     uint8_t temp, temp_last;
     uint32_t length = 0;
     length = myCAM.read_fifo_length();
