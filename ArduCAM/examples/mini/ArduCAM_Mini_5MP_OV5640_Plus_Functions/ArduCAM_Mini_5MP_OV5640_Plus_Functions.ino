@@ -42,7 +42,7 @@ uint8_t temp;
   Wire.begin();
   Serial.begin(921600);
 #endif
-Serial.println(F("ACK CMD ArduCAM Start!"));
+Serial.println(F("ACK CMD ArduCAM Start! END"));
 // set the CS as an output:
 pinMode(CS, OUTPUT);
 // initialize SPI:
@@ -52,10 +52,10 @@ while(1){
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM.read_reg(ARDUCHIP_TEST1);
   if (temp != 0x55){
-    Serial.println(F("ACK CMD SPI interface Error!"));
+    Serial.println(F("ACK CMD SPI interface Error! END"));
     delay(1000);continue;
   }else{
-    Serial.println(F("ACK CMD SPI interface OK."));break;
+    Serial.println(F("ACK CMD SPI interface OK. END"));break;
   }
 }
   while(1){
@@ -64,11 +64,11 @@ while(1){
     myCAM.rdSensorReg16_8(OV5640_CHIPID_HIGH, &vid);
     myCAM.rdSensorReg16_8(OV5640_CHIPID_LOW, &pid);
     if((vid != 0x56) || (pid != 0x40)){
-      Serial.println(F("ACK CMD Can't find OV5640 module!"));
+      Serial.println(F("ACK CMD Can't find OV5640 module! END"));
       delay(1000);continue;
     }
     else{
-      Serial.println(F("ACK CMD OV5640 detected."));break;
+      Serial.println(F("ACK CMD OV5640 detected. END"));break;
     } 
   }
 //Change to JPEG capture mode and initialize the OV5642 module
@@ -91,57 +91,57 @@ if (Serial.available())
   {
      case 0:
       myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_320x240"));
+      Serial.println(F("ACK CMD switch to OV5640_320x240 END"));
     temp=0xff;
     break;
     case 1:
       myCAM.OV5640_set_JPEG_size(OV5640_352x288);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_352x288"));
+      Serial.println(F("ACK CMD switch to OV5640_352x288 END"));
     temp=0xff;
     break;
     case 2:
       myCAM.OV5640_set_JPEG_size(OV5640_640x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_640x480"));
+      Serial.println(F("ACK CMD switch to OV5640_640x480 END"));
   
     temp=0xff;
     break;
     case 3:
       myCAM.OV5640_set_JPEG_size(OV5640_800x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_800x480"));
+      Serial.println(F("ACK CMD switch to OV5640_800x480 END"));
     temp=0xff;
     break;
     case 4:
       myCAM.OV5640_set_JPEG_size(OV5640_1024x768);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_1024x768"));
+      Serial.println(F("ACK CMD switch to OV5640_1024x768 END"));
    
     temp=0xff;
     break;
     case 5:
       myCAM.OV5640_set_JPEG_size(OV5640_1280x960);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_1280x960"));
+      Serial.println(F("ACK CMD switch to OV5640_1280x960 END"));
  
     temp=0xff;
     break;
     case 6:
       myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_1600x1200"));
+      Serial.println(F("ACK CMD switch to OV5640_1600x1200 END"));
  
     temp=0xff;
     break;
       case 7:
       myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_2048x1536"));
+      Serial.println(F("ACK CMD switch to OV5640_2048x1536 END"));
       temp=0xff;
       break;
       case 8:
       myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_2592x1944"));
+      Serial.println(F("ACK CMD switch to OV5640_2592x1944 END"));
       temp=0xff;
       break;
    case 0x10:
     mode = 1;
     start_capture = 1;
-    Serial.println(F("ACK CMD CAM start single shoot."));
+    Serial.println(F("ACK CMD CAM start single shoot. END"));
     break;
     case 0x11: 
     temp = 0xff;
@@ -153,13 +153,13 @@ if (Serial.available())
     mode = 2;
     temp = 0xff;
     start_capture = 2;
-    Serial.println(F("ACK CMD CAM start video streaming."));
+    Serial.println(F("ACK CMD CAM start video streaming. END"));
     break;
     case 0x30:
     mode = 3;
     temp = 0xff;
     start_capture = 3;
-    Serial.println(F("CAM start single shoot."));
+    Serial.println(F("ACK CMD CAM start single shoot. END"));
     break;
     case 0x31:
     temp = 0xff;
@@ -171,158 +171,158 @@ if (Serial.available())
     break;
    case 0x40:
   myCAM.OV5640_set_Brightness(Brightness4);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+4"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+4 END"));break; 
     case 0x41:
   myCAM.OV5640_set_Brightness(Brightness3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+3"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+3 END"));break; 
   case 0x42:
   myCAM.OV5640_set_Brightness(Brightness2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+2"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+2 END"));break; 
    case 0x43:
   myCAM.OV5640_set_Brightness(Brightness1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+1"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+1 END"));break; 
    case 0x44:
   myCAM.OV5640_set_Brightness(Brightness0);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+0"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+0 END"));break; 
     case 0x45:
   myCAM.OV5640_set_Brightness(Brightness_1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-1"));break; 
+   Serial.println(F("ACK CMD Set to Brightness-1 END"));break; 
      case 0x46:
   myCAM.OV5640_set_Brightness(Brightness_2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-2"));break; 
+   Serial.println(F("ACK CMD Set to Brightness-2 END"));break; 
     case 0x47:
   myCAM.OV5640_set_Brightness(Brightness_3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-3"));break; 
+   Serial.println(F("ACK CMD Set to Brightness-3 END"));break; 
     case 0x48:
   myCAM.OV5640_set_Brightness(Brightness_4);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-4"));break;
+   Serial.println(F("ACK CMD Set to Brightness-4 END"));break;
   case 0x50:
   myCAM.OV5640_set_Contrast(Contrast3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+3"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+3 END"));break; 
   case 0x51:
   myCAM.OV5640_set_Contrast(Contrast2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+2"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+2 END"));break; 
    case 0x52:
   myCAM.OV5640_set_Contrast(Contrast1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+1"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+1 END"));break; 
    case 0x53:
   myCAM.OV5640_set_Contrast(Contrast0);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+0"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+0 END"));break; 
     case 0x54:
   myCAM.OV5640_set_Contrast(Contrast_1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast-1"));break; 
+   Serial.println(F("ACK CMD Set to Contrast-1 END"));break; 
      case 0x55:
   myCAM.OV5640_set_Contrast(Contrast_2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast-2"));break; 
+   Serial.println(F("ACK CMD Set to Contrast-2 END"));break; 
     case 0x56:
   myCAM.OV5640_set_Contrast(Contrast_3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast-3"));break; 
+   Serial.println(F("ACK CMD Set to Contrast-3 END"));break; 
    case 0x60:
       myCAM.OV5640_set_Color_Saturation(Saturation3);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Saturation+3"));break;
+     Serial.println(F("ACK CMD Set to Saturation+3 END"));break;
    case 0x61:
     myCAM.OV5640_set_Color_Saturation(Saturation2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation+2"));break;
+   Serial.println(F("ACK CMD Set to Saturation+2 END"));break;
   case 0x62:
     myCAM.OV5640_set_Color_Saturation(Saturation1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation+1"));break;
+   Serial.println(F("ACK CMD Set to Saturation+1 END"));break;
    case 0x63:
     myCAM.OV5640_set_Color_Saturation(Saturation0);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation+0"));break;
+   Serial.println(F("ACK CMD Set to Saturation+0 END"));break;
    case 0x64:
     myCAM.OV5640_set_Color_Saturation(Saturation_1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation-1"));break;
+   Serial.println(F("ACK CMD Set to Saturation-1 END"));break;
    case 0x65:
     myCAM.OV5640_set_Color_Saturation(Saturation_2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation-2"));break;
+   Serial.println(F("ACK CMD Set to Saturation-2 END"));break;
     case 0x66:
     myCAM.OV5640_set_Color_Saturation(Saturation_3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation-3"));break;
+   Serial.println(F("ACK CMD Set to Saturation-3 END"));break;
    case 0x70:
      myCAM.OV5640_set_EV(EV3);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+3"));break;
+     Serial.println(F("ACK CMD Set to EV+3 END"));break;
    case 0x71:
      myCAM.OV5640_set_EV(EV2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+2"));break;
+     Serial.println(F("ACK CMD Set to EV+2 END"));break;
   case 0x72:
      myCAM.OV5640_set_EV(EV1);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+1"));break;
+     Serial.println(F("ACK CMD Set to EV+1 END"));break;
    case 0x73:
      myCAM.OV5640_set_EV(EV0);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+0"));break; 
+     Serial.println(F("ACK CMD Set to EV+0 END"));break; 
     case 0x74:
      myCAM.OV5640_set_EV(EV_1);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-1"));break;
+     Serial.println(F("ACK CMD Set to EV-1 END"));break;
     case 0x75:
      myCAM.OV5640_set_EV(EV_2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-2"));break;
+     Serial.println(F("ACK CMD Set to EV-2 END"));break;
     case 0x76:
      myCAM.OV5640_set_EV(EV_2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-2"));break;
+     Serial.println(F("ACK CMD Set to EV-2 END"));break;
     case 0x77:
      myCAM.OV5640_set_EV(EV_3);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-3"));break;
+     Serial.println(F("ACK CMD Set to EV-3 END"));break;
     
     case 0x80:
     myCAM.OV5640_set_Light_Mode(Auto);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Auto"));break;
+     Serial.println(F("ACK CMD Set to Auto END"));break;
     case 0x81:
     myCAM.OV5640_set_Light_Mode(Sunny);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Sunny"));break;
+     Serial.println(F("ACK CMD Set to Sunny END"));break;
     case 0x82:
     myCAM.OV5640_set_Light_Mode(Office);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Office"));break;
+     Serial.println(F("ACK CMD Set to Office END"));break;
      case 0x83:
       myCAM.OV5640_set_Light_Mode(Cloudy);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Cloudy"));break;
+     Serial.println(F("ACK CMD Set to Cloudy END"));break;
     case 0x84:
     myCAM.OV5640_set_Light_Mode(Home);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Home"));break;
+     Serial.println(F("ACK CMD Set to Home END"));break;
     case 0x90: 
    myCAM.OV5640_set_Light_Mode(Normal);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Normal"));break ;
+     Serial.println(F("ACK CMD Set to Normal END"));break ;
       case 0x91: 
    myCAM.OV5640_set_Light_Mode(Blueish);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Blueish"));break ;
+     Serial.println(F("ACK CMD Set to Blueish END"));break ;
     case 0x92: 
    myCAM.OV5640_set_Light_Mode(Reddish);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Reddish"));break ;
+     Serial.println(F("ACK CMD Set to Reddish END"));break ;
       case 0x93: 
    myCAM.OV5640_set_Light_Mode(BW);temp = 0xff;
-     Serial.println(F("ACK CMD Set to BW"));break ;
+     Serial.println(F("ACK CMD Set to BW END"));break ;
     case 0x94: 
    myCAM.OV5640_set_Light_Mode(Sepia);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Sepia"));break ;
+     Serial.println(F("ACK CMD Set to Sepia END"));break ;
    case 0x95: 
    myCAM.OV5640_set_Light_Mode(Negative);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Negative"));break ;
+     Serial.println(F("ACK CMD Set to Negative END"));break ;
    case 0x96: 
    myCAM.OV5640_set_Light_Mode(Greenish);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Greenish"));break ;
+     Serial.println(F("ACK CMD Set to Greenish END"));break ;
     case 0x97: 
    myCAM.OV5640_set_Light_Mode(Overexposure);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Overexposure"));break ;
+     Serial.println(F("ACK CMD Set to Overexposure END"));break ;
    case 0x98: 
    myCAM.OV5640_set_Light_Mode(Solarize);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Solarize"));break ;
+     Serial.println(F("ACK CMD Set to Solarize END"));break ;
    case 0xA0: 
    myCAM.OV5640_set_Night_Mode(Night_Mode_On);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Night_Mode_On"));break ; 
+   Serial.println(F("ACK CMD Set to Night_Mode_On END"));break ; 
   case 0xA1: 
    myCAM.OV5640_set_Night_Mode(Night_Mode_Off);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Night_Mode_Off"));break ; 
+   Serial.println(F("ACK CMD Set to Night_Mode_Off END"));break ; 
    case 0xB0:
     myCAM.OV5640_set_Banding_Filter(Off);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Off"));break ; 
+   Serial.println(F("ACK CMD Set to Off END"));break ; 
   case 0xB1:
     myCAM.OV5640_set_Banding_Filter(Manual_50HZ);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Manual 50HZ"));break ; 
+   Serial.println(F("ACK CMD Set to Manual 50HZ END"));break ; 
   case 0xB2:
     myCAM.OV5640_set_Banding_Filter(Manual_60HZ);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Manual 60HZ"));break ; 
+   Serial.println(F("ACK CMD Set to Manual 60HZ END"));break ; 
    case 0xB3:
     myCAM.OV5640_set_Banding_Filter(Auto_Detection);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Auto_Detection"));break ;
+   Serial.println(F("ACK CMD Set to Auto_Detection END"));break ;
       default:
       break;
   }
@@ -339,7 +339,7 @@ if (mode == 1)
   }
   if (myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
   {
-    Serial.println(F("ACK CMD CAM Capture Done."));
+    Serial.println(F("ACK CMD CAM Capture Done. END"));
     read_fifo_burst(myCAM);
     //Clear the capture done flag
     myCAM.clear_fifo_flag();
@@ -354,161 +354,161 @@ else if (mode == 2)
     {
       start_capture = 0;
       mode = 0;
-      Serial.println(F("ACK CMD CAM stop video streaming."));
+      Serial.println(F("ACK CMD CAM stop video streaming. END"));
       break;
     }
     switch(temp){
          case 0x40:
   myCAM.OV5640_set_Brightness(Brightness4);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+4"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+4 END"));break; 
     case 0x41:
   myCAM.OV5640_set_Brightness(Brightness3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+3"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+3 END"));break; 
   case 0x42:
   myCAM.OV5640_set_Brightness(Brightness2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+2"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+2 END"));break; 
    case 0x43:
   myCAM.OV5640_set_Brightness(Brightness1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+1"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+1 END"));break; 
    case 0x44:
   myCAM.OV5640_set_Brightness(Brightness0);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness+0"));break; 
+   Serial.println(F("ACK CMD Set to Brightness+0 END"));break; 
     case 0x45:
   myCAM.OV5640_set_Brightness(Brightness_1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-1"));break; 
+   Serial.println(F("ACK CMD Set to Brightness-1 END"));break; 
      case 0x46:
   myCAM.OV5640_set_Brightness(Brightness_2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-2"));break; 
+   Serial.println(F("ACK CMD Set to Brightness-2 END"));break; 
     case 0x47:
   myCAM.OV5640_set_Brightness(Brightness_3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-3"));break; 
+   Serial.println(F("ACK CMD Set to Brightness-3 END"));break; 
     case 0x48:
   myCAM.OV5640_set_Brightness(Brightness_4);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Brightness-4"));break;
+   Serial.println(F("ACK CMD Set to Brightness-4 END"));break;
   case 0x50:
   myCAM.OV5640_set_Contrast(Contrast3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+3"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+3 END"));break; 
   case 0x51:
   myCAM.OV5640_set_Contrast(Contrast2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+2"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+2 END"));break; 
    case 0x52:
   myCAM.OV5640_set_Contrast(Contrast1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+1"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+1 END"));break; 
    case 0x53:
   myCAM.OV5640_set_Contrast(Contrast0);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast+0"));break; 
+   Serial.println(F("ACK CMD Set to Contrast+0 END"));break; 
     case 0x54:
   myCAM.OV5640_set_Contrast(Contrast_1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast-1"));break; 
+   Serial.println(F("ACK CMD Set to Contrast-1 END"));break; 
      case 0x55:
   myCAM.OV5640_set_Contrast(Contrast_2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast-2"));break; 
+   Serial.println(F("ACK CMD Set to Contrast-2 END"));break; 
     case 0x56:
   myCAM.OV5640_set_Contrast(Contrast_3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Contrast-3"));break; 
+   Serial.println(F("ACK CMD Set to Contrast-3 END"));break; 
    case 0x60:
       myCAM.OV5640_set_Color_Saturation(Saturation3);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Saturation+3"));break;
+     Serial.println(F("ACK CMD Set to Saturation+3 END"));break;
    case 0x61:
     myCAM.OV5640_set_Color_Saturation(Saturation2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation+2"));break;
+   Serial.println(F("ACK CMD Set to Saturation+2 END"));break;
   case 0x62:
     myCAM.OV5640_set_Color_Saturation(Saturation1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation+1"));break;
+   Serial.println(F("ACK CMD Set to Saturation+1 END"));break;
    case 0x63:
     myCAM.OV5640_set_Color_Saturation(Saturation0);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation+0"));break;
+   Serial.println(F("ACK CMD Set to Saturation+0 END"));break;
    case 0x64:
     myCAM.OV5640_set_Color_Saturation(Saturation_1);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation-1"));break;
+   Serial.println(F("ACK CMD Set to Saturation-1 END"));break;
    case 0x65:
     myCAM.OV5640_set_Color_Saturation(Saturation_2);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation-2"));break;
+   Serial.println(F("ACK CMD Set to Saturation-2 END"));break;
     case 0x66:
     myCAM.OV5640_set_Color_Saturation(Saturation_3);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Saturation-3"));break;
+   Serial.println(F("ACK CMD Set to Saturation-3 END"));break;
    case 0x70:
      myCAM.OV5640_set_EV(EV3);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+3"));break;
+     Serial.println(F("ACK CMD Set to EV+3 END"));break;
    case 0x71:
      myCAM.OV5640_set_EV(EV2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+2"));break;
+     Serial.println(F("ACK CMD Set to EV+2 END"));break;
   case 0x72:
      myCAM.OV5640_set_EV(EV1);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+1"));break;
+     Serial.println(F("ACK CMD Set to EV+1 END"));break;
    case 0x73:
      myCAM.OV5640_set_EV(EV0);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV+0"));break; 
+     Serial.println(F("ACK CMD Set to EV+0 END"));break; 
     case 0x74:
      myCAM.OV5640_set_EV(EV_1);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-1"));break;
+     Serial.println(F("ACK CMD Set to EV-1 END"));break;
     case 0x75:
      myCAM.OV5640_set_EV(EV_2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-2"));break;
+     Serial.println(F("ACK CMD Set to EV-2 END"));break;
     case 0x76:
      myCAM.OV5640_set_EV(EV_2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-2"));break;
+     Serial.println(F("ACK CMD Set to EV-2 END"));break;
     case 0x77:
      myCAM.OV5640_set_EV(EV_3);temp = 0xff;
-     Serial.println(F("ACK CMD Set to EV-3"));break;
+     Serial.println(F("ACK CMD Set to EV-3 END"));break;
     
     case 0x80:
     myCAM.OV5640_set_Light_Mode(Auto);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Auto"));break;
+     Serial.println(F("ACK CMD Set to Auto END"));break;
     case 0x81:
     myCAM.OV5640_set_Light_Mode(Sunny);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Sunny"));break;
+     Serial.println(F("ACK CMD Set to Sunny END"));break;
     case 0x82:
     myCAM.OV5640_set_Light_Mode(Office);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Office"));break;
+     Serial.println(F("ACK CMD Set to Office END"));break;
      case 0x83:
     myCAM.OV5640_set_Light_Mode(Home);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Home"));break;
+     Serial.println(F("ACK CMD Set to Home END"));break;
     case 0x90: 
    myCAM.OV5640_set_Light_Mode(Normal);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Normal"));break ;
+     Serial.println(F("ACK CMD Set to Normal END"));break ;
       case 0x91: 
    myCAM.OV5640_set_Light_Mode(Blueish);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Blueish"));break ;
+     Serial.println(F("ACK CMD Set to Blueish END"));break ;
     case 0x92: 
    myCAM.OV5640_set_Light_Mode(Reddish);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Reddish"));break ;
+     Serial.println(F("ACK CMD Set to Reddish END"));break ;
       case 0x93: 
    myCAM.OV5640_set_Light_Mode(BW);temp = 0xff;
-     Serial.println(F("ACK CMD Set to BW"));break ;
+     Serial.println(F("ACK CMD Set to BW END"));break ;
     case 0x94: 
    myCAM.OV5640_set_Light_Mode(Sepia);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Sepia"));break ;
+     Serial.println(F("ACK CMD Set to Sepia END"));break ;
    case 0x95: 
    myCAM.OV5640_set_Light_Mode(Negative);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Negative"));break ;
+     Serial.println(F("ACK CMD Set to Negative END"));break ;
    case 0x96: 
    myCAM.OV5640_set_Light_Mode(Greenish);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Greenish"));break ;
+     Serial.println(F("ACK CMD Set to Greenish END"));break ;
     case 0x97: 
    myCAM.OV5640_set_Light_Mode(Overexposure);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Overexposure"));break ;
+     Serial.println(F("ACK CMD Set to Overexposure END"));break ;
    case 0x98: 
    myCAM.OV5640_set_Light_Mode(Solarize);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Solarize"));break ;
+     Serial.println(F("ACK CMD Set to Solarize END"));break ;
    case 0xA0: 
    myCAM.OV5640_set_Night_Mode(Night_Mode_On);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Night_Mode_On"));break ; 
+   Serial.println(F("ACK CMD Set to Night_Mode_On END"));break ; 
   case 0xA1: 
    myCAM.OV5640_set_Night_Mode(Night_Mode_Off);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Night_Mode_Off"));break ; 
+   Serial.println(F("ACK CMD Set to Night_Mode_Off END"));break ; 
    case 0xB0:
     myCAM.OV5640_set_Banding_Filter(Off);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Off"));break ; 
+   Serial.println(F("ACK CMD Set to Off END"));break ; 
   case 0xB1:
     myCAM.OV5640_set_Banding_Filter(Manual_50HZ);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Manual 50HZ"));break ; 
+   Serial.println(F("ACK CMD Set to Manual 50HZ END"));break ; 
   case 0xB2:
     myCAM.OV5640_set_Banding_Filter(Manual_60HZ);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Manual 60HZ"));break ; 
+   Serial.println(F("ACK CMD Set to Manual 60HZ END"));break ; 
    case 0xB3:
     myCAM.OV5640_set_Banding_Filter(Auto_Detection);temp = 0xff;
-   Serial.println(F("ACK CMD Set to Auto_Detection"));break ;
+   Serial.println(F("ACK CMD Set to Auto_Detection END"));break ;
       
       }
     if (start_capture == 2)
@@ -544,7 +544,7 @@ else if (mode == 2)
         else if ((temp == 0xD8) & (temp_last == 0xFF))
         {
           is_header = true;
-          Serial.println(F("ACK IMG"));
+          Serial.println(F("ACK IMG END"));
           Serial.write(temp_last);
           Serial.write(temp);
         }
@@ -572,19 +572,19 @@ else if (mode == 3)
   }
   if (myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
   {
-    Serial.println(F("ACK CMD CAM Capture Done."));
+    Serial.println(F("ACK CMD CAM Capture Done. END"));delay(50);
     uint8_t temp, temp_last;
     uint32_t length = 0;
     length = myCAM.read_fifo_length();
     if (length >= MAX_FIFO_SIZE ) 
     {
-      Serial.println(F("ACK CMD Over size."));
+      Serial.println(F("ACK CMD Over size. END"));
       myCAM.clear_fifo_flag();
       return;
     }
     if (length == 0 ) //0 kb
     {
-      Serial.println(F("ACK CMD Size is 0."));
+      Serial.println(F("ACK CMD Size is 0. END"));
       myCAM.clear_fifo_flag();
       return;
     }
@@ -628,7 +628,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   Serial.println(length, DEC);
   if (length >= MAX_FIFO_SIZE) //512 kb
   {
-    Serial.println(F("Over size."));
+    Serial.println(F("ACK CMD Over size. END"));
     return 0;
   }
   if (length == 0 ) //0 kb
@@ -651,7 +651,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
     else if ((temp == 0xD8) & (temp_last == 0xFF))
     {
       is_header = true;
-      Serial.println(F("ACK IMG"));
+      Serial.println(F("ACK IMG END"));
       Serial.write(temp_last);
       Serial.write(temp);
     }
