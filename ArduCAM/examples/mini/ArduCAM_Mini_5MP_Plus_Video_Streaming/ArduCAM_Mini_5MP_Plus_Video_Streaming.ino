@@ -57,7 +57,7 @@ uint8_t temp;
   Wire.begin();
   Serial.begin(921600);
 #endif
-Serial.println(F("ACK CMD ArduCAM Start!"));
+Serial.println(F("ACK CMD ArduCAM Start! END"));
 // set the CS as an output:
 pinMode(CS, OUTPUT);
 // initialize SPI:
@@ -68,10 +68,10 @@ while(1){
   temp = myCAM.read_reg(ARDUCHIP_TEST1);
   if(temp != 0x55)
   {
-    Serial.println(F("ACK CMD SPI interface Error!"));
+    Serial.println(F("ACK CMD SPI interface Error! END"));
     delay(1000);continue;
   }else{
-    Serial.println(F("ACK CMD SPI interface OK."));break;
+    Serial.println(F("ACK CMD SPI interface OK. END"));break;
   }
 }
 #if defined (OV5640_MINI_5MP_PLUS)
@@ -80,10 +80,10 @@ while(1){
     myCAM.rdSensorReg16_8(OV5640_CHIPID_HIGH, &vid);
     myCAM.rdSensorReg16_8(OV5640_CHIPID_LOW, &pid);
     if ((vid != 0x56) || (pid != 0x40)){
-      Serial.println(F("ACK CMD Can't find OV5640 module!"));
+      Serial.println(F("ACK CMD Can't find OV5640 module! END"));
       delay(1000); continue;
     }else{
-      Serial.println(F("ACK CMD OV5640 detected."));break;      
+      Serial.println(F("ACK CMD OV5640 detected. END"));break;      
     }
   }
 #else
@@ -92,10 +92,10 @@ while(1){
     myCAM.rdSensorReg16_8(OV5642_CHIPID_HIGH, &vid);
     myCAM.rdSensorReg16_8(OV5642_CHIPID_LOW, &pid);
     if ((vid != 0x56) || (pid != 0x42)){
-      Serial.println(F("ACK CMD Can't find OV5642 module!"));
+      Serial.println(F("ACK CMD Can't find OV5642 module! END"));
       delay(1000);continue;
     }else{
-      Serial.println(F("ACK CMD OV5642 detected."));break;      
+      Serial.println(F("ACK CMD OV5642 detected. END"));break;      
     }
   }
 #endif
@@ -118,89 +118,89 @@ if (Serial.available())
     case 0:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_320x240"));
+      Serial.println(F("ACK CMD switch to OV5640_320x240 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_320x240"));
+      Serial.println(F("ACK CMD switch to OV5642_320x240 END"));
     #endif
     temp=0xff;
     break;
     case 1:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_352x288);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_352x288"));
+      Serial.println(F("ACK CMD switch to OV5640_352x288 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_640x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_640x480"));
+      Serial.println(F("ACK CMD switch to OV5642_640x480 END"));
     #endif
     temp=0xff;
     break;
     case 2:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_640x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_640x480"));
+      Serial.println(F("ACK CMD switch to OV5640_640x480 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_1024x768);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_1024x768"));
+      Serial.println(F("ACK CMD switch to OV5642_1024x768 END"));
     #endif
     temp=0xff;
     break;
     case 3:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_800x480);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_800x480"));
+      Serial.println(F("ACK CMD switch to OV5640_800x480 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_1280x960);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_1280x960"));
+      Serial.println(F("ACK CMD switch to OV5642_1280x960 END"));
     #endif
     temp=0xff;
     break;
     case 4:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_1024x768);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_1024x768"));
+      Serial.println(F("ACK CMD switch to OV5640_1024x768 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_1600x1200"));
+      Serial.println(F("ACK CMD switch to OV5642_1600x1200 END"));
     #endif
     temp=0xff;
     break;
     case 5:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_1280x960);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_1280x960"));
+      Serial.println(F("ACK CMD switch to OV5640_1280x960 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_2048x1536"));
+      Serial.println(F("ACK CMD switch to OV5642_2048x1536 END"));
     #endif
     temp=0xff;
     break;
     case 6:
     #if defined (OV5640_MINI_5MP_PLUS)
       myCAM.OV5640_set_JPEG_size(OV5640_1600x1200);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_1600x1200"));
+      Serial.println(F("ACK CMD switch to OV5640_1600x1200 END"));
     #else
       myCAM.OV5642_set_JPEG_size(OV5642_2592x1944);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5642_2592x1944"));
+      Serial.println(F("ACK CMD switch to OV5642_2592x1944 END"));
     #endif
     temp=0xff;
     break;
     #if defined (OV5640_MINI_5MP_PLUS)
       case 7:
       myCAM.OV5640_set_JPEG_size(OV5640_2048x1536);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_2048x1536"));
+      Serial.println(F("ACK CMD switch to OV5640_2048x1536 END"));
       temp=0xff;
       break;
       case 8:
       myCAM.OV5640_set_JPEG_size(OV5640_2592x1944);delay(1000);
-      Serial.println(F("ACK CMD switch to OV5640_2592x1944"));
+      Serial.println(F("ACK CMD switch to OV5640_2592x1944 END"));
       temp=0xff;
       break;
     #endif
     case 0x10:
     mode = 1;
     start_capture = 1;
-    Serial.println(F("ACK CMD CAM start single shoot."));
+    Serial.println(F("ACK CMD CAM start single shoot. END"));
     break;
     case 0x11:
     myCAM.set_format(JPEG);
@@ -210,13 +210,13 @@ if (Serial.available())
     case 0x20:
     mode = 2;
     start_capture = 2;
-    Serial.println(F("ACK CMD CAM start video streaming."));
+    Serial.println(F("ACK CMD CAM start video streaming. END"));
     break;
     case 0x30:
     mode = 3;
     temp = 0xff;
     start_capture = 3;
-    Serial.println(F("CAM start single shoot."));
+    Serial.println(F("CAM start single shoot. END"));
     break;
     case 0x31:
     temp = 0xff;
@@ -242,7 +242,7 @@ if (mode == 1)
   }
   if (myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
   {
-    Serial.println(F("CAM Capture Done."));
+    Serial.println(F("CAM Capture Done. END"));
     read_fifo_burst(myCAM);
     //Clear the capture done flag
     myCAM.clear_fifo_flag();
@@ -257,7 +257,7 @@ else if (mode == 2)
     {
       start_capture = 0;
       mode = 0;
-      Serial.println(F("ACK CMD CAM stop video streaming."));
+      Serial.println(F("ACK CMD CAM stop video streaming. END"));
       break;
     }
     if (start_capture == 2)
@@ -319,19 +319,19 @@ else if (mode == 3)
   }
   if (myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
   {
-    Serial.println(F("ACK CMD CAM Capture Done."));
+    Serial.println(F("ACK CMD CAM Capture Done. END"));
     uint8_t temp, temp_last;
     uint32_t length = 0;
     length = myCAM.read_fifo_length();
     if (length >= MAX_FIFO_SIZE ) 
     {
-      Serial.println(F("ACK CMD Over size."));
+      Serial.println(F("ACK CMD Over size. END"));
       myCAM.clear_fifo_flag();
       return;
     }
     if (length == 0 ) //0 kb
     {
-      Serial.println(F("ACK CMD Size is 0."));
+      Serial.println(F("ACK CMD Size is 0. END"));
       myCAM.clear_fifo_flag();
       return;
     }
@@ -374,7 +374,7 @@ length = myCAM.read_fifo_length();
 Serial.println(length, DEC);
 if (length >= MAX_FIFO_SIZE) //512 kb
 {
-  Serial.println(F("ACK CMD Over size."));
+  Serial.println(F("ACK CMD Over size. END"));
   return 0;
 }
 if (length == 0 ) //0 kb
@@ -395,7 +395,7 @@ while ( length-- )
   else if ((temp == 0xD8) & (temp_last == 0xFF))
   {
     is_header = true;
-    Serial.println(F("ACK IMG"));
+    Serial.println(F("ACK IMG END"));
     Serial.write(temp_last);
     Serial.write(temp);
   }
