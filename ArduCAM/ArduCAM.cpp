@@ -138,7 +138,7 @@ ArduCAM::ArduCAM(byte model ,int CS)
 		#endif
 	#endif
  #if defined (RASPBERRY_PI)
-   pinMode(CS, OUTPUT);
+  // pinMode(CS, OUTPUT);
  #else
 	  pinMode(CS, OUTPUT);
       sbi(P_CS, B_CS);
