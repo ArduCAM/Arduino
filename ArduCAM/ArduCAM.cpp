@@ -3129,7 +3129,7 @@ byte ArduCAM::wrSensorReg16_8(int regID, int regDat)
 {
 	#if defined (RASPBERRY_PI) 
 		arducam_i2c_word_write(regID, regDat);
-		//arducam_delay_ms(1);
+		arducam_delay_ms(1);
 	#else
 		Wire.beginTransmission(sensor_addr >> 1);
 	  Wire.write(regID >> 8);            // sends instruction byte, MSB first
