@@ -723,7 +723,7 @@ class ArduCAM
 	#include "ov3640_regs.h"
 #endif
 
-#if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP))
+#if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP) || defined(OV2640_MINI_2MP_PLUS))
 	#include "ov2640_regs.h"
 #endif
 

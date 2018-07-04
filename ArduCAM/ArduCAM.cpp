@@ -384,7 +384,7 @@ void ArduCAM::InitCAM()
       }
     case OV2640:
       {
-#if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP))
+#if (defined(OV2640_CAM) || defined(OV2640_MINI_2MP) || defined(OV2640_MINI_2MP_PLUS))
         wrSensorReg8_8(0xff, 0x01);
         wrSensorReg8_8(0x12, 0x80);
         delay(100);
@@ -885,7 +885,7 @@ void ArduCAM:: OV3640_set_JPEG_size(uint8_t size)
 
 void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 {
- #if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))
+ #if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP)||defined (OV2640_MINI_2MP_PLUS))
 	switch(size)
 	{
 		case OV2640_160x120:
@@ -1032,7 +1032,7 @@ void ArduCAM::set_format(byte fmt)
 
 	void ArduCAM::OV2640_set_Light_Mode(uint8_t Light_Mode)
 	{
- #if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))
+ #if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP)||defined (OV2640_MINI_2MP_PLUS))
 		 switch(Light_Mode)
 		 {
 			
@@ -1275,7 +1275,7 @@ void ArduCAM::set_format(byte fmt)
 	
 	void ArduCAM::OV2640_set_Color_Saturation(uint8_t Color_Saturation)
 	{
-	#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))
+	#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP)||defined (OV2640_MINI_2MP_PLUS))
 		switch(Color_Saturation)
 		{
 			case Saturation2:
@@ -1555,7 +1555,7 @@ void ArduCAM::set_format(byte fmt)
 	
 	void ArduCAM::OV2640_set_Brightness(uint8_t Brightness)
 	{
-	#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))
+	#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP)||defined (OV2640_MINI_2MP_PLUS))
 		switch(Brightness)
 		{
 			case Brightness2:
@@ -1796,7 +1796,7 @@ void ArduCAM::set_format(byte fmt)
 	
 	void ArduCAM::OV2640_set_Contrast(uint8_t Contrast)
 	{
- #if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))	
+ #if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP)||defined (OV2640_MINI_2MP_PLUS))	
 		switch(Contrast)
 		{
 			case Contrast2:
@@ -2147,7 +2147,7 @@ void ArduCAM::set_format(byte fmt)
 	
 	void ArduCAM::OV2640_set_Special_effects(uint8_t Special_effect)
 	{
-#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP))	
+#if (defined (OV2640_CAM)||defined (OV2640_MINI_2MP)||defined (OV2640_MINI_2MP_PLUS))	
 		switch(Special_effect)
 		{
 			case Antique:
