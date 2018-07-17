@@ -32,7 +32,7 @@
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 
-#define   FRAMES_NUM    0x07
+#define   FRAMES_NUM    0xFF
 #define   rate     0x0a
 #define SD_CS 9
 #define KEY 2
