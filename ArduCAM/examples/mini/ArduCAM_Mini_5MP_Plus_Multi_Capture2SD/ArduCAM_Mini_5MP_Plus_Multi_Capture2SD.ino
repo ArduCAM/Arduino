@@ -16,7 +16,7 @@
 //IF the FRAMES_NUM is 0X04, take five photos
 //IF the FRAMES_NUM is 0X05, take six photos
 //IF the FRAMES_NUM is 0X06, take seven photos
-//IF the FRAMES_NUM is 0X07, continue shooting until the FIFO is full
+//IF the FRAMES_NUM is 0XFF, continue shooting until the FIFO is full
 //You can see the picture in the SD card.
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM_Mini_5MP_Plus
 // and use Arduino IDE 1.6.8 compiler or above
