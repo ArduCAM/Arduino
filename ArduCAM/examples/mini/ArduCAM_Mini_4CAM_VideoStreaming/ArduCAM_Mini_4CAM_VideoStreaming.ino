@@ -62,12 +62,17 @@ Serial.begin(921600);
 Serial.println("ACK CMD ArduCAM Start! END"); 
 // set the CS output:
 pinMode(CS1, OUTPUT);
+digitalWrite(CS1, HIGH);
 pinMode(CS2, OUTPUT);
+digitalWrite(CS2, HIGH);
 pinMode(CS3, OUTPUT);
+digitalWrite(CS3, HIGH);
 pinMode(CS4, OUTPUT);
+digitalWrite(CS4, HIGH);
 
 // initialize SPI:
 SPI.begin(); 
+  
 while(1){
   //Check if the 4 ArduCAM Mini 2MP Cameras' SPI bus is OK
   myCAM1.write_reg(ARDUCHIP_TEST1, 0x55);
