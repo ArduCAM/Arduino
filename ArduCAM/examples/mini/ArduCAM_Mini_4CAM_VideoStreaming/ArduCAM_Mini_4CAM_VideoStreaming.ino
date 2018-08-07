@@ -71,7 +71,24 @@ pinMode(CS4, OUTPUT);
 digitalWrite(CS4, HIGH);
 
 // initialize SPI:
-SPI.begin(); 
+SPI.begin();  
+//Reset the CPLD
+myCAM1.write_reg(0x07, 0x80);
+delay(100);
+myCAM1.write_reg(0x07, 0x00);
+delay(100);  
+myCAM2.write_reg(0x07, 0x80);
+delay(100);
+myCAM2.write_reg(0x07, 0x00);
+delay(100); 
+myCAM3.write_reg(0x07, 0x80);
+delay(100);
+myCAM3.write_reg(0x07, 0x00);
+delay(100); 
+myCAM4.write_reg(0x07, 0x80);
+delay(100);
+myCAM4.write_reg(0x07, 0x00);
+delay(100); 
   
 while(1){
   //Check if the 4 ArduCAM Mini 2MP Cameras' SPI bus is OK
