@@ -53,10 +53,19 @@ uint8_t temp;
 #endif
 Serial.begin(115200);
 Serial.println(F("ArduCAM Start!"));
+
 // set the CS as an output:
 pinMode(CS, OUTPUT);
+digitalWrite(CS, HIGH);
+
 // initialize SPI:
 SPI.begin();
+//Reset the CPLD
+myCAM.write_reg(0x07, 0x80);
+delay(100);
+myCAM.write_reg(0x07, 0x00);
+delay(100); 
+  
 while(1){
   //Check if the ArduCAM SPI bus is OK
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
