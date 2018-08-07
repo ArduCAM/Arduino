@@ -134,7 +134,6 @@ Serial.println(F("ACK CMD SD Card detected.END"));
 //Change to JPEG capture mode and initialize the OV5640 module
 myCAM.set_format(JPEG);
 myCAM.InitCAM();
-myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
 #if defined (OV2640_MINI_2MP_PLUS)
   myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
 #endif
