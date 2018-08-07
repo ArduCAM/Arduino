@@ -57,11 +57,34 @@ Serial.begin(921600);
 Serial.println(F("ACK CMD ArduCAM Start! END")); 
 // set the CS output:
 pinMode(CS1, OUTPUT);
+digitalWrite(CS1, HIGH);
 pinMode(CS2, OUTPUT);
+digitalWrite(CS2, HIGH);
 pinMode(CS3, OUTPUT);
+digitalWrite(CS3, HIGH);
 pinMode(CS4, OUTPUT);
+digitalWrite(CS4, HIGH);
+
 // initialize SPI:
-SPI.begin(); 
+SPI.begin();  
+//Reset the CPLD
+myCAM1.write_reg(0x07, 0x80);
+delay(100);
+myCAM1.write_reg(0x07, 0x00);
+delay(100);  
+myCAM2.write_reg(0x07, 0x80);
+delay(100);
+myCAM2.write_reg(0x07, 0x00);
+delay(100); 
+myCAM3.write_reg(0x07, 0x80);
+delay(100);
+myCAM3.write_reg(0x07, 0x00);
+delay(100); 
+myCAM4.write_reg(0x07, 0x80);
+delay(100);
+myCAM4.write_reg(0x07, 0x00);
+delay(100); 
+  
 while(1){
   //Check if the 4 ArduCAM Mini 5MP Plus Cameras' SPI bus is OK
   myCAM1.write_reg(ARDUCHIP_TEST1, 0x55);
