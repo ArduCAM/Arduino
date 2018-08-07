@@ -136,7 +136,7 @@ myCAM.set_format(JPEG);
 myCAM.InitCAM();
 myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
 #if defined (OV2640_MINI_2MP_PLUS)
-  myCAM.OV2640_set_JPEG_size(OV5640_320x240);delay(1000);
+  myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
 #endif
 myCAM.clear_fifo_flag();
 myCAM.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
