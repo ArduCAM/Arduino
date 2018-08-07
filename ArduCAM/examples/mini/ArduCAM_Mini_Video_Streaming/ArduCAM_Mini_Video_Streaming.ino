@@ -278,7 +278,7 @@ if (Serial.available())
     mode = 2;
     temp = 0xff;
     start_capture = 2;
-    Serial.println(F("ACK CMD CAM start video streaming. END"));
+    Serial.println(F("ACK CMD CAM start video streaming. END")); Serial.println(F("ACK IMG END"));
     break;
     case 0x30:
     mode = 3;
