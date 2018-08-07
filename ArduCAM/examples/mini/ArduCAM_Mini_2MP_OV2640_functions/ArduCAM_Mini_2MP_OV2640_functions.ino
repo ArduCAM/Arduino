@@ -49,7 +49,7 @@ uint8_t temp;
 Serial.println(F("ACK CMD ArduCAM Start! END"));
 // set the CS as an output:
 pinMode(CS, OUTPUT);
-digitalWrite(CS,HIGH);
+digitalWrite(CS, HIGH);
 // initialize SPI:
 SPI.begin();
   //Reset the CPLD
