@@ -240,7 +240,7 @@ void loop() {
         mode = 2;
         temp = 0xff;
         start_capture = 2;
-        Serial.println(F("ACK CMD CAM start video streaming.END"));
+        Serial.println(F("ACK CMD CAM start video streaming.END")); Serial.println(F("ACK CMD IMG END"));
         break;
       case 0x30:
         mode = 3;
@@ -326,7 +326,7 @@ void loop() {
           else if ((temp == 0xD8) & (temp_last == 0xFF))
           {
             is_header = true;
-            Serial.println(F("ACK CMD IMG END"));
+           
             Serial.write(temp_last);
             Serial.write(temp);
           }
