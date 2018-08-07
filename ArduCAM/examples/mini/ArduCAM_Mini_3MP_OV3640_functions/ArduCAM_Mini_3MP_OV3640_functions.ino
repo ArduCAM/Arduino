@@ -29,7 +29,7 @@ const int CS = 7;
 bool is_header = false;
 int mode = 0;
 uint8_t start_capture = 0;
-  ArduCAM myCAM( OV3640, CS );
+ArduCAM myCAM( OV3640, CS );
 uint8_t read_fifo_burst(ArduCAM myCAM);
 void setup() {
 // put your setup code here, to run once:
@@ -47,12 +47,12 @@ Serial.println(F("ACK CMD ArduCAM Start!"));
 pinMode(CS, OUTPUT);
 digitalWrite(CS, HIGH);
 // initialize SPI:
-  //Reset the CPLD
+SPI.begin();
+//Reset the CPLD
 myCAM.write_reg(0x07, 0x80);
 delay(100);
 myCAM.write_reg(0x07, 0x00);
 delay(100);
-SPI.begin();
 while(1){
   //Check if the ArduCAM SPI bus is OK
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
