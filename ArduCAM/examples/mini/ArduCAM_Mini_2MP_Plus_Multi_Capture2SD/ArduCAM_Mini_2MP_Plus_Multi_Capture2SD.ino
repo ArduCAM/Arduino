@@ -132,7 +132,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   uint32_t length = 0;
   static int i = 0;
   static int k = 0;
-  char str[8];
+  char str[16];
   File outFile;
   byte buf[256];
   length = myCAM.read_fifo_length();
