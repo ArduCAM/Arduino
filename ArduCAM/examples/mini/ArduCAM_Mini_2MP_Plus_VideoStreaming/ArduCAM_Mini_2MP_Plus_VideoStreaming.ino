@@ -230,17 +230,16 @@ void loop() {
         break;
       case 0x11:
         temp = 0xff;
+        Serial.println(F("ACK CMD Change OK.END"));
         myCAM.set_format(JPEG);
         myCAM.InitCAM();
-#if !(defined (OV2640_MINI_2MP))
-        myCAM.set_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
-#endif
+        myCAM.OV2640_set_JPEG_size(OV2640_320x240); 
         break;
       case 0x20:
         mode = 2;
         temp = 0xff;
         start_capture = 2;
-        Serial.println(F("ACK CMD CAM start video streaming.END")); Serial.println(F("ACK CMD IMG END"));
+        Serial.println(F("ACK CMD CAM start video streaming.END"));
         break;
       case 0x30:
         mode = 3;
@@ -252,11 +251,6 @@ void loop() {
         temp = 0xff;
         myCAM.set_format(BMP);
         myCAM.InitCAM();
-#if !(defined (OV2640_MINI_2MP_PLUS))
-        myCAM.clear_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
-#endif
-        myCAM.wrSensorReg16_8(0x3818, 0x81);
-        myCAM.wrSensorReg16_8(0x3621, 0xA7);
         break;
       default:
         break;
@@ -326,7 +320,7 @@ void loop() {
           else if ((temp == 0xD8) & (temp_last == 0xFF))
           {
             is_header = true;
-           
+            Serial.println(F("ACK CMD IMG END"));
             Serial.write(temp_last);
             Serial.write(temp);
           }
