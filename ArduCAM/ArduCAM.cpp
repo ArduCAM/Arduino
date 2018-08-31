@@ -1026,6 +1026,8 @@ void ArduCAM::set_format(byte fmt)
 {
   if (fmt == BMP)
     m_fmt = BMP;
+  else if(fmt == RAW)
+    m_fmt = RAW;
   else
     m_fmt = JPEG;
 }
