@@ -168,7 +168,7 @@
 	#define regsize uint32_t
 #endif	
 
-#if defined(ARDUINO_SAMD_ZERO)
+#if defined(__SAMD21G18A__)
 	#define Serial SERIAL_PORT_USBVIRTUAL
 
 	#define cbi(reg, bitmask) *reg &= ~bitmask
