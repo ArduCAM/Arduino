@@ -93,7 +93,9 @@
 	2017/04/27  V4.1.0  by Lee	Add support for OV2640/OV5640/OV5642 functions.
 	2017/07/07  V4.1.0  by Lee	Add support for ArduCAM_ESP32 paltform
 	2017/07/25  V4.1.1  by Lee	Add support for MT9V034
-	2017/11/27  V4.1.2  by Max  Add support for Feather M0
+	2017/11/27  V4.1.2  by Max      Add support for Feather M0
+	2018/10/15  V4.1.2  by Lee      Add support for NRF52
+	2018/10/15  V4.1.2  by Lee      Add support for TEENSYDUINO
 --------------------------------------*/
 
 #ifndef ArduCAM_H
@@ -249,6 +251,19 @@
 	#define regsize uint32_t
 
 #endif
+
+#if defined(TEENSYDUINO)
+ #define cbi(reg, bitmask) digitalWriteFast(bitmask, LOW)
+ #define sbi(reg, bitmask) digitalWriteFast(bitmask, HIGH)
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+ #define cport(port, data) port &= data
+#define sport(port, data) port |= data
+ #define swap(type, i, j) {type t = i; i = j; j = t;}
+ #define fontbyte(x) cfont.font[x]  
+ #define regtype volatile uint8_t
+#define regsize uint8_t
+ #endif
 
 
 /****************************************************/
