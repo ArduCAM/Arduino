@@ -1,10 +1,11 @@
-# ArduCAM Library Introduction
-This is a opensource library for taking high resolution still images and short video clip on Arduino based platforms using ArduCAM's camera moduels. <br>
-The camera breakout boards should work with ArduCAM shield before connecting to the Arduino boards. <br>
-ArduCAM mini series camera modules like Mini-2MP, Mini-5MP(Plus) can be connected to Arduino boards directly. <br>
-In addition to Arduino, the library can be ported to any hardware platforms as long as they have I2C and SPI interface based on this ArduCAM library. <br>
+# Introduction
+**ArduCAM Library** is an open source code library that supports the [ArduCAM](http://www.arducam.com/) series of still and video camera products for the Arduino platform.
 
-## Now Supported Cameras
+ArduCAM products come in two basic forms. The **ArduCAM shield** contains a hardware driver that interfaces with your own camera sensor modules and presents it to the Ardrino platform for use. The **ArduCAM mini** combines the ArduCAM shield with one of a number of popular camera sensors to produce an all-in-one, plug-and-play camera shield for popular Arduino systems.
+
+The ArduCAM system relies on the [Serial Peripheral Interface](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface), or SPI, to connect to Arduino. In theory, any ArduCAM product should work with any Arduino-compatible system that supports SPI and [I2C](https://en.wikipedia.org/wiki/I%C2%B2C). The ArduCAM Library has been designed to be ported to any Arduino platform with these interfaces.
+
+## Currently supported cameras
 -	OV7660		0.3MP
 -	OV7670		0.3MP
 -	OV7675		0.3MP
@@ -19,54 +20,69 @@ In addition to Arduino, the library can be ported to any hardware platforms as l
 -	OV5642		5MP	JPEG
 -	OV5640		5MP JPEG
 
-## Supported MCU Platform
--	Theoretically support all Arduino families
--	Arduino UNO R3			(Tested)
--	Arduino MEGA2560 R3		(Tested)
--	Arduino Leonardo R3		(Tested)
--	Arduino Nano			(Tested)
--	Arduino DUE			(Tested)
--	Arduino Genuion 101		(Tested)
--	Raspberry Pi			(Tested)
--	ESP8266-12			(Tested) (http://www.arducam.com/downloads/ESP8266_UNO/package_ArduCAM_index.json)
-*	Feather M0              (Tested with OV5642)
+## Supported MCU platforms
+ArduCAM theoretically supports all Arduino MCU families, but has been tested and is known to work on the following platforms:
 
-Note: ArduCAM library for ESP8266 is maintained with another repository [ESP8266](https://github.com/ArduCAM/ArduCAM_ESP8266_UNO) using josn board manager script. <br>
+-	Arduino UNO R3
+-	Arduino MEGA2560 R3
+-	Arduino Leonardo R3
+-	Arduino Nano
+-	Arduino DUE
+-	Arduino Genuion 101
+-	Feather M0
+-	ESP8266-12 (see notes below)
+-	Raspberry Pi
 
-## Libraries Structure
-The basic libraries are composed by two sub-libraries one is ArduCAM and the other is UTFT4ArduCAM_SPI. These two libraries should be copied right under the libraries of Arduino directory in order to be recognized by the Arduino IDE. <br>
-The ArduCAM library is the core library for ArduCAM shields. It contains supported image sensor drivers and user land API functions which issue capture or image data read commands .There is also an example directory inside the ArduCAM library which illustrates most 
-function of the ArduCAM shields. The existing examples are plug and play without need to write a single line of code.  <br>
-The UTFT4ArduCAM_SPI library is modified version of UTFT which is written by [Henning Karlsen](http://www.henningkarlsen.com/electronics). We ported it to support ArduCAM 
-shield with LCD screen. So the UTFT4ArduCAM_SPI library is only needed when using the ArduCAM-LF model. <br>
+**Note:** The ArduCAM Library for ESP8266 is maintained in another repository [ESP8266](https://github.com/ArduCAM/ArduCAM_ESP8266_UNO) using the [json board manager script](http://www.arducam.com/downloads/ESP8266_UNO/package_ArduCAM_index.json).
 
-# How to use
-The libraries should be configured before running any examples, or else you will get a compilation error message. <br>
+## Library structure
+The ArduCAM Library code is organized into two sub-libraries; the first is "ArduCAM" and the second is "UTFT4ArduCAM_SPI". In order to be recognized by the Arduino IDE, these two libraries should be [copied into the library directory](https://www.arduino.cc/en/Guide/Libraries) for your sketchbook.
+
+The "ArduCAM" library is the core library for ArduCAM shields. It contains the supported image sensor drivers and user-land API functions used to issue capture or image data read commands. There is also an example directory inside the ArduCAM library which illustrates most functions of the ArduCAM shields. The examples are plug-and-play without the need to write a single line of code.
+
+The "UTFT4ArduCAM_SPI" library is modified version of UTFT which is written by [Henning Karlsen](http://www.henningkarlsen.com/electronics). It combines the basic ArduCAM library with UTFT in order to support the [ArduCAM-LF](https://www.robotshop.com/ca/en/arducam-lf-revc-camera-module-32-lcd-arduino.html), an ArduCAM shield with a built-in LCD display. UTFT4ArduCAM_SPI is only needed when working with the ArduCAM-LF.
+
+# Compiling the libraries
+There is some basic configuration required before the libraries can be successfully compiled.
 
 ## 1. Edit memorysaver.h file
-Open the `memorysaver.h` file in the ArduCAM folder and enable the hardware platform and camera module which matches to your hardware by comment or 
-uncomment the macro definition in the file. For example, if you got a ArduCAM-Mini-2MP you 
-should uncomment the line `#define OV2640_MINI_2MP` and comment all the other lines. And 
-if you got a ArduCAM-Shield-V2 and a OV5642 camera module, you should uncomment the line `#define ARDUCAM_SHIELD_V2` 
-and the line `#define OV5642_CAM` then comment other lines. <br>
+Open the `memorysaver.h` file in the ArduCAM folder and enable the hardware platform and camera module which matches to your hardware by commenting or uncommenting the macro definition in the file. For example, if you have an ArduCAM-Mini-2MP you 
+should uncomment the line:
 
-## 2. Choose correct CS pin for your camera
+`#define OV2640_MINI_2MP`
+
+and comment-out all the other lines. On the other hand, if you have an ArduCAM-Shield-V2 and a OV5642 camera module, you should uncomment these two lines:
+
+`#define ARDUCAM_SHIELD_V2`
+`#define OV5642_CAM`
+
+and comment-out all the other lines.
+
+## 2. Choose the correct CS pin for your camera
 Open one of the examples, wiring SPI and I2C interface especially CS pins to ArduCAM shield according to the examples.
-Hardware and software shuld be consistent to run the examples correctly.
+Hardware and software should be consistent to run the examples correctly.
 
 ## 3. Upload the examples
-In the example folder there are seven sub directories for different ArduCAM models and the host application. 
-The `Mini` folder is for ArduCAM-Mini-2MP and ArduCAM-Mini-5MP modules.  <br>
-The `Mini_5MP_Plus` folder is for ArduCAM-Mini-5MP-Plus (OV5640/OV5642) modules.  <br>
-The `RevC` folder is for ArduCAM-Shield-RevC or ArduCAM-Shield-RevC+ shields.  <br>
-The `Shield_V2` folder is for ArduCAM-Shield-V2 shield.  <br>
-The `host_app` folder is host capture and display application for all of ArduCAM modules. <br>
-The `RaspberryPi` folder is examples used for Raspberry Pi platform, see [more instruction](https://github.com/ArduCAM/Arduino/tree/master/ArduCAM/examples/RaspberryPi). <br>
-The `ESP8266` folder is for ArduCAM-ESP8266-UNO board examples for library compatibility. Please try repository [ESP8266](https://github.com/ArduCAM/ArduCAM_ESP8266_UNO) using josn board manager script instead.<br>
-Selecting correct COM port and Arduino boards then upload the sketches.  <br>
-# Arducam MINI Camera Demo Tutorial for Arduino
-[![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_MINI_Camera.jpeg)](https://youtu.be/hybQpjwJ4aA  "Arducam MINI Camera Demo Tutorial for Arduino")
+In the example folder there are seven sub-directories for different ArduCAM models and the host application.
 
-# Arducam Camera Shield V2 Demo Tutorial for Arduino
-[![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_Shield_V2_Camera.jpeg)](https://youtu.be/XMik38TNqGk  "Arducam MINI Camera Demo Tutorial for Arduino")
+The `Mini` folder is for ArduCAM-Mini-2MP and ArduCAM-Mini-5MP modules.
+The `Mini_5MP_Plus` folder is for ArduCAM-Mini-5MP-Plus (OV5640/OV5642) modules.
+The `RevC` folder is for ArduCAM-Shield-RevC or ArduCAM-Shield-RevC+ shields.
+The `Shield_V2` folder is for ArduCAM-Shield-V2 shield.
+The `host_app` folder is host capture and display application for all of ArduCAM modules.
+The `RaspberryPi` folder is examples used for Raspberry Pi platform, see [more instruction](https://github.com/ArduCAM/Arduino/tree/master/ArduCAM/examples/RaspberryPi).
+The `ESP8266` folder is for ArduCAM-ESP8266-UNO board examples for library compatibility.
+
+If you are using the ESP8266, please use the  [ESP8266](https://github.com/ArduCAM/ArduCAM_ESP8266_UNO) repository instead, which uses the [json board manager script](http://www.arducam.com/downloads/ESP8266_UNO/package_ArduCAM_index.json).
+
+To use these examples, simply edit the code to select the correct COM port and Arduino board, and then uploade the sketch to your board.
+
+# Video tutorials
+There are two video tutorials available on YouTube:
+
+## ArduCAM mini tutorial for Arduino
+[![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_MINI_Camera.jpeg)](https://youtu.be/hybQpjwJ4aA "Arducam MINI Camera Demo Tutorial for Arduino")
+
+## Arducam shield tutorial for Arduino
+[![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_Shield_V2_Camera.jpeg)](https://youtu.be/XMik38TNqGk "Arducam MINI Camera Demo Tutorial for Arduino")
 
