@@ -130,7 +130,7 @@ ArduCAM::ArduCAM(byte model ,int CS)
 			B_CS = CS;
 		}
 	#else
-		#if (defined(ESP8266)||defined(ESP32))
+		#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO))
 		  B_CS = CS;
 		#else
 		  P_CS  = portOutputRegister(digitalPinToPort(CS));
@@ -818,7 +818,7 @@ uint8_t ArduCAM:: bus_read(int address)
 		sbi(P_CS, B_CS);
 		return value;	
 	#else
-		#if (defined(ESP8266) || defined(__arm__))
+		#if (defined(ESP8266) || defined(__arm__) ||defined(TEENSYDUINO))
 		#if defined(OV5642_MINI_5MP)
 		  SPI.transfer(address);
 		  value = SPI.transfer(0x00);
@@ -2951,7 +2951,7 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 	    reg_val = pgm_read_word(&next->val);
 	    err = wrSensorReg8_8(reg_addr, reg_val);
 	    next++;
-		#if (defined(ESP8266)||defined(ESP32))
+		#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO))
 		    yield();
 		#endif
 	  }
@@ -2982,7 +2982,7 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 	    //  if (!err)
 	    //return err;
 	    next++;
-		#if defined(ESP8266)||defined(ESP32)
+		#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO))
 			yield();
 		#endif
 	  }
@@ -3015,7 +3015,7 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 	    //if (!err)
 	    //return err;
 	    next++;
-		#if defined(ESP8266)||defined(ESP32)
+		#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO))
 			yield();
 		#endif
 	  }
@@ -3041,7 +3041,7 @@ int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 	    next++;
 	    reg_addr = pgm_read_word(&next->reg);
 	    reg_val = pgm_read_word(&next->val);
-			#if defined(ESP8266)||defined(ESP32)
+			#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO))
 			    yield();
 			#endif
 	  }
@@ -3203,7 +3203,7 @@ byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 	#endif 
   return (1);
 }
-#if defined(ESP8266)
+#if defined(ESP8266)||defined(TEENSYDUINO)
 inline void ArduCAM::setDataBits(uint16_t bits) {
   const uint32_t mask = ~((SPIMMOSI << SPILMOSI) | (SPIMMISO << SPILMISO));
   bits--;
