@@ -51,6 +51,7 @@ void myCAMSaveToSDFile() {
   myCAM.CS_HIGH();
   while (!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
   Serial.println(F("Capture Done."));
+  myCAM.CS_HIGH();
   length = myCAM.read_fifo_length();
   Serial.print(F("The fifo length is :"));
   Serial.println(length, DEC);
