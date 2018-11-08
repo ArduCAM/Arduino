@@ -287,7 +287,7 @@ if (Serial.available())
     #if defined (OV2640_CAM)
       myCAM.OV2640_set_JPEG_size(OV2640_1600x1200);delay(1000);
       Serial.println(F("ACK CMD switch to OV2640_1600x1200 END"));
-    #elif define (OV3640_CAM)
+    #elif defined (OV3640_CAM)
      myCAM.OV3640_set_JPEG_size(OV3640_2048x1536);delay(1000);
      Serial.println(F("ACK CMD switch to OV3640_2048x1536 END"));
     #else
