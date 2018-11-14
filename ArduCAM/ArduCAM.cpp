@@ -3203,7 +3203,7 @@ byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 	#endif 
   return (1);
 }
-#if defined(ESP8266)||defined(TEENSYDUINO)
+#if defined(ESP8266)
 inline void ArduCAM::setDataBits(uint16_t bits) {
   const uint32_t mask = ~((SPIMMOSI << SPILMOSI) | (SPIMMISO << SPILMISO));
   bits--;
