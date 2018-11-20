@@ -70,3 +70,7 @@ Selecting correct COM port and Arduino boards then upload the sketches.  <br>
 # Arducam Camera Shield V2 Demo Tutorial for Arduino
 [![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_Shield_V2_Camera.jpeg)](https://youtu.be/XMik38TNqGk  "Arducam MINI Camera Demo Tutorial for Arduino")
 
+## 4. How To Connect Bluetooth Module
+ ![Alt text](https://github.com/ArduCAM/Arduino/blob/master/data/Arducam_Mini_VideoStreaming_BlueTooth.png)
+
+
