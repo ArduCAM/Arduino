@@ -17,7 +17,7 @@
 /*
 		UNO         PIR
 		VCC         VCC
-		7            S
+		4            S
 		GND         GND		
 ***************************************************/
 
@@ -32,8 +32,8 @@
   #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 #define SD_CS 9
-#define HCSR 7
-const int SPI_CS = 5;
+#define HCSR 4
+const int SPI_CS = 7;
 #if defined (OV2640_MINI_2MP)
   ArduCAM myCAM( OV2640, SPI_CS );
 #elif defined (OV3640_MINI_3MP)
