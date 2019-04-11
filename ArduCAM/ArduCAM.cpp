@@ -2505,7 +2505,7 @@ void ArduCAM::set_format(byte fmt)
 		switch(level)
 		{
 			case Exposure_17_EV:
-			wrSensorReg16_8(0x3a0f ,0x10);
+			  wrSensorReg16_8(0x3a0f ,0x10);
 				wrSensorReg16_8(0x3a10 ,0x08);
 				wrSensorReg16_8(0x3a1b ,0x10);
 				wrSensorReg16_8(0x3a1e ,0x08);
@@ -2551,6 +2551,8 @@ void ArduCAM::set_format(byte fmt)
 				wrSensorReg16_8(0x3a1b ,0x38);
 				wrSensorReg16_8(0x3a1e ,0x30);
 				wrSensorReg16_8(0x3a1f ,0x10);
+			break;
+			case Exposure03_EV:
 				wrSensorReg16_8(0x3a0f ,0x40);
 				wrSensorReg16_8(0x3a10 ,0x38);
 				wrSensorReg16_8(0x3a11 ,0x71);
