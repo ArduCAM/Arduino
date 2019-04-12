@@ -261,6 +261,7 @@ Exposure_10_EV	LITERAL1
 Exposure_07_EV	LITERAL1            
 Exposure_03_EV	LITERAL1            
 Exposure_default	LITERAL1          
+Exposure03_EV	LITERAL1             
 Exposure07_EV	LITERAL1             
 Exposure10_EV	LITERAL1             
 Exposure13_EV	LITERAL1             

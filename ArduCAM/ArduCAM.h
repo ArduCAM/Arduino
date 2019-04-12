@@ -431,12 +431,11 @@
 #define Exposure_07_EV                    3
 #define Exposure_03_EV                    4
 #define Exposure_default                  5
-#define Exposure07_EV                     6
-#define Exposure10_EV                     7
-#define Exposure13_EV                     8
-#define Exposure17_EV                     9
-#define Exposure03_EV                     10
-
+#define Exposure03_EV                     6
+#define Exposure07_EV                     7
+#define Exposure10_EV                     8
+#define Exposure13_EV                     9
+#define Exposure17_EV                     10
 
 #define Auto_Sharpness_default              0
 #define Auto_Sharpness1                     1
