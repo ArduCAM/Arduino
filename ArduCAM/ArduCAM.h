@@ -170,7 +170,7 @@
 	#define regsize uint32_t
 #endif	
 
-#if defined(__SAMD21G18A__)
+#if defined(__SAMD51__) || defined(__SAMD21G18A__)
 	#define Serial SERIAL_PORT_USBVIRTUAL
 
 	#define cbi(reg, bitmask) *reg &= ~bitmask
