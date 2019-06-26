@@ -76,5 +76,13 @@ Selecting correct COM port and Arduino boards then upload the sketches.  <br>
 https://github.com/ArduCAM/Arduino/blob/master/ArduCAM/examples/mini/ArduCAM_Mini_Video_Streaming_Bluetooth/ArduCAM_Mini_Video_Streaming_Bluetooth.ino
 ```
  ![Alt text](https://github.com/ArduCAM/Arduino/blob/master/Arducam_Mini_VideoStreaming_BlueTooth.png)
-
+## 5. How to download the Host V2 ?
+- For ArduCAM_Host_V2.0_Mac.app, please refer to this link:
+```bash
+www.arducam.com/downloads/app/ArduCAM_Host_V2.0_Mac.app.zip
+```
+- For ArduCAM_Mini_V2.0_Linux_x86_64bit, Please refer to this link:
+```bash
+www.arducam.com/downloads/app/ArduCAM_Mini_V2.0_Linux_x86_64bit.zip
+```
 
