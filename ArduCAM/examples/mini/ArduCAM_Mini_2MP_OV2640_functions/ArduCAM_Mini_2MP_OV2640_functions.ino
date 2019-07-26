@@ -492,7 +492,8 @@ else if (mode == 3)
     {
       Serial.write(pgm_read_byte(&bmp_header[temp]));
     }
-    SPI.transfer(0x00);
+    //for old version, enable it else disable
+   // SPI.transfer(0x00);
     char VH, VL;
     int i = 0, j = 0;
     for (i = 0; i < 240; i++)
