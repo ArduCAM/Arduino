@@ -130,7 +130,7 @@ ArduCAM::ArduCAM(byte model ,int CS)
 			B_CS = CS;
 		}
 	#else
-		#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO))
+		#if (defined(ESP8266)||defined(ESP32)||defined(TEENSYDUINO) ||defined(NRF52840_XXAA))
 		  B_CS = CS;
 		#else
 		  P_CS  = portOutputRegister(digitalPinToPort(CS));
