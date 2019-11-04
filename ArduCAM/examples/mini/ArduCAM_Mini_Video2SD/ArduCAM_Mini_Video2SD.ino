@@ -443,7 +443,7 @@ void setup()
   myCAM.OV5642_set_JPEG_size(OV5642_320x240);
 #endif
 
-  delay(1000);
+  delay(30000);
 
   Video2SD();
 }
