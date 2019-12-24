@@ -1,5 +1,7 @@
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/ArduCAM/Arduino) 
 
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/ArduCAM/Arduino) 
+
 # ArduCAM Library Introduction
 This is a opensource library for taking high resolution still images and short video clip on Arduino based platforms using ArduCAM's camera moduels. <br>
 The camera breakout boards should work with ArduCAM shield before connecting to the Arduino boards. <br>
