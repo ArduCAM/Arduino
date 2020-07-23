@@ -324,7 +324,8 @@ void ArduCAM::InitCAM()
           #else
           wrSensorReg16_8(0x4407, 0x0C);
           #endif
-	 wrSensorReg16_8(0x5888, 0x00);
+	 		wrSensorReg16_8(0x5888, 0x00);
+			wrSensorReg16_8(0x5000, 0xFF); 
         }
         else
         {
