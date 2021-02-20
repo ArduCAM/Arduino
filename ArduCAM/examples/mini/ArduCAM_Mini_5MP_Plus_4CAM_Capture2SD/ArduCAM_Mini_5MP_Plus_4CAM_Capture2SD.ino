@@ -55,7 +55,7 @@ Serial.begin(115200);
 Serial.println(F("ArduCAM Start!")); 
 // set the CS output:
 pinMode(CS1, OUTPUT);
-digitalWrite(CS1, HIHG);
+digitalWrite(CS1, HIGH);
 pinMode(CS2, OUTPUT);
 digitalWrite(CS2, HIGH);
 pinMode(CS3, OUTPUT);
