@@ -112,7 +112,6 @@
 	#include <SPI.h>
 	#include "HardwareSerial.h"
 	#if defined(__SAM3X8E__)
-	#define Wire Wire1
 	#endif
 #endif
 
