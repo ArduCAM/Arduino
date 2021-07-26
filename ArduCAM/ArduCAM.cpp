@@ -319,7 +319,7 @@ void ArduCAM::InitCAM()
           wrSensorReg16_8(0x3621, 0x10);
           wrSensorReg16_8(0x3801, 0xb0);
           #if (defined(OV5642_MINI_5MP_PLUS) || (defined ARDUCAM_SHIELD_V2))
-          wrSensorReg16_8(0x4407, 0x04);
+          wrSensorReg16_8(0x4407, 0x08);
           #else
           wrSensorReg16_8(0x4407, 0x0C);
           #endif

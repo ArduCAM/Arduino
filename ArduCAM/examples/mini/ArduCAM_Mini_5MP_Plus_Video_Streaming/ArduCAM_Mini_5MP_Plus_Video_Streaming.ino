@@ -410,7 +410,7 @@ while ( length-- )
   }
   if ( (temp == 0xD9) && (temp_last == 0xFF) ) //If find the end ,break while,
   break;
-  delayMicroseconds(15);
+  delayMicroseconds(5);
 }
 myCAM.CS_HIGH();
 is_header = false;
