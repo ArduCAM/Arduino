@@ -18,6 +18,9 @@
 #include <time.h>
 #include "arducam_arch_raspberrypi.h"
 
+extern "C" {
+#include <i2c/smbus.h>
+}
 
 #define	SPI_ARDUCAM_SPEED	1000000
 #define	SPI_ARDUCAM		      0
