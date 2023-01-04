@@ -7,18 +7,18 @@ objects = ArduCAM.o arducam_arch_raspberrypi.o
 
 
 ov2640_capture : $(objects) arducam_ov2640_capture.o 
-	g++ $(CCFLAGS) -o ov2640_capture $(objects) arducam_ov2640_capture.o -lwiringPi -Wall	
+	g++ $(CCFLAGS) -o ov2640_capture $(objects) arducam_ov2640_capture.o -lwiringPi -li2c -Wall	
 ov5640_capture : $(objects) arducam_ov5640_capture.o 
-	g++ $(CCFLAGS) -o ov5640_capture $(objects) arducam_ov5640_capture.o -lwiringPi -Wall
+	g++ $(CCFLAGS) -o ov5640_capture $(objects) arducam_ov5640_capture.o -lwiringPi -li2c -Wall
 ov5642_capture : $(objects) arducam_ov5642_capture.o 
-	g++ $(CCFLAGS) -o ov5642_capture $(objects) arducam_ov5642_capture.o -lwiringPi -Wall
+	g++ $(CCFLAGS) -o ov5642_capture $(objects) arducam_ov5642_capture.o -lwiringPi -li2c -Wall
 	
 ov2640_4cams_capture : $(objects) arducam_ov2640_4cams_capture.o 
-	g++ $(CCFLAGS) -o ov2640_4cams_capture $(objects) arducam_ov2640_4cams_capture.o -lwiringPi -Wall
+	g++ $(CCFLAGS) -o ov2640_4cams_capture $(objects) arducam_ov2640_4cams_capture.o -lwiringPi -li2c -Wall
 ov5640_4cams_capture : $(objects) arducam_ov5640_4cams_capture.o 
-	g++ $(CCFLAGS) -o ov5640_4cams_capture $(objects) arducam_ov5640_4cams_capture.o -lwiringPi -Wall
+	g++ $(CCFLAGS) -o ov5640_4cams_capture $(objects) arducam_ov5640_4cams_capture.o -lwiringPi -li2c -Wall
 ov5642_4cams_capture : $(objects) arducam_ov5642_4cams_capture.o 
-	g++ $(CCFLAGS) -o ov5642_4cams_capture $(objects) arducam_ov5642_4cams_capture.o -lwiringPi -Wall
+	g++ $(CCFLAGS) -o ov5642_4cams_capture $(objects) arducam_ov5642_4cams_capture.o -lwiringPi -li2c -Wall
 
 	
 ArduCAM.o : ArduCAM.cpp 

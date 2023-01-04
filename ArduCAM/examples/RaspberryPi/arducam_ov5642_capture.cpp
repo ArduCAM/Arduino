@@ -17,7 +17,7 @@
 #define OV5642_CHIPID_LOW 0x300b
 #define OV5642_MAX_FIFO_SIZE		0x7FFFFF		//8MByte
 #define BUF_SIZE 4096
-#define CAM1_CS 5
+#define CAM1_CS 5     // Currently this is ignored and SPI_CE0_N (GPIO 08) must be used.
 
 #define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
 uint8_t buf[BUF_SIZE];
