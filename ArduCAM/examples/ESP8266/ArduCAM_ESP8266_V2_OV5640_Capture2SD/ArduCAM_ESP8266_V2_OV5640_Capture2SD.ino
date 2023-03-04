@@ -7,7 +7,7 @@
 // It will run the ArduCAM ESP8266 5MP as a real 2MP digital camera, provide both JPEG capture.
 // The demo sketch will do the following tasks:
 // 1. Set the sensor to JPEG mode.
-// 2. Capture and buffer the image to FIFO every 5 seconds 
+// 2. Capture and buffer the image to FIFO every 5 seconds
 // 3. Store the image to Micro SD/TF card with JPEG format in sequential.
 // 4. Resolution can be changed by myCAM.set_JPEG_size() function.
 // This program requires the ArduCAM V4.0.0 (or later) library and ArduCAM ESP8266 5MP shield
@@ -17,12 +17,12 @@
 #include <SPI.h>
 #include <SD.h>
 #include "memorysaver.h"
-#if !(defined ESP8266 )
+#if !(defined ESP8266)
 #error Please select the ArduCAM ESP8266 UNO board in the Tools/Board
 #endif
 
-//This demo can only work on OV5640_MINI_5MP_PLUS or ARDUCAM_SHIELD_V2 platform.
-#if !(defined (OV5640_MINI_5MP_PLUS)||(defined (ARDUCAM_SHIELD_V2) && defined (OV5640_CAM)))
+// This demo can only work on OV5640_MINI_5MP_PLUS or ARDUCAM_SHIELD_V2 platform.
+#if !(defined(OV5640_MINI_5MP_PLUS) || (defined(ARDUCAM_SHIELD_V2) && defined(OV5640_CAM)))
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
 // set GPIO16 as the slave select :
@@ -31,7 +31,8 @@ const int CS = 16;
 const int SD_CS = 0;
 ArduCAM myCAM(OV5640, CS);
 
-void myCAMSaveToSDFile(){
+void myCAMSaveToSDFile()
+{
   char str[8];
   byte buf[256];
   static int i = 0;
@@ -39,62 +40,68 @@ void myCAMSaveToSDFile(){
   static int n = 0;
   uint8_t temp, temp_last;
   File file;
-  //Flush the FIFO
+  // Flush the FIFO
   myCAM.flush_fifo();
-  //Clear the capture done flag
+  // Clear the capture done flag
   myCAM.clear_fifo_flag();
-  //Start capture
+  // Start capture
   myCAM.start_capture();
   Serial.println("star Capture");
- while(!myCAM.get_bit(ARDUCHIP_TRIG , CAP_DONE_MASK));
- Serial.println("Capture Done!");  
+  while (!myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK))
+    ;
+  Serial.println("Capture Done!");
 
- //Construct a file name
- k = k + 1;
- itoa(k, str, 10);
- strcat(str, ".jpg");
- //Open the new file
- file = SD.open(str, O_WRITE | O_CREAT | O_TRUNC);
- if(! file){
-  Serial.println("open file faild");
-  return;
- }
- i = 0;
- myCAM.CS_LOW();
- myCAM.set_fifo_burst();
- #if !(defined (ARDUCAM_SHIELD_V2) && defined (OV5640_CAM))
+  // Construct a file name
+  k = k + 1;
+  itoa(k, str, 10);
+  strcat(str, ".jpg");
+  // Open the new file
+  file = SD.open(str, O_WRITE | O_CREAT | O_TRUNC);
+  if (!file)
+  {
+    Serial.println("open file faild");
+    return;
+  }
+  i = 0;
+  myCAM.CS_LOW();
+  myCAM.set_fifo_burst();
+#if !(defined(ARDUCAM_SHIELD_V2) && defined(OV5640_CAM))
   SPI.transfer(0xFF);
-  #endif
- //Read JPEG data from FIFO
- while ( (temp !=0xD9) | (temp_last !=0xFF)){
-  temp_last = temp;
-  temp = SPI.transfer(0x00);
-  //Write image data to buffer if not full
-  if( i < 256)
-   buf[i++] = temp;
-   else{
-    //Write 256 bytes image data to file
+#endif
+  // Read JPEG data from FIFO
+  while ((temp != 0xD9) | (temp_last != 0xFF))
+  {
+    temp_last = temp;
+    temp = SPI.transfer(0x00);
+    // Write image data to buffer if not full
+    if (i < 256)
+      buf[i++] = temp;
+    else
+    {
+      // Write 256 bytes image data to file
+      myCAM.CS_HIGH();
+      file.write(buf, 256);
+      i = 0;
+      buf[i++] = temp;
+      myCAM.CS_LOW();
+      myCAM.set_fifo_burst();
+    }
+    delay(0);
+  }
+
+  // Write the remain bytes in the buffer
+  if (i > 0)
+  {
     myCAM.CS_HIGH();
-    file.write(buf ,256);
-    i = 0;
-    buf[i++] = temp;
-    myCAM.CS_LOW();
-    myCAM.set_fifo_burst();
-   }
-   delay(0);  
- }
- 
- //Write the remain bytes in the buffer
- if(i > 0){
-  myCAM.CS_HIGH();
-  file.write(buf,i);
- }
- //Close the file
- file.close();
+    file.write(buf, i);
+  }
+  // Close the file
+  file.close();
   Serial.println("CAM Save Done!");
 }
 
-void setup(){
+void setup()
+{
   uint8_t vid, pid;
   uint8_t temp;
 
@@ -102,53 +109,52 @@ void setup(){
   Serial.begin(115200);
   Serial.println("ArduCAM Start!");
 
-  //set the CS as an output:
-  pinMode(CS,OUTPUT);
+  // set the CS as an output:
+  pinMode(CS, OUTPUT);
 
   // initialize SPI:
   SPI.begin();
-  SPI.setFrequency(4000000); //4MHz
+  SPI.setFrequency(4000000); // 4MHz
   delay(1000);
-  //Check if the ArduCAM SPI bus is OK
+  // Check if the ArduCAM SPI bus is OK
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
   temp = myCAM.read_reg(ARDUCHIP_TEST1);
-   
-  if (temp != 0x55){
+
+  if (temp != 0x55)
+  {
     Serial.println("SPI1 interface Error!");
-    //while(1);
+    // while(1);
   }
-    //Initialize SD Card
-  if(!SD.begin(SD_CS)){
+  // Initialize SD Card
+  if (!SD.begin(SD_CS))
+  {
     Serial.println("SD Card Error");
   }
   else
-  Serial.println("SD Card detected!");
-   
-  myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK); //disable low power
+    Serial.println("SD Card detected!");
+
+  myCAM.clear_bit(ARDUCHIP_GPIO, GPIO_PWDN_MASK); // disable low power
   delay(100);
-//Check if the camera module type is OV5640
+  // Check if the camera module type is OV5640
   myCAM.wrSensorReg16_8(0xff, 0x01);
   myCAM.rdSensorReg16_8(OV5640_CHIPID_HIGH, &vid);
   myCAM.rdSensorReg16_8(OV5640_CHIPID_LOW, &pid);
-   if((vid != 0x56) || (pid != 0x40))
-   Serial.println("Can't find OV5640 module!");
-   else
-   Serial.println("OV5640 detected.");
-   myCAM.set_format(JPEG);
-   myCAM.InitCAM();
-   myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
-   myCAM.OV5640_set_JPEG_size(OV5640_320x240);
-   delay(1000);
+  if ((vid != 0x56) || (pid != 0x40))
+    Serial.println("Can't find OV5640 module!");
+  else
+    Serial.println("OV5640 detected.");
+  myCAM.set_format(JPEG);
+  myCAM.InitCAM();
+  myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK); // VSYNC is active HIGH
+  myCAM.OV5640_set_JPEG_size(OV5640_320x240);
+  delay(1000);
 }
 
-void loop(){
+void loop()
+{
   myCAMSaveToSDFile();
-  myCAM.set_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK);  //enable low power
+  myCAM.set_bit(ARDUCHIP_GPIO, GPIO_PWDN_MASK); // enable low power
   delay(3000);
-   myCAM.clear_bit(ARDUCHIP_GPIO,GPIO_PWDN_MASK); //disable low power
-   delay(2000);
-  
-  
+  myCAM.clear_bit(ARDUCHIP_GPIO, GPIO_PWDN_MASK); // disable low power
+  delay(2000);
 }
-
-

@@ -13,39 +13,43 @@
 // Declare which fonts we will be using
 extern uint8_t SmallFont[];
 // Declare the TFT CS
-const int SPI_CS =10;
+const int SPI_CS = 10;
 UTFT myGLCD(SPI_CS);
-//Initialize the touch  CS INT
-ArduCAM_Touch  myTouch(8, 2);
+// Initialize the touch  CS INT
+ArduCAM_Touch myTouch(8, 2);
 void rtp_test(void)
-{  
-  while(1)
+{
+  while (1)
   {
-    myTouch.sta = myTouch.TP_Scan(0);      
-    if(myTouch.sta&TP_PRES_DOWN)     
-    { 
-      if(myTouch.x[0]<myTouch.width&&myTouch.y[0]<myTouch.height)
-      { 
-        if(myTouch.x[0]>(myTouch.width-30)&&myTouch.y[0]<20) {
-            myGLCD.clrScr(); myTouch.Load_Drow_Dialog();
-          }
-        else  myTouch.TP_Draw_Big_Point(myTouch.x[0],myTouch.y[0],VGA_YELLOW);              
+    myTouch.sta = myTouch.TP_Scan(0);
+    if (myTouch.sta & TP_PRES_DOWN)
+    {
+      if (myTouch.x[0] < myTouch.width && myTouch.y[0] < myTouch.height)
+      {
+        if (myTouch.x[0] > (myTouch.width - 30) && myTouch.y[0] < 20)
+        {
+          myGLCD.clrScr();
+          myTouch.Load_Drow_Dialog();
+        }
+        else
+          myTouch.TP_Draw_Big_Point(myTouch.x[0], myTouch.y[0], VGA_YELLOW);
       }
-    }else delay(20);      
-   
+    }
+    else
+      delay(20);
   }
 }
 void setup()
 {
   Serial.begin(115200);
-	// set the SPI_CS as an output:
+  // set the SPI_CS as an output:
   pinMode(SPI_CS, OUTPUT);
   // initialize SPI:
-  SPI.begin(); 
+  SPI.begin();
   myGLCD.InitLCD();
   myGLCD.setFont(SmallFont);
   myTouch.InitTouch();
-  myTouch.setPrecision(PREC_MEDIUM); 
+  myTouch.setPrecision(PREC_MEDIUM);
   myTouch.TP_Adjust();
   myTouch.Load_Drow_Dialog();
 }

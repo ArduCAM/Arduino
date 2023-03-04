@@ -3,13 +3,10 @@
 #include "ArduCAM.h"
 #include <Wire.h>
 
-const struct sensor_reg MT9T112_QVGA[] PROGMEM=
-{
-	
+const struct sensor_reg MT9T112_QVGA[] PROGMEM =
+	{
 
-
-	{0xffff, 0xffff},
+		{0xffff, 0xffff},
 };
 
 #endif
-
