@@ -52,7 +52,7 @@ and the line `#define OV5642_CAM` then comment other lines. <br>
 
 ## 2. Choose correct CS pin for your camera
 Open one of the examples, wiring SPI and I2C interface especially CS pins to ArduCAM shield according to the examples.
-Hardware and software shuld be consistent to run the examples correctly.
+Hardware and software should be consistent to run the examples correctly.
 
 ## 3. Upload the examples
 In the example folder there are seven sub directories for different ArduCAM models and the host application. 
