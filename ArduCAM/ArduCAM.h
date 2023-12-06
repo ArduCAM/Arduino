@@ -306,6 +306,28 @@
 #define regsize uint32_t
 #endif
 
+#if defined(ARDUINO_ARCH_MBED)
+#define cbi(reg, bitmask) digitalWrite(bitmask, LOW)
+#define sbi(reg, bitmask) digitalWrite(bitmask, HIGH)
+#define pulse_high(reg, bitmask) \
+	sbi(reg, bitmask);           \
+	cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) \
+	cbi(reg, bitmask);          \
+	sbi(reg, bitmask);
+
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+
+// Avoid conflicts with what is defined in STL.
+// Not used in this library anyway
+// #define swap(type, i, j) {type t = i; i = j; j = t;}
+
+#define fontbyte(x) cfont.font[x]
+
+#define regtype volatile uint32_t
+#define regsize uint32_t
+#endif
 
 /****************************************************/
 /* Sensor related definition 												*/
