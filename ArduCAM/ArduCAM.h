@@ -96,6 +96,7 @@
 	2017/11/27  V4.1.2  by Max      Add support for Feather M0
 	2018/10/15  V4.1.2  by Lee      Add support for NRF52
 	2018/10/15  V4.1.2  by Lee      Add support for TEENSYDUINO
+        2024/09/28  V4.1.3  by Keeeal   Add support for Uno R4 Minima + WIFI
 --------------------------------------*/
 
 #ifndef ArduCAM_H
@@ -304,6 +305,21 @@
 #define fontbyte(x) cfont.font[x]
 #define regtype volatile uint32_t
 #define regsize uint32_t
+#endif
+
+#if defined (ARDUINO_UNOR4_MINIMA) || defined (ARDUINO_UNOR4_WIFI)
+#define cbi(reg, bitmask) *reg &= ~bitmask
+#define sbi(reg, bitmask) *reg |= bitmask
+
+#define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
+#define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+
+#define cport(port, data) port &= data
+#define sport(port, data) port |= data
+
+#define fontbyte(x) cfont.font[x]
+#define regtype volatile uint16_t
+#define regsize uint16_t
 #endif
 
 
