@@ -81,7 +81,7 @@ void ArduCAM_Touch::read()
 
 	digitalWrite(T_CS,LOW);                    
 
-	for (int i=0; i<prec; i++)
+	for (uint8_t i=0; i<prec; ++i)
 	{
 		touch_WriteData(0x90);        
 		ty+=touch_ReadData();
@@ -93,9 +93,10 @@ void ArduCAM_Touch::read()
 
 	digitalWrite(T_CS,HIGH);
 
-	TP_X=tx/prec;
-	TP_Y=ty/prec;
-	
+	if (prec > 0) {
+		TP_X = tx / prec;
+		TP_Y = ty / prec;
+	}  
 }
 
 bool ArduCAM_Touch::dataAvailable()
