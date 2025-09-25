@@ -43,11 +43,11 @@ UTFT TP_TFT(LCD_CS);
 
 
 
-ArduCAM_Touch::ArduCAM_Touch(byte tcs,byte irq)
+ArduCAM_Touch::ArduCAM_Touch(byte tcs,byte irq) : prec(10)
 {
-		T_IRQ = irq;
-		T_CS  = tcs;
-    SPI.begin();
+	T_IRQ = irq;
+	T_CS = tcs;
+	SPI.begin();
 }
 
 void ArduCAM_Touch::InitTouch(byte orientation)
