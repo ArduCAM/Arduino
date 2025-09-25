@@ -96,7 +96,7 @@ void ArduCAM_Touch::read()
 	if (prec > 0) {
 		TP_X = tx / prec;
 		TP_Y = ty / prec;
-	}  
+	}
 }
 
 bool ArduCAM_Touch::dataAvailable()
