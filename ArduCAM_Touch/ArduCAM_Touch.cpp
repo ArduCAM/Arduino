@@ -43,11 +43,11 @@ UTFT TP_TFT(LCD_CS);
 
 
 
-ArduCAM_Touch::ArduCAM_Touch(byte tcs,byte irq)
+ArduCAM_Touch::ArduCAM_Touch(byte tcs,byte irq) : prec(10)
 {
-		T_IRQ = irq;
-		T_CS  = tcs;
-    SPI.begin();
+	T_IRQ = irq;
+	T_CS = tcs;
+	SPI.begin();
 }
 
 void ArduCAM_Touch::InitTouch(byte orientation)
@@ -81,7 +81,7 @@ void ArduCAM_Touch::read()
 
 	digitalWrite(T_CS,LOW);                    
 
-	for (int i=0; i<prec; i++)
+	for (uint8_t i=0; i<prec; ++i)
 	{
 		touch_WriteData(0x90);        
 		ty+=touch_ReadData();
@@ -93,9 +93,10 @@ void ArduCAM_Touch::read()
 
 	digitalWrite(T_CS,HIGH);
 
-	TP_X=tx/prec;
-	TP_Y=ty/prec;
-	
+	if (prec > 0) {
+		TP_X = tx / prec;
+		TP_Y = ty / prec;
+	}
 }
 
 bool ArduCAM_Touch::dataAvailable()
